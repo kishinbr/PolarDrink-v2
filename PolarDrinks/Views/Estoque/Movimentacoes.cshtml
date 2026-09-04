@@ -1,0 +1,248 @@
+﻿@model IEnumerable<MovimentacaoEstoqueModel>
+
+@{
+    ViewData["Title"] = "Movimentações do Estoque";
+}
+
+<div class="container rounded-4 mt-5">
+
+    <div class="bg-shadow p-4 rounded-4 mb-4">
+
+        <h2 class="text-light text-center mb-4">Movimentações do Estoque</h2>
+
+        <div class="mb-4 position-relative">
+            <input type="text" id="buscaProduto" class="form-control bg-shadow text-light"
+                   placeholder="Digite o nome ou código do produto"
+                   autocomplete="off" maxlength="100">
+            <div id="listaSugestoes" class="list-group position-absolute w-100" style="z-index:1000;"></div>
+        </div>
+
+        @if (ViewBag.ProdutoSelecionado != null)
+        {
+            <div class="d-flex justify-content-between align-items-center bg-tpreto text-light p-4 rounded-4">
+                <div>
+                    <h5 class="mb-1">Produto</h5>
+                    <strong class="badge bg-light text-dark">@ViewBag.ProdutoSelecionado.ProdutoNome</strong>
+                </div>
+                <div class="text-center">
+                    <h6 class="mb-1">Estoque Atual / Min</h6>
+                    @if (ViewBag.ProdutoSelecionado.ProdutoQtdEstoque <= ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo)
+                    {
+                        <span class="badge bg-warning text-dark fs-6">
+                            @ViewBag.ProdutoSelecionado.ProdutoQtdEstoque / @ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success fs-6">
+                            @ViewBag.ProdutoSelecionado.ProdutoQtdEstoque / @ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+
+    </div> 
+    <div class="bg-shadow text-light p-4 rounded-4">
+        <table id="tabelaMovimentacoes" class="table  table-hover mb-auto bg-shadowt">
+        <thead class="bg-tpreto">
+            <tr>
+                <th style="width: 10%;">ID Movi</th>
+                <th style="width: 10%;">Data</th>
+                <th style="width: 10%;" >Tipo</th>
+                <th style="width: 10%;" >Quantidade</th>
+                <th style="width: 15%;" >ID Venda/Compra</th>
+                <th style="width: 10%;">Responsável</th>
+                <th style="width: 15%;">Descrição</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var mov in Model)
+                {
+                    <tr>
+                            <td data-order="@mov.MovimentacaoID">
+                                <span class="badge bg-secondary">#@mov.MovimentacaoID</span>
+                            </td>
+
+                        <td>@mov.MovimentacaoData.ToString("dd/MM/yyyy HH:mm")</td>
+
+                        <td class="text-center">
+                            @if (mov.MovimentacaoTipo == "Entrada")
+                            {
+                                <span class="badge bg-success">Reabastecimento</span>
+                            }
+                            else if (mov.MovimentacaoTipo == "Saida")
+                            {
+                                <span class="badge bg-primary">Venda</span>
+                            }
+                            else if (mov.MovimentacaoTipo == "Cancelamento")
+                            {
+                                <span class="badge bg-primary">Venda</span>
+                                <span class="badge bg-danger text-light">Cancelamento</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Edição</span>
+                            }
+                        </td>
+
+                        <td class="text-center">
+                            @if (mov.MovimentacaoTipo == "Entrada")
+                            {
+                                <span class="text-success">+@mov.MovimentacaoQtd</span>
+                            }
+                            else if (mov.MovimentacaoTipo == "Saida")
+                            {
+                                <span class="text-danger">-@mov.MovimentacaoQtd</span>
+                            }
+                            else
+                            {
+                                if (mov.MovimentacaoQtd > 0)
+                                {
+                                    <span class="text-success fw-bold">+@mov.MovimentacaoQtd</span>
+                                }
+                                else if (mov.MovimentacaoQtd < 0)
+                                {
+                                    <span class="text-danger fw-bold">@mov.MovimentacaoQtd</span>
+                                }
+                                else
+                                {
+                                    <span>0</span>
+                                }
+                            }
+                        </td>
+
+                            <td class="text-center"
+                                data-order="@(mov.ItemVenda != null
+                                                    ? mov.ItemVenda.VendaID
+                                                    : mov.ItemCompra != null
+                                                        ? mov.ItemCompra.CompraID
+                                                        : 0)">
+
+                                @if (mov.ItemVenda != null)
+                                {
+                                    <span class="badge bg-primary">
+                                        #@mov.ItemVenda.VendaID
+                                    </span>
+                                }
+                                else if (mov.ItemCompra != null)
+                                {
+                                    <span class="badge bg-success">
+                                        #@mov.ItemCompra.CompraID
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        <td>@mov.Usuario?.UsuarioNome</td>
+
+                        <td title="@mov.MovimentacaoDescricao">
+                            @(mov.MovimentacaoDescricao != null && mov.MovimentacaoDescricao.Length > 20
+                                ? mov.MovimentacaoDescricao.Substring(0, 20) + "..."
+                                : mov.MovimentacaoDescricao)
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const produtos = @Html.Raw(Json.Serialize(ViewBag.Produtos));
+
+        const buscaInput = document.getElementById("buscaProduto");
+        const lista = document.getElementById("listaSugestoes");
+
+        function renderLista(filtro = "") {
+            lista.innerHTML = "";
+
+            const filtrados = produtos
+                .filter(p =>
+                    p.produtoNome.toLowerCase().includes(filtro) ||
+                    p.produtoCodBarra.toLowerCase().includes(filtro)
+                )
+                .slice(0, 8);
+
+            filtrados.forEach(p => {
+                const item = document.createElement("a");
+                item.classList.add("list-group-item", "list-group-item-action");
+
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>${p.produtoNome} [${p.produtoCodBarra}]</span>
+                        <span>${p.produtoQtdEstoque} QTD</span>
+                    </div>
+                `;
+
+                item.onclick = () => {
+                    window.location.href = `/Estoque/Movimentacoes?produtoId=${p.produtoID}`;
+                };
+
+                lista.appendChild(item);
+            });
+        }
+
+        buscaInput.addEventListener("focus", () => renderLista(buscaInput.value.toLowerCase()));
+        buscaInput.addEventListener("input", () => renderLista(buscaInput.value.toLowerCase()));
+
+        document.addEventListener("click", e => {
+            if (!buscaInput.contains(e.target) && !lista.contains(e.target)) {
+                lista.innerHTML = "";
+            }
+        });
+
+        $(document).ready(function () {
+
+            $('#tabelaMovimentacoes').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 20, 30],
+            scrollX: true,
+            scrollCollapse: true,
+            paging: true,
+            order: [],
+            columnDefs: [
+                { orderable: false, targets: [5] }, // desabilita ordenação na coluna Ações
+                { className: "text-center", targets: [4] } // status e ações centralizados
+            ],
+
+            language: {
+                "decimal": "",
+                "emptyTable": "Movimentações não encontradas",
+                "info": "Mostrando de _START_ a _END_ de um total de _TOTAL_ movimentações",
+                "infoEmpty": "Mostrando de 0 a 0 de 0 movimentações",
+                "infoFiltered": "(filtrado de _MAX_ movimentações no total)",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ movimentações",
+                "loadingRecords": "Carregando...",
+                "search": "Procurar:",
+                "zeroRecords": "Movimentação não encontrada",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Próximo",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "orderable": "Ordenar por esta coluna",
+                    "orderableReverse": "Ordem reversa desta coluna"
+                }
+            }
+        });
+
+            setTimeout(function () {
+                $(".alert").fadeOut("slow", function () {
+                    $(this).alert('close');
+                });
+            }, 3000);
+
+        });
+    </script>
+}

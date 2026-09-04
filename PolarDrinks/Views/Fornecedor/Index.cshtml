@@ -1,0 +1,94 @@
+﻿@model IEnumerable<FornecedorModel>
+@{
+    ViewData["Title"] = "Fornecedores";
+}
+
+<div class="container p-4 rounded-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
+        <h1 class="m-0">Fornecedores</h1>
+      @if (Context.Session.GetString("Perfil") == "Admin")
+        {
+            <a class="btn btn-success mx-2" asp-action="Cadastrar" title="Cadastrar">
+            <i class="bi bi-file-earmark-plus-fill mx-2"></i>
+            Cadastrar novo Fornecedor
+        </a>
+        }
+    </div>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <div class="bg-shadow text-light p-4 rounded-4 mb-4">
+    <table id="Fornecedores" class="table table-hover mb-auto bg-shadowt">
+        <thead class="bg-tpreto">
+            <tr>
+                <th style="width: 15%;">Nome</th>
+                <th style="width: 15%;">CNPJ</th>
+                <th style="width: 15%;">Telefone</th>
+                <th style="width: 15%;">Email</th>
+                <th style="width: 15%;">CEP</th>
+                <th style="width: 15%;">Cidade</th>
+                <th style="width: 5%;">UF</th>
+                <th style="width: 5%;" class="text-center">Status</th>
+                @if (Context.Session.GetString("Perfil") == "Admin")
+                {
+                <th style="width: 5%;" class="text-center">Ações</th>
+                }
+                
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var fornecedor in Model)
+                {
+                    <tr>
+                        <td>@fornecedor.FornecedorNome</td>
+                        <td>@fornecedor.FornecedorCNPJ</td>
+                        <td>@fornecedor.FornecedorTelefone</td>
+                        <td>@fornecedor.FornecedorEmail</td>
+                        <td>@fornecedor.FornecedorCEP</td>
+                        <td>@fornecedor.FornecedorCidade</td>
+                        <td>@fornecedor.FornecedorEstado</td>
+
+                        <td class="text-center">
+                            @if (fornecedor.FornecedorAtivo)
+                            {
+                                <span class="badge bg-primary">Disponível</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Indisponível</span>
+                            }
+                        </td>
+                        @if (Context.Session.GetString("Perfil") == "Admin")
+                        {
+                        <td class="text-center">
+                            <a class="btn btn-warning btn-sm mx-1"
+                               asp-action="Editar"
+                               asp-route-id="@fornecedor.FornecedorID"
+                               title="Editar fornecedor">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                        }
+                    </tr>
+                }
+            }
+            
+        </tbody>
+    </table>
+    </div>
+</div>

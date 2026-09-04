@@ -1,0 +1,116 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+select.dt-input {
+    color: #fff !important;
+    background-color: #1a1e28 !important;
+    border: 1px solid #444 !important;
+}
+
+
+
+.dt-length label {
+    color: #fff !important;
+}
+
+
+/* SIDEBAR DESKTOP */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: #181818;
+    color: white;
+    padding: 20px 15px;
+    overflow-y: auto;
+}
+
+    .sidebar .brand {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar a,
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        color: #d1d5db;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: 0.2s;
+        font-size: 14px;
+    }
+
+        .sidebar a:hover,
+        .menu-item:hover {
+            background: #303030;
+            transform: translateX(3px);
+            color: white;
+        }
+
+        .menu-item.active,
+        .sidebar a.active {
+            background: #303030;
+            color: white;
+        }
+
+        .sidebar i,
+        .menu-item i {
+            font-size: 18px;
+        }
+
+.menu-section {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    letter-spacing: 1px;
+}
+
+/* CONTENT */
+.content {
+    margin-left: 260px;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* TOP BAR MOBILE */
+.topbar {
+    display: none;
+    background: #181818;
+    padding: 10px 15px;
+    color: white;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .topbar {
+        display: flex;
+    }
+}

@@ -1,0 +1,301 @@
+﻿@{
+    ViewData["Title"] = "Estoque";
+}
+
+@model IEnumerable<ProdutoModel>
+@using System.Globalization
+
+<div class="container rounded-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3 bg-shadow text-light p-4 rounded-4 mt-2">
+        
+        <h1 class="m-0">Estoque de Produtos</h1>
+        @if (Context.Session.GetString("Perfil") == "Admin")
+        {
+            <a class="btn btn-success mx-2" asp-controller="Estoque" asp-action="Cadastrar" data-bs-toggle="tooltip" title="Cadastrar">
+                <i class="bi bi-file-earmark-plus-fill mx-2"></i>Cadastrar novo Produto
+            </a>
+        }
+    </div>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light" role="alert">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if(TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light" role="alert">
+            @TempData["MensagemErro"]
+        </div>
+    }
+    <div class="bg-shadow text-light p-4 rounded-4">
+    <table id="Produtos" class="table table-hover mb-auto bg-shadowt "  >
+        <thead class="bg-tpreto">
+            <tr>
+                <th style="width: 15%;">Nome</th>
+                <th style="width: 15%;" class="text-center">Cod Barra</th>
+                <th style="width: 15%;" class="text-center">Descrição</th>
+                <th style="width: 10%;" class="text-end">P.Custo</th>
+                <th style="width: 10%;" class="text-end">P.Venda</th>
+                <th style="width: 10%;" class="text-end">Qtd/Min</th>
+                <th style="width: 5%;" class="text-center">Promoção</th>
+                <th style="width: 15%;" class="text-center">Status</th>
+                @if (Context.Session.GetString("Perfil") == "Admin")
+                {
+                <th style="width: 10%;" class="text-center">Edição</th>
+                }
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var produto in Model)
+                {
+                    <tr>
+                        <td>@produto.ProdutoNome</td>
+
+                        <td>@produto.ProdutoCodBarra</td>
+
+                        <td>
+                            @(produto.ProdutoDescricao != null && produto.ProdutoDescricao.Length > 20
+                            ? produto.ProdutoDescricao.Substring(0, 20) + "..."
+                            : produto.ProdutoDescricao)
+                               
+                        </td>
+
+
+                        <td class="text-end">
+                            @("R" + produto.ProdutoPrecoCusto.GetValueOrDefault(0).ToString("C"))
+                        </td>
+
+                        <td class="text-end">
+                            @("R" + produto.ProdutoPrecoVenda.GetValueOrDefault(0).ToString("C"))
+                        </td>
+
+                        <td data-order="@produto.ProdutoQtdEstoque.GetValueOrDefault(0)">
+
+                                @{
+                                    var atual = produto.ProdutoQtdEstoque.GetValueOrDefault(0);
+                                    var minimo = produto.ProdutoEstoqueMinimo;
+
+                                    string classe = "";
+
+                                    if (atual == 0)
+                                    {
+                                        classe = "badge bg-danger";
+                                    }
+                                    else if (atual <= minimo)
+                                    {
+                                        classe = "badge bg-warning text-dark";
+                                    }
+                                    else
+                                    {
+                                        classe = "badge bg-success";
+                                    }
+                                }
+
+                            <span class="@classe">
+                                @($"{atual}/{minimo}")
+                            </span>
+
+                        </td>
+
+                        <td class="text-center">
+                            @if (produto.ProdutoPromocao > 0)
+                            {
+                                <span class="text-success">@produto.ProdutoPromocao.ToString("0.#")%</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+
+                        <td class="text-center">
+                            @if (produto.ProdutoAtivo)
+                            {
+                                <span class="badge bg-primary">Disponível</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Indisponível</span>
+                            }
+                        </td>
+                        @if (Context.Session.GetString("Perfil") == "Admin")
+                        {
+                        <td class="text-center">
+                                <a class="btn btn-warning btn-sm mx-1"
+                                       asp-controller="Estoque"
+                                       asp-action="Editar"
+                                       asp-route-id="@produto.ProdutoID"
+                                       data-bs-toggle="tooltip"
+                                       title="Edição completa">
+
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                    <a class="btn btn-sm mx-1 btn-edicao-rapida btn-dark" style="background:#a78bfa"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#edicaoRapidaModal"
+                                       data-id="@produto.ProdutoID"
+                                       data-preco="@produto.ProdutoPrecoVenda"
+                                       data-promocao="@produto.ProdutoPromocao"
+                                       
+                                       title="Promoção">
+
+                                    <i class="bi bi-percent"></i>
+                                </a>
+                        </td>
+                        }
+                    </tr> 
+                }
+            }
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- Edição Rápida -->
+<div class="modal fade" id="edicaoRapidaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-shadow text-light">
+            <div class="modal-header">
+                <h5 class="modal-title">Promoção Rápida do Produto </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEdicaoRapida" method="post" asp-controller="Estoque" asp-action="EdicaoRapida">
+                    <input type="hidden" id="ProdutoID" name="ProdutoID" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Preço de Venda</label>
+                        <input type="text" class="form-control bg-shadow text-light" id="PrecoVenda" name="ProdutoPrecoVenda">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Promoção (%)</label>
+                        <input type="text" class="form-control bg-shadow text-light" id="Promocao" name="ProdutoPromocao">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" title="Voltar">Voltar</button>
+                <button type="button" class="btn btn-success" id="btnConfirmarEdicao" title="Confirmar">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    var modal = document.getElementById('edicaoRapidaModal');
+    var btnConfirmar = document.getElementById('btnConfirmarEdicao');
+
+    const precoInput = document.getElementById("PrecoVenda");
+    const promocaoInput = document.getElementById("Promocao");
+
+    // ===========================
+    // ABRIR MODAL
+    // ===========================
+    modal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+
+        var id = button.getAttribute('data-id');
+        var preco = button.getAttribute('data-preco');
+        var promocao = button.getAttribute('data-promocao');
+
+        modal.querySelector('#ProdutoID').value = id;
+        precoInput.value = "";
+        promocaoInput.value = "";
+
+        let promocaoFormatada = parseFloat(promocao).toString();
+
+        precoInput.placeholder = preco;
+        promocaoInput.placeholder = promocaoFormatada;
+    });
+
+
+    precoInput.addEventListener("input", function () {
+        let value = this.value;
+
+
+        value = value.replace(/[^0-9.]/g, '');
+
+
+        let parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts[1];
+        }
+
+        if (value.startsWith('0') && value.length > 1 && value[1] !== '.') {
+            value = value.replace(/^0+/, '');
+        }
+
+        if (value.includes('.')) {
+            let [intPart, decPart] = value.split('.');
+            intPart = intPart.substring(0, 5);
+            decPart = decPart.substring(0, 2);
+            value = intPart + '.' + decPart;
+        } else {
+            value = value.substring(0, 5);
+        }
+
+        this.value = value;
+    });
+
+
+    promocaoInput.addEventListener("input", function () {
+    let value = this.value;
+
+
+    value = value.replace(/[^0-9.]/g, '');
+
+    let parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts[1];
+    }
+
+
+    if (value.startsWith('0') && value.length > 1 && value[1] !== '.') {
+        value = value.replace(/^0+/, '');
+    }
+
+
+    if (value.includes('.')) {
+        let [intPart, decPart] = value.split('.');
+        intPart = intPart.substring(0, 3);   
+        decPart = decPart.substring(0, 1);  
+        value = intPart + '.' + decPart;
+    } else {
+        value = value.substring(0, 3);
+    }
+
+    let numero = parseFloat(value) || 0;
+
+
+    if (numero > 100) numero = 100;
+
+    this.value = numero.toString();
+});
+
+    btnConfirmar.addEventListener('click', function () {
+
+    if (!precoInput.value) {
+        precoInput.value = precoInput.placeholder || "0.00";
+    }
+
+    if (!promocaoInput.value) {
+        promocaoInput.value = promocaoInput.placeholder || "0";
+    }
+
+    document.getElementById('formEdicaoRapida').submit();
+});
+
+});
+</script>
+}

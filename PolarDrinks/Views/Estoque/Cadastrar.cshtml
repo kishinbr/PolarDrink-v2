@@ -1,0 +1,156 @@
+﻿@model ProdutoModel
+@{
+    ViewData["title"] = "Cadastrar Produto";
+}
+<div class="container bg-shadow p-5 rounded-5 mt-5">
+    <div class="mb-5 text-center">
+        <h1 class="text-light">Cadastrar Produto</h1>
+    </div>
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light" role="alert">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light" role="alert">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <form method="post" asp-controller="Estoque" asp-action="Cadastrar" autocomplete="off">
+
+        <div class="mb-4">
+            <label class="form-label text-light">Nome</label>
+            <input type="text" class="form-control bg-shadow text-light" asp-for="ProdutoNome" placeholder="Nome do Produto" maxlength="100" >
+            <span asp-validation-for="ProdutoNome" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-light">Descrição</label>
+            <textarea class="form-control bg-shadow text-light" asp-for="ProdutoDescricao" rows="3" placeholder="Descrição do Produto" maxlength="200"></textarea>
+            <span asp-validation-for="ProdutoDescricao" class="text-danger"></span>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <label class="form-label text-light">Código de Barras</label>
+                <input type="text" class="form-control bg-shadow text-light" asp-for="ProdutoCodBarra" placeholder="Ex: 1234567890123" maxlength="13">
+                <span asp-validation-for="ProdutoCodBarra" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label text-light">Preço de Custo</label>
+                <input type="text" class="form-control bg-shadow text-light" asp-for="ProdutoPrecoCusto" placeholder="0.00">
+                <span asp-validation-for="ProdutoPrecoCusto" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label text-light">Preço de Venda</label>
+                <input type="text" class="form-control bg-shadow text-light" asp-for="ProdutoPrecoVenda" placeholder="0.00">
+                <span asp-validation-for="ProdutoPrecoVenda" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label text-light">Quantidade em Estoque</label>
+
+                <input type="number"
+                        class="form-control bg-shadowi text-light"
+                        asp-for="ProdutoQtdEstoque"
+                        value="0"
+                        readonly />
+                <span asp-validation-for="ProdutoQtdEstoque" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label text-light">Estoque Mínimo</label>
+                <input type="text" class="form-control bg-shadow text-light" asp-for="ProdutoEstoqueMinimo" placeholder="0" maxlength="10">
+                <span asp-validation-for="ProdutoEstoqueMinimo" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="ProdutoAtivo">
+                <label class="form-check-label text-light">
+                    Produto disponível
+                </label>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 mt-4">
+            <a class="btn btn-primary w-50" asp-controller="Estoque" asp-action="Index"  title="Voltar">Voltar</a>
+            <button type="submit" class="btn btn-success w-50" title="Cadastrar"> Cadastrar</button>
+            
+        </div>
+
+    </form>
+</div>
+@section Scripts {
+<script>
+
+    $(document).on("input", 'input[name="ProdutoPrecoCusto"], input[name="ProdutoPrecoVenda"]', function () {
+        let value = this.value;
+
+
+        value = value.replace(/[^0-9.]/g, '');
+
+
+        let parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts[1];
+        }
+
+
+        if (value.startsWith('0') && value.length > 1 && value[1] !== '.') {
+            value = value.replace(/^0+/, '');
+        }
+
+
+        if (value.includes('.')) {
+            let [intPart, decPart] = value.split('.');
+            intPart = intPart.substring(0, 5);
+            decPart = decPart.substring(0, 2);
+            value = intPart + '.' + decPart;
+        } else {
+            value = value.substring(0, 5);
+        }
+
+        this.value = value;
+    });
+
+
+    $(document).on("input", 'input[name="ProdutoEstoqueMinimo"]', function () {
+        let value = this.value;
+
+
+        value = value.replace(/[^0-9]/g, '');
+
+
+        value = value.substring(0, 4);
+
+
+        if (value.length > 1) {
+            value = value.replace(/^0+/, '');
+        }
+
+        this.value = value;
+    });
+
+
+    $(document).on("input", 'input[name="ProdutoCodBarra"]', function () {
+        let value = this.value;
+
+
+        value = value.replace(/[^0-9]/g, '');
+
+        this.value = value;
+    });
+
+
+    
+</script>
+}

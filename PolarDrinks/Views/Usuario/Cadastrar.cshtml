@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Novo Usuário";
+}
+
+<div class="container bg-shadow p-5 rounded-5 mt-3" style="max-width:480px;">
+
+    <div class="text-center mb-4">
+        <h2 class="text-light">Novo Usuário</h2>
+    </div>
+
+    @if (ViewBag.Erro != null)
+    {
+        <div class="alert bg-danger text-light" role="alert">
+            @ViewBag.Erro
+        </div>
+    }
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label text-light">Nome</label>
+            <input type="text" name="usuarioNome" class="form-control bg-shadow text-light" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-light">Login de usuário</label>
+            <input type="text" name="usuarioLogin" class="form-control bg-shadow text-light" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light">Perfil</label>
+            <select name="usuarioPerfil" class="form-select bg-shadow text-light">
+                <option value="Funcionario">Funcionário</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light">Senha</label>
+            <input type="password" name="senha" class="form-control bg-shadow text-light" minlength="6" required />
+            <small class="text-secondary">Mínimo 6 caracteres.</small>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-light">Confirmar senha</label>
+            <input type="password" name="confirmacaoSenha" class="form-control bg-shadow text-light" minlength="6" required />
+        </div>
+
+
+        <div class="mb-4">
+            <label class="form-label text-light">Senha do @Context.Session.GetString("Nome")</label>
+            <input type="password" name="senhaAtual" class="form-control bg-shadow text-light" minlength="6" required />
+        </div>
+
+        <div class="d-flex gap-3">
+            <a asp-action="Index" class="btn btn-primary w-50">Voltar</a>
+            <button type="submit" class="btn btn-success w-50">Cadastrar</button>
+            
+        </div>
+    </form>
+
+</div>

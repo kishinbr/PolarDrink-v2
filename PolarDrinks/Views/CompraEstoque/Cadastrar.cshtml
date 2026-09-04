@@ -1,0 +1,333 @@
+﻿@model PolarDrinks.ViewModels.CompraCreateViewModel
+@{
+    ViewData["Title"] = "Novo Reabastecimento";
+}
+
+<div class="container bg-shadow p-5 mt-5 rounded-5">
+
+    <div class="text-center mb-4">
+        <h2 class="text-light">Novo Reabastecimento</h2>
+    </div>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light">@TempData["MensagemSucesso"]</div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light">@TempData["MensagemErro"]</div>
+    }
+
+    <div id="erroTabela" class="alert bg-danger text-light d-none">
+        Adicione pelo menos um produto antes de salvar.
+    </div>
+
+    <form method="post" id="formCompra">
+        <div class="mb-4">
+            <label class="form-label text-light">Fornecedor</label>
+            <select class="form-select bg-shadow text-light" asp-for="FornecedorID" asp-items="Model.Fornecedores">
+                <option value="">Selecione um fornecedor</option>
+            </select>
+            <span asp-validation-for="FornecedorID" class="text-danger"></span>
+        </div>
+
+        <table class="table table-light bg-shadowt" id="tabelaItens">
+            <thead class="bg-tpreto">
+                <tr>
+                    <th>Produto</th>
+                    <th style="width:150px;">Quantidade</th>
+                    <th style="width:150px;">Preço</th>
+                    <th style="width:80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Itens.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <div class="position-relative">
+                                
+                                <input type="text" class="form-control busca-produto bg-shadow text-light"
+                                       placeholder="Digite o nome do produto"
+                                       autocomplete="off"
+                                       value="@Model.Itens[i].ProdutoNome" />
+
+                                <input type="hidden" name="Itens[@i].ProdutoID"
+                                       class="produto-id-hidden"
+                                       value="@Model.Itens[i].ProdutoID" />
+                                <div class="lista-sugestoes list-group position-absolute w-100" style="z-index:1000; display:none;"></div>
+                            </div>
+                            <span asp-validation-for="Itens[@i].ProdutoID" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input class="form-control bg-shadow text-light" asp-for="Itens[@i].Quantidade" type="text" />
+                            <span asp-validation-for="Itens[@i].Quantidade" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input class="form-control preco-input bg-shadow text-light" asp-for="Itens[@i].Preco" type="text" />
+                            <span asp-validation-for="Itens[@i].Preco" class="text-danger"></span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-remover">X</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between mb-3">
+            <button type="button" id="addItem" class="btn btn-primary">
+                + Adicionar Produto
+            </button>
+            <span class="fw-bold text-light" id="totalPreco">Total: R$ 0.00</span>
+        </div>
+
+        <div class="d-flex gap-3">
+            <a asp-action="Index" class="btn btn-primary w-50">Voltar</a>
+            <button type="submit" class="btn btn-success w-50" id="btnSalvar" disabled>Salvar</button>
+        </div>
+    </form>
+</div>
+
+@if (Model.ProdutosEstoque != null && Model.ProdutosEstoque.Any())
+{
+    <div class="d-flex justify-content-between container align-items-center bg-shadow text-light p-4 mt-4 rounded-4">
+        <h4 class="m-0">Produtos em Estoque</h4>
+    </div>
+
+    <div class="container rounded-4 bg-shadow p-4 mt-4">
+        <table id="tabelaEstoqueConsulta" class="table table-hover mb-0 bg-shadowt">
+            <thead class="bg-tpreto">
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço de Custo</th>
+                    <th>Preço de Venda</th>
+                    <th>Estoque/Min</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.ProdutosEstoque)
+                {
+                    <tr>
+                        <td>@p.ProdutoNome</td>
+                        <td>R$ @p.ProdutoPrecoCusto.GetValueOrDefault(0).ToString("N2")</td>
+                        <td>R$ @p.ProdutoPrecoVenda.GetValueOrDefault(0).ToString("N2")</td>
+                        <td>
+                            @if (p.ProdutoQtdEstoque == 0)
+                            {
+                                <span class="badge bg-danger ">@p.ProdutoQtdEstoque/@p.ProdutoEstoqueMinimo</span>
+                            }
+                            else if (p.ProdutoQtdEstoque <= p.ProdutoEstoqueMinimo)
+                            {
+                                <span class="badge bg-warning text-dark">@p.ProdutoQtdEstoque/@p.ProdutoEstoqueMinimo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">@p.ProdutoQtdEstoque/@p.ProdutoEstoqueMinimo</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        const todosProdutos = @Html.Raw(Json.Serialize(Model.Produtos.Select(p => new { value = p.Value, text = p.Text })));
+
+        function proximoIndice() {
+            return $("#tabelaItens tbody tr").length;
+        }
+
+        function renumerarIndices() {
+            $("#tabelaItens tbody tr").each(function (i) {
+                $(this).find(".produto-id-hidden").attr("name", `Itens[${i}].ProdutoID`);
+                $(this).find("input[name$='.Quantidade']").attr("name", `Itens[${i}].Quantidade`);
+                $(this).find("input[name$='.Preco']").attr("name", `Itens[${i}].Preco`);
+            });
+        }
+
+        function atualizarBotaoSalvar() {
+            $("#btnSalvar").prop("disabled", $("#tabelaItens tbody tr").length === 0);
+        }
+
+        function atualizarTotal() {
+            let total = 0;
+            $("#tabelaItens tbody tr").each(function () {
+                let qtd = parseFloat($(this).find('input[name$=".Quantidade"]').val());
+                let preco = parseFloat($(this).find('input[name$=".Preco"]').val());
+                if (!isNaN(qtd) && !isNaN(preco)) {
+                    total += qtd * preco;
+                }
+            });
+            $("#totalPreco").text("Total: R$ " + total.toFixed(2));
+        }
+
+        function renderizarLista(lista, hiddenInput, buscaInput, filtro) {
+            lista.empty();
+
+            const filtrados = filtro.length === 0
+                ? todosProdutos.slice(0, 5)
+                : todosProdutos.filter(p => p.text.toLowerCase().includes(filtro)).slice(0, 5);
+
+            if (filtrados.length === 0) {
+                lista.hide();
+                return;
+            }
+
+            filtrados.forEach(p => {
+                const item = $(`<a class="list-group-item list-group-item-action" style="cursor:pointer;">${p.text}</a>`);
+                item.on("mousedown", function (e) {
+                    e.preventDefault(); 
+                    buscaInput.val(p.text);
+                    hiddenInput.val(p.value);
+                    lista.empty().hide();
+                    atualizarTotal();
+                });
+                lista.append(item);
+            });
+
+            lista.show();
+        }
+
+        function inicializarAutocomplete(row) {
+            const buscaInput = row.find(".busca-produto");
+            const hiddenInput = row.find(".produto-id-hidden");
+            const lista = row.find(".lista-sugestoes");
+
+            // 👇 ao focar já mostra a lista completa
+            buscaInput.on("focus", function () {
+                renderizarLista(lista, hiddenInput, buscaInput, $(this).val().toLowerCase());
+            });
+
+            buscaInput.on("input", function () {
+                renderizarLista(lista, hiddenInput, buscaInput, $(this).val().toLowerCase());
+                // se o usuário apagou o texto, limpa o ID
+                if ($(this).val().trim() === "") {
+                    hiddenInput.val("");
+                }
+            });
+
+            buscaInput.on("blur", function () {
+                // pequeno delay para o mousedown do item ter tempo de disparar
+                setTimeout(() => lista.empty().hide(), 150);
+            });
+
+            $(document).on("click", function (e) {
+                if (!buscaInput.is(e.target) && !lista.is(e.target) && lista.has(e.target).length === 0) {
+                    lista.empty().hide();
+                }
+            });
+        }
+
+        function novaLinha(index) {
+            return $(`
+                <tr>
+                    <td>
+                        <div class="position-relative">
+                            <input type="text" class="form-control busca-produto bg-shadow text-light"
+                                   placeholder="Digite o nome do produto"
+                                   autocomplete="off" />
+                            <input type="hidden" name="Itens[${index}].ProdutoID" class="produto-id-hidden" />
+                            <div class="lista-sugestoes list-group position-absolute w-100" style="z-index:1000; display:none;"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" name="Itens[${index}].Quantidade" class="form-control bg-shadow text-light" value="0" />
+                    </td>
+                    <td>
+                        <input type="text" name="Itens[${index}].Preco" class="form-control preco-input bg-shadow text-light" value="0.00" />
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-remover">X</button>
+                    </td>
+                </tr>
+            `);
+        }
+
+        $("#addItem").click(function () {
+            let index = proximoIndice();
+            let row = novaLinha(index);
+            $("#tabelaItens tbody").append(row);
+            inicializarAutocomplete(row);
+            renumerarIndices();
+            atualizarTotal();
+            atualizarBotaoSalvar();
+        });
+
+        $(document).on("click", ".btn-remover", function () {
+            $(this).closest("tr").remove();
+            renumerarIndices();
+            atualizarTotal();
+            atualizarBotaoSalvar();
+        });
+
+        $(document).on("input", 'input[name$=".Quantidade"]', function () {
+            let value = this.value.replace(/[^0-9]/g, '');
+            if (value.length > 1) value = value.replace(/^0+/, '');
+            if (value.length > 4) value = value.substring(0, 4);
+            this.value = value;
+            atualizarTotal();
+        });
+
+        $(document).on("input", 'input.preco-input', function () {
+            let value = this.value.replace(/[^0-9.]/g, '');
+            let parts = value.split('.');
+            if (parts.length > 2) value = parts[0] + '.' + parts[1];
+            let [intPart, decPart] = value.split('.');
+            if (intPart && intPart.length > 1) intPart = intPart.replace(/^0+/, '');
+            if (intPart) intPart = intPart.substring(0, 5);
+            value = decPart !== undefined ? intPart + '.' + decPart.substring(0, 2) : intPart;
+            this.value = value;
+            atualizarTotal();
+        });
+
+        $("#formCompra").on("submit", function (e) {
+            let temItens = $("#tabelaItens tbody tr").length > 0;
+
+            if (!temItens) {
+                e.preventDefault();
+                $("#erroTabela").removeClass("d-none").hide().fadeIn();
+                window.scrollTo(0, 0);
+                return false;
+            }
+
+            let produtoInvalido = false;
+            $("#tabelaItens tbody tr").each(function () {
+                let id = $(this).find(".produto-id-hidden").val();
+                if (!id || id.trim() === "") {
+                    $(this).find(".busca-produto").addClass("is-invalid");
+                    produtoInvalido = true;
+                } else {
+                    $(this).find(".busca-produto").removeClass("is-invalid");
+                }
+            });
+
+            if (produtoInvalido) {
+                e.preventDefault();
+                return false;
+            }
+
+            $("#erroTabela").addClass("d-none");
+            renumerarIndices();
+
+            $('input.preco-input').each(function () {
+                if (this.value.trim() === '' || isNaN(this.value)) this.value = '0.00';
+            });
+
+            $('input[name$=".Quantidade"]').each(function () {
+                if (this.value.trim() === '' || isNaN(this.value)) this.value = '0';
+            });
+        });
+
+        $(document).ready(function () {
+            $("#tabelaItens tbody tr").each(function () {
+                inicializarAutocomplete($(this));
+            });
+            atualizarTotal();
+            atualizarBotaoSalvar();
+        });
+    </script>
+}

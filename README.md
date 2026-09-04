@@ -1,1 +1,1 @@
-# PolarDrink-v2
+# Polar Drinks

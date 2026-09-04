@@ -1,0 +1,154 @@
+﻿@model FornecedorModel
+@{
+    ViewData["Title"] = "Cadastrar Fornecedor";
+}
+
+<div class="container bg-shadow p-5 rounded-5 mt-5">
+    <div class="mb-3 text-center">
+        <h1 class="text-light">Cadastrar Fornecedor</h1>
+    </div>
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <form method="post" asp-controller="Fornecedor" asp-action="Cadastrar" autocomplete="off">
+
+        <div class="mb-4">
+            <label class="form-label text-light">Nome</label>
+            <input type="text" class="form-control bg-shadow text-light" asp-for="FornecedorNome" maxlength="80" autocomplete="off" placeholder="Nome do Fornecedor">
+            <span asp-validation-for="FornecedorNome" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-light">CNPJ</label>
+            <input type="text"
+                   id="FornecedorCNPJ"
+                   class="form-control bg-shadow text-light"
+                   asp-for="FornecedorCNPJ"
+                   maxlength="18"
+                   minlength="18"
+                   placeholder="00.000.000/0000-00"
+                   autocomplete="off">
+            <span asp-validation-for="FornecedorCNPJ" class="text-danger"></span>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label text-light">Telefone</label>
+                <input type="text"
+                       id="FornecedorTelefone"
+                       class="form-control bg-shadow text-light"
+                       asp-for="FornecedorTelefone"
+                       maxlength="15"
+                       minlength="15"
+                       placeholder="(00) 00000-0000"
+                       autocomplete="off">
+                <span asp-validation-for="FornecedorTelefone" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label text-light">E-mail</label>
+                <input type="email" class="form-control bg-shadow text-light" asp-for="FornecedorEmail" maxlength="80">
+                <span asp-validation-for="FornecedorEmail" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+        <div class="col-md-4">
+            <label class="form-label text-light">CEP</label>
+            <div class="input-group">
+                <input type="text"
+                        id="FornecedorCEP"
+                        class="form-control bg-shadow text-white"
+                        asp-for="FornecedorCEP"
+                        maxlength="9"
+                        placeholder="00000-000"
+                        autocomplete="off">
+
+                    <button type="button" id="btnBuscarCEP" class="btn btn-secondary" title="Buscar CEP">
+                        Buscar
+                    </button>
+                </div>
+                <span asp-validation-for="FornecedorCEP" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label text-light">Estado</label>
+                <input type="text" id="FornecedorEstado" class="form-control bg-shadowi text-white" maxlength="2" readonly asp-for="FornecedorEstado">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label text-light">Cidade</label>
+                <input type="text" id="FornecedorCidade" class="form-control bg-shadowi text-white" readonly asp-for="FornecedorCidade">
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label text-light">Logradouro</label>
+                <input type="text" id="FornecedorLogradouro" class="form-control bg-shadowi text-white" asp-for="FornecedorLogradouro" readonly>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label text-light">Bairro</label>
+                <input type="text" id="FornecedorBairro" class="form-control bg-shadowi text-white" readonly asp-for="FornecedorBairro">
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label text-light">Número</label>
+                <input type="text" class="form-control bg-shadow text-light" asp-for="FornecedorNum" maxlength="10">
+                <span asp-validation-for="FornecedorNum" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="FornecedorAtivo">
+                <label class="form-check-label text-light ">
+                    Fornecedor disponível
+                </label>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 mt-4">
+            <a class="btn btn-primary w-50" asp-controller="Fornecedor" asp-action="Index" title="Voltar">Voltar</a>
+            <button type="submit" class="btn btn-success w-50" title="Cadastrar">Cadastrar</button>
+            
+        </div>
+
+    </form>
+</div>
+
+@section Scripts{
+<script>
+    // buscar endereço pelo CEP usando a API ViaCEP
+    $("#btnBuscarCEP").click(function(){
+        var cep = $("#FornecedorCEP").val().replace(/\D/g, '');
+
+        if(cep.length !== 8){
+            alert("CEP inválido!");
+            return;
+        }
+
+        $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(dados){
+            if(!("erro" in dados)){
+                $("#FornecedorLogradouro").val(dados.logradouro);
+                $("#FornecedorBairro").val(dados.bairro);
+                $("#FornecedorCidade").val(dados.localidade);
+                $("#FornecedorEstado").val(dados.uf);
+            } else {
+                alert("CEP não encontrado.");
+            }
+        });
+    });
+</script>
+}

@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "_LayoutLogin";
+}
+
+<div class="container d-flex justify-content-center align-items-start min-vh-100 pt-5">
+
+    <div class="container rounded-4 bg-shadow p-4 mt-4" style="max-width:400px;">
+        <h1 class="display-5 display-md-4 text-center text-light">Polar Drinks</h1>
+        <div id="bear-zone" style="position: relative; display: inline-block;">
+            <img id="bear-img"
+                 src="/img/polaria.png"
+                 class="img-fluid"
+                 style="max-height: 400px; object-fit: contain; cursor: pointer;"
+                 alt="Polaria mascot" />
+        </div>
+        <h3 class="mb-4 text-center text-light">Login</h3>
+
+        <form method="post" autocomplete="off">
+            <input name="usuario" class="form-control mb-3 bg-shadow text-light" placeholder="Usuário" />
+            <input name="senha" type="password" class="form-control mb-3 bg-shadow text-light" placeholder="Senha" />
+
+            <button class="btn btn-dark w-100">Entrar</button>
+        </form>
+
+        @if (ViewBag.Erro != null)
+        {
+            <div class="alert bg-danger text-light mt-3">
+                @ViewBag.Erro
+            </div>
+        }
+
+    </div>
+
+</div>

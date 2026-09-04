@@ -1,0 +1,192 @@
+﻿@{
+    ViewData["Title"] = "Polar Drinks";
+}
+
+<div style="min-height: calc(100vh - 56px); display: flex; align-items: center; justify-content: center;">
+    <div class="container py-4 px-3 px-md-5">
+        <div class="bg-shadow p-4 p-md-5 rounded-5 text-light text-center">
+            <h1 class="display-5 display-md-4">Bem-vindo ao</h1>
+            <h1 class="display-5 display-md-4">Polar Drinks!</h1>
+            <h3 class="display-6 display-md-5"></h3>
+            <p class="lead text-secondary">Sua plataforma de controle de estoque e vendas de bebidas e produtos</p>
+
+            <div id="bear-zone" style="position: relative; display: inline-block;">
+                <img id="bear-img"
+                     src="/img/polaria.png"
+                     class="img-fluid"
+                     style="max-height: 400px; object-fit: contain; cursor: pointer;"
+                     alt="Polaria mascot" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cherry-ball {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #7b1a1a;
+        box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4), inset 2px 2px 4px rgba(255,255,255,0.1);
+        pointer-events: none;
+        opacity: 0;
+        z-index: 10;
+        transform: rotate(35deg);
+    }
+
+        .cherry-ball::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 60%;
+            width: 2px;
+            height: 12px;
+            background: #1a5c2a;
+            border-radius: 1px;
+            transform-origin: bottom center;
+
+        }
+
+    .umbrella-wrap {
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 10;
+        width: 32px;
+        height: 38px;
+    }
+
+        .umbrella-wrap svg {
+            width: 100%;
+            height: 100%;
+        }
+</style>
+
+<script>
+    (function () {
+        var clicks = 0;
+        var MAX = 5;
+        var animating = false;
+
+        /* ── Ajuste aqui: percentual da altura da imagem onde os itens param ── */
+        var STOP_PCT = 0.56;
+        /* ───────────────────────────────────────────────────────────────────── */
+
+        var img = document.getElementById('bear-img');
+        var zone = document.getElementById('bear-zone');
+
+        img.addEventListener('click', function () {
+            if (animating) return;
+            clicks++;
+            if (clicks >= MAX) {
+                clicks = 0;
+                animating = true;
+                launch();
+            }
+        });
+
+        function launch() {
+            var imgW   = img.offsetWidth;
+            var imgH   = img.offsetHeight;
+            var stopY  = Math.round(imgH * STOP_PCT);
+            var centerX = Math.round(imgW / 2);
+
+            launchCherry(centerX, stopY);
+            launchUmbrella(centerX, stopY, imgW);
+        }
+
+        function launchCherry(centerX, stopY) {
+            var ball = document.createElement('div');
+            ball.className = 'cherry-ball';
+            //mover para esquerda
+            ball.style.left   = (centerX - 7) + 'px';
+            ball.style.top    = '-16px';
+            ball.style.opacity = '1';
+            zone.appendChild(ball);
+
+            var y = -16, vy = 0.8;
+            var finalStop = stopY - 8;
+
+            function fall() {
+                vy += 0.18;
+                y  += vy;
+                ball.style.top = y + 'px';
+                if (y < finalStop) {
+                    requestAnimationFrame(fall);
+                } else {
+                    ball.style.top = finalStop + 'px';
+                    ball.style.transition = 'transform 0.5s';
+                    ball.style.transform = 'rotate(35deg) scale(1.3)';
+                    setTimeout(function () { ball.style.transform = 'rotate(35deg) scale(1)'; }, 500);
+                    fadeOut(ball, 1800);
+                }
+            }
+            requestAnimationFrame(fall);
+        }
+
+        function launchUmbrella(centerX, stopY, imgW) {
+            var wrap = document.createElement('div');
+            wrap.className = 'umbrella-wrap';
+            //mover para esquerda
+            var umbX = centerX - 10;
+            wrap.style.left    = umbX + 'px';
+            wrap.style.top     = '-40px';
+            wrap.style.opacity = '1';
+            wrap.innerHTML = buildUmbrellaSVG();
+            zone.appendChild(wrap);
+
+            var y = -40, vy = 0;
+            var finalStop = stopY - 30;
+            var t = 0;
+
+            function fall() {
+                vy += 0.06;
+                if (vy > 1.2) vy = 1.2;
+                y  += vy;
+                t  += 0.07;
+
+                var sway   = Math.sin(t) * 18;
+                var tiltDeg = 20 + Math.sin(t) * 10;
+                 wrap.style.transform = 'rotate(' + tiltDeg + 'deg)';
+
+                wrap.style.top       = y + 'px';
+                wrap.style.transform = 'rotate(' + tiltDeg + 'deg)';
+                wrap.style.left      = (umbX + sway) + 'px';
+
+                if (y < finalStop) {
+                    requestAnimationFrame(fall);
+                } else {
+                    wrap.style.top = finalStop + 'px';
+                    fadeOut(wrap, 1200);
+                }
+            }
+            requestAnimationFrame(fall);
+        }
+
+        function buildUmbrellaSVG() {
+            return '<svg viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg">' +
+                '<path d="M16 3 Q2 3 2 14 Q8 8 16 10 Q24 8 30 14 Q30 3 16 3Z" fill="#e74c3c"/>' +
+                '<path d="M16 3 Q2 3 2 14 Q8 8 16 10 Q24 8 30 14 Q30 3 16 3Z" fill="none" stroke="#c0392b" stroke-width="0.8"/>' +
+                '<path d="M16 10 Q8 8 2 14"  fill="none" stroke="#fff" stroke-width="0.5" opacity="0.4"/>' +
+                '<path d="M16 10 Q24 8 30 14" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.4"/>' +
+                '<path d="M2 14 Q8 8 16 10"  fill="#e67e22" stroke="none"/>' +
+                '<path d="M16 10 Q24 8 30 14" fill="#f1c40f" stroke="none"/>' +
+                '<line x1="16" y1="10" x2="16" y2="33" stroke="#8B4513" stroke-width="1.5" stroke-linecap="round"/>' +
+                '<path d="M16 33 Q17 36 15 37 Q13 38 13 36" fill="none" stroke="#8B4513" stroke-width="1.5" stroke-linecap="round"/>' +
+                '</svg>';
+        }
+
+        function fadeOut(el, delay) {
+            setTimeout(function () {
+                el.style.transition = 'opacity 0.6s';
+                el.style.opacity    = '0';
+                setTimeout(function () {
+                    el.remove();
+                    animating = false;
+                }, 650);
+            }, delay);
+        }
+    })();
+
+</script>

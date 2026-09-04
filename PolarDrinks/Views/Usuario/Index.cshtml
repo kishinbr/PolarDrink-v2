@@ -1,0 +1,147 @@
+﻿@model IEnumerable<PolarDrinks.Models.UsuarioModel>
+@{
+    ViewData["Title"] = "Usuários";
+}
+
+<div class="container p-4 rounded-4">
+
+
+    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
+
+        <h1 class="m-0">Usuários</h1>
+
+        <a asp-action="Cadastrar" class="btn btn-success" title="Cadastrar">
+            <i class="bi bi-person-plus-fill me-1"></i>
+            Cadastrar novo Usuário
+        </a>
+
+    </div>
+
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <!-- TABELA -->
+    <div class="container rounded-4 bg-shadow p-4 mt-4">
+    <table id="tabelaUsuarios" class="table bg-shadowt table-hover mb-auto">
+
+        <thead class="bg-tpreto">
+            <tr>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Perfil</th>
+                <th>Criado em</th>
+                <th>Status</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+
+                    <td class="align-middle">@u.UsuarioNome</td>
+                    <td class="align-middle">@u.UsuarioLogin</td>
+
+                    <td class="align-middle">
+                        @if (u.UsuarioPerfil == "Admin")
+                        {
+                            <span class="badge bg-primary">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Funcionário</span>
+                        }
+                    </td>
+
+                    <td class="align-middle">
+                        @u.UsuarioCriadoEm.ToString("dd/MM/yyyy HH:mm")
+                    </td>
+
+                    <td class="align-middle">
+                        @if (u.UsuarioAtivo)
+                        {
+                            <span class="badge bg-success">Ativo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inativo</span>
+                        }
+                    </td>
+
+                    <td class="text-center align-middle">
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <a asp-action="AlterarSenha"
+                                   asp-route-id="@u.UsuarioID"
+                                   class="btn btn-sm btn-warning" title="Alterar Senha">
+                                Alterar Senha
+                            </a>
+
+                            <a asp-action="Desativar"
+                                   asp-route-id="@u.UsuarioID"
+                                   class="btn btn-sm @(u.UsuarioAtivo ? "btn-danger" : "btn-success")">
+                                @(u.UsuarioAtivo ? "Desativar" : "Ativar")
+                            </a>
+
+                        </div>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+
+    </table>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+           $('#tabelaUsuarios').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 20, 30],
+            scrollY: "50vh",
+            scrollX: true,
+            scrollCollapse: true,
+            paging: true,
+
+            columnDefs: [
+                { orderable: false, targets: [5] }, 
+                { className: "text-start", targets: [0, 1] }, 
+                { className: "text-center", targets: [2, 3, 4, 5] }, 
+
+
+            ],
+
+            language: {
+                "decimal": "",
+                "emptyTable": "Nenhum usuário cadastrado",
+                "info": "Mostrando de _START_ a _END_ de _TOTAL_ usuários",
+                "infoEmpty": "Mostrando 0 de 0 usuários",
+                "infoFiltered": "(filtrado de _MAX_ usuários)",
+                "lengthMenu": "Mostrar _MENU_ usuários",
+                "loadingRecords": "Carregando...",
+                "search": "Procurar:",
+                "zeroRecords": "Usuário não encontrado",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Próximo",
+                    "previous": "Anterior"
+                }
+            }
+        });
+        });
+    </script>
+}

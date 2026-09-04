@@ -1,0 +1,111 @@
+﻿@model IEnumerable<PolarDrinks.Models.VendaModel>
+@{
+    ViewData["Title"] = "Histórico de Vendas";
+}
+
+<div class="container p-4 rounded-4 ">
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
+        <h1 class="m-0">Histórico de Vendas</h1>
+    </div>
+    <div class="bg-shadow text-light p-4 rounded-4">
+        <div class="mb-3 d-flex justify-content-center ">
+            <div class="d-flex align-items-end gap-2 flex-wrap">
+                <div>
+                    <label class="form-label small mb-1">Início</label>
+                    <input type="date" id="dataInicio" class="form-control form-control-sm">
+                </div>
+                <div>
+                    <label class="form-label small mb-1">Fim</label>
+                    <input type="date" id="dataFim" class="form-control form-control-sm">
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-2">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+        </div>
+
+        <table id="tabelaVendas" class="table table-hover mb-auto bg-shadowt" >
+            <thead class="bg-tpreto">
+                <tr>
+                    <th>ID</th>
+                    <th>Data / Hora</th>
+                    <th>Valor Total</th>
+                    <th>Tipo Pagamento</th>
+                    <th>Status</th>
+                    <th class="text-center">Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var venda in Model)
+                {
+                    <tr>
+                        <td>@venda.VendaID</td>
+                        <td data-order="@venda.VendaData.ToString("yyyy-MM-dd")">
+                            @venda.VendaData.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>@("R" + venda.VendaValorTotal.ToString("C"))</td>
+                        <td>
+                            @if (venda.VendaTipoPagamento == "Pix")
+                            {
+                                <span class="badge" style="background-color:#00BDAE">Pix</span>
+                            }
+                            else if (venda.VendaTipoPagamento == "Dinheiro")
+                            {
+                                <span class="badge bg-warning text-dark">Dinheiro</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-dark" style="background-color:#a78bfa">Cartão</span>
+                            }
+                        </td>
+                        <td>
+                            @if (venda.VendaCancelada)
+                            {
+                                <span class="badge bg-danger">Cancelada</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Concluído</span>
+                            }
+                        <td class="text-center">
+                            <a class="btn btn-primary btn-sm"
+                                   asp-action="Detalhes"
+                                   asp-route-id="@venda.VendaID">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </a>
+
+                                @{
+                                    var podeCancelar = DateTime.Now <= venda.VendaData.AddHours(24);
+                                }
+                           
+
+                                @if (!venda.VendaCancelada && podeCancelar)
+                                {
+                                    <a class="btn btn-danger btn-sm"
+                                           asp-action="Cancelar"
+                                           asp-route-id="@venda.VendaID">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                }
+                         
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://cdn.datatables.net/v/dt/dt-2.3.7/datatables.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+
+    <link rel="icon" href="~/img/icon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="~/css/layout.css" />
+    <link href="~/css/dash1.css" rel="stylesheet" />
+</head>
+<body style="background:#0D1117;" class="text-light">
+    <div class="topbar">
+        <button class="btn btn-light btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral">
+            <i class="bi bi-list"></i>
+        </button>
+        <div>
+            <img src="/img/polaria.png" width="32" height="32"> Polar Drinks
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="brand">
+            <img src="/img/polaria.png" width="32" height="32"> Polar Drinks 
+            <span style="font-size:.7rem; color:#6b7280; margin-top:2px;">
+            @Context.Session.GetString("Nome")
+            </span>
+
+         </div>
+        
+
+        <div class="menu-section">GESTÃO</div>
+
+        <a asp-controller="Home" asp-action="Index">
+            <i class="bi bi-house-fill"></i> Home
+        </a>
+
+        <a asp-controller="Dashboard" asp-action="Index">
+            <i class="bi bi-graph-up"></i> Dashboard
+
+    </a>
+
+        <div class="menu-section">ESTOQUE</div>
+
+        <a asp-controller="Estoque" asp-action="Index">
+            <i class="bi bi-box-seam"></i> Produtos
+        </a>
+
+        <a asp-controller="Estoque" asp-action="Movimentacoes">
+            <i class="bi bi-arrow-left-right"></i> Movimentações
+        </a>
+
+        
+        <div class="menu-section">VENDAS</div>
+
+        <a asp-controller="Venda" asp-action="Cadastrar">
+            <i class="bi bi-cart-check"></i> Vendas
+        </a>
+
+        <a asp-controller="Venda" asp-action="Index">
+            <i class="bi bi-receipt"></i> Histórico
+        </a>
+
+        <div class="menu-section">FORNECEDORES</div>
+
+        <a asp-controller="Fornecedor" asp-action="Index">
+            <i class="bi bi-truck"></i> Fornecedor
+        </a>
+        <a asp-controller="CompraEstoque" asp-action="Index">
+            <i class="bi bi-bag-plus"></i> Reabastecer
+        </a>
+        <div class="menu-section">ACESSIBILIDADE</div>
+
+        <a href="javascript:void(0)" onclick="toggleLibras()" id="btnLibras">
+            <i class="bi bi-universal-access"></i> Ativar LIBRAS
+        </a>
+        <div class="menu-section">Acesso</div>
+
+        <a asp-controller="Usuario" asp-action="Index">
+            <i class="bi bi-people-fill"></i> Usuários
+        </a>
+
+        <a asp-controller="Auth" asp-action="Deslogar">
+            <i class="bi bi-box-arrow-right"></i> Deslogar
+        </a>
+    </div>
+
+    <!-- menu hamburguer -->
+    <div class="offcanvas offcanvas-start text-light"
+     tabindex="-1"
+     id="menuLateral"
+     style="background:#181818;">
+
+    <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title"><img src="/img/polaria.png" width="32" height="32"> Polar Drinks</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body p-3">
+
+        
+        <div class="menu-section">GESTÃO</div>
+
+        <a class="menu-item" href="/Home/Index">
+            <i class="bi bi-house-fill"></i> Home
+        </a>
+
+        <a class="menu-item" href="/Dashboard/Index">
+            <i class="bi bi-graph-up"></i> Dashboard
+        </a>
+       
+        <div class="menu-section">ESTOQUE</div>
+
+        <a class="menu-item" href="/Estoque/Index">
+            <i class="bi bi-box-seam"></i> Produtos
+        </a>
+
+        <a class="menu-item" href="/Estoque/Movimentacoes">
+            <i class="bi bi-arrow-left-right"></i> Movimentações
+        </a>
+
+        <div class="menu-section">VENDAS</div>
+
+        <a class="menu-item" href="/Venda/Cadastrar">
+            <i class="bi bi-cart-check"></i> Vendas
+        </a>
+
+        <a class="menu-item" href="/Venda/Index">
+            <i class="bi bi-receipt"></i> Histórico
+        </a>
+
+        <div class="menu-section">FORNECEDORES</div>
+
+        <a class="menu-item" href="/Fornecedor/Index">
+            <i class="bi bi-truck"></i> Fornecedor
+        </a>
+        <a class="menu-item" href="/CompraEstoque/Index">
+            <i class="bi bi-bag-plus"></i> Reabastecer
+        </a>
+        <div class="menu-section">ACESSIBILIDADE</div>
+
+        <a class="menu-item" href="javascript:void(0)" onclick="toggleLibras()" id="btnLibrasMobile">
+            <i class="bi bi-universal-access"></i> Ativar LIBRAS
+        </a>
+
+        <div class="menu-section">Acesso</div>
+            
+            <a class="menu-item" href="/Usuario/Index">
+             <i class="bi bi-people-fill"></i> Usuários
+            </a>
+
+            <a class="menu-item" href="/Auth/Deslogar">
+            <i class="bi bi-box-arrow-right"></i> Deslogar
+            </a>
+
+    </div>
+</div>
+
+    <!-- onde as views sao renderizadas -->
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <div id="vlibras-container" style="display: none;">
+        <div vw class="enabled">
+            <div vw-access-button class="active"></div>
+            <div vw-plugin-wrapper>
+                <div class="vw-plugin-top-wrapper"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
+    <script>
+        let vlibrasAtivo = false;
+        let vlibrasWidget = null;
+
+        function ajustarPosicaoVLibras() {
+        const btn = document.querySelector('[vw-access-button]');
+
+        if (btn) {
+        btn.style.position = "fixed";
+        btn.style.top = "80px";
+        btn.style.right = "20px";
+        btn.style.bottom = "auto";
+        btn.style.zIndex = "9999";
+        }
+        }
+
+        // 🔥 Observa mudanças no DOM (garante que sempre funcione)
+        const observer = new MutationObserver(() => {
+        ajustarPosicaoVLibras();
+        });
+
+        observer.observe(document.body, {
+        childList: true,
+        subtree: true
+        });
+
+        function toggleLibras() {
+        const container = document.getElementById("vlibras-container");
+        const btn = document.getElementById("btnLibras");
+        const btnMobile = document.getElementById("btnLibrasMobile");
+
+        if (!vlibrasAtivo) {
+        container.style.display = "block";
+
+        if (!vlibrasWidget) {
+        vlibrasWidget = new window.VLibras.Widget('https://vlibras.gov.br/app');
+        }
+
+        btn.innerHTML = '<i class="bi bi-universal-access"></i> Desativar LIBRAS';
+        btnMobile.innerHTML = '<i class="bi bi-universal-access"></i> Desativar LIBRAS';
+
+        vlibrasAtivo = true;
+        localStorage.setItem("vlibrasAtivo", "true");
+
+        } else {
+        container.style.display = "none";
+
+        btn.innerHTML = '<i class="bi bi-universal-access"></i> Ativar LIBRAS';
+        btnMobile.innerHTML = '<i class="bi bi-universal-access"></i> Ativar LIBRAS';
+
+        vlibrasAtivo = false;
+        localStorage.setItem("vlibrasAtivo", "false");
+        }
+        }
+
+        window.addEventListener("load", function () {
+        const ativoSalvo = localStorage.getItem("vlibrasAtivo");
+
+        if (ativoSalvo === "true") {
+        toggleLibras();
+        }
+        });
+    </script>
+    <!-- SCRIPTS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.3.7/datatables.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

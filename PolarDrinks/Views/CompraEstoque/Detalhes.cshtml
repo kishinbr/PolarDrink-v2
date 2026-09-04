@@ -1,0 +1,70 @@
+﻿@model PolarDrinks.ViewModels.CompraDetalhesViewModel
+@{
+    ViewData["Title"] = "Detalhes";
+}
+<div class="container bg-shadow p-4 rounded-4 p-5 mt-5">
+    <h2 class="@(
+                Model.Compra.CompraStatus == "Concluído"
+                    ? "text-light"
+                    : Model.PodeConfirmar
+                        ? "text-success"
+                        : "text-warning"
+            ) mb-4">
+        Detalhes da Compra #@Model.Compra.CompraID
+    </h2>
+        <div class="text-light mb-3">
+        <strong>Cadastrado por:</strong> @Model.Compra.Usuario?.UsuarioNome <br />
+        <strong>Data:</strong> @Model.Compra.CompraData.ToString("dd/MM/yyyy") <br />
+        <strong>Fornecedor:</strong> @Model.Compra.Fornecedor?.FornecedorNome <br />
+        <strong>Status:</strong> @Model.Compra.CompraStatus <br />
+        
+        @if (Model.Compra.CompraStatus == "Concluído")
+        {
+            <div>
+                <strong>Recebido por:</strong> @ViewBag.UsuarioConfirmacao
+            </div>
+        }
+        <strong>Data de Entrega:</strong> @(Model.Compra.CompraDataEntrega?.ToString("dd/MM/yyyy") ?? "Não Entregue") <br />
+    </div>
+
+    <table class="table bg-shadowt table-hover">
+        <thead class="bg-tpreto">
+            <tr>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th class="text-end">Unitário</th>
+                <th class="text-end">Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Itens)
+            {
+                <tr>
+                    <td>@item.Produto?.ProdutoNome</td>
+                    <td>@item.ItemCompraQtd</td>
+                    <td class="text-end">@("R" +@item.ItemCompraPreco.ToString("C"))</td>
+                    <td class="text-end">@("R" + (item.ItemCompraQtd * item.ItemCompraPreco).ToString("C"))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-end text-light"> <h4>Total: @("R" +@Model.Compra.CompraValorTotal.ToString("C"))</h4> </div>
+
+    <div class="d-flex gap-2 mt-3 justify-content-lg-between">
+        <a asp-action="Index" class="btn btn-primary" title="Voltar">
+            Voltar
+        </a>
+
+        @if (Model.PodeConfirmar)
+        {
+            <a asp-action="ConfirmarEntrega"
+                   asp-route-id="@Model.Compra.CompraID"
+                   class="btn btn-success" title="Confirmar Entrega">
+                Confirmar Entrega
+            </a>
+        }
+    </div>
+
+</div>

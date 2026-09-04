@@ -1,0 +1,443 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+@model PolarDrinks.Models.DashboardViewModel
+@using System.Globalization
+@*  *@
+
+<div style=" min-height:100vh;">
+    <div class="container-fluid">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h6 class="m-0 fw-normal text-secondary pt-2 mt-2">
+                Gestão / <span class="text-light">Dashboard</span>
+            </h6>
+            <span class="badge rounded-pill text-bg-secondary fw-normal" style="font-size:.7rem;" id="dashDate"></span>
+        </div>
+
+        <div class="row g-3 mb-4 ">
+
+            <!-- COLUNA ESQUERDA -->
+            <div class="col-md-8 d-flex flex-column gap-3">
+
+                <!-- FINANCEIRO (2x2) -->
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <div class="card rounded-3 h-100 p-3 bg-shadow">
+                            <div class="mb-2 bg-primary" style="height:2px;"></div>
+                            <div class="text-light mb-1">Total Hoje</div>
+                            <div class="fw-semibold text-primary" style="font-size:1.35rem;">R$ @Model.TotalHoje.ToString("N2")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card  rounded-3 h-100 p-3 bg-shadow ">
+                            <div class="mb-2" style="height:2px; background:#a78bfa;"></div>
+                            <div class="text-light mb-1">Total Mês</div>
+                            <div class="fw-semibold " style="font-size:1.35rem; color:#a78bfa">R$ @Model.TotalMes.ToString("N2")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card rounded-3 h-100 p-3 bg-shadow">
+                            <div class="mb-2 bg-info" style="height:2px;"></div>
+                            <div class="text-light mb-1">Ticket Médio</div>
+                            <div class="fw-semibold text-info" style="font-size:1.35rem;">
+                                R$ @Model.TicketMedio.ToString("N2")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card  rounded-3 h-100 p-3 bg-shadow">
+                            <div class="mb-2 bg-success" style="height:2px;"></div>
+                            <div class="text-light mb-1">Lucro Hoje</div>
+                            <div class="fw-semibold text-success" style="font-size:1.35rem;">R$ @Model.LucroHoje.ToString("N2")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card  rounded-3 h-100 p-3 bg-shadow">
+                            <div class="mb-2 bg-warning" style="height:2px;"></div>
+                            <div class="text-light mb-1">Lucro Mês</div>
+                            <div class="fw-semibold text-warning" style="font-size:1.35rem;">R$ @Model.LucroMes.ToString("N2")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    <div class="card rounded-3 h-100 p-3 bg-shadow">
+                        <div class="mb-2" style="height:2px; background:#34d399;"></div>
+                        <div class="text-light mb-1">Previsão Amanhã</div>
+                        <div class="fw-semibold" style="font-size:1.35rem; color:#34d399;">
+                            R$ @Model.PrevisaoAmanha.ToString("N2")
+                        </div>
+                    </div>
+                </div>
+                    
+                
+                </div>
+
+                <!-- GRÁFICO VENDAS -->
+                <div class="card shadow rounded-4 p-3 flex-fill text-light bg-shadow">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <h6 class="mb-0">Vendas</h6>
+
+                        
+
+                        <div class="btn-group btn-group-sm flex-wrap">
+                            <span class="btn btn-outline-primary" id="totalVendasLabel">
+                                Quantidade vendas: 0
+                            </span>
+                            <button class="btn btn-outline-primary" onclick="atualizarVendas('hoje')">Hoje</button>
+                            <button class="btn btn-outline-primary" onclick="atualizarVendas('semana')">7d</button>
+                            <button class="btn btn-outline-primary" onclick="atualizarVendas('mes')">30d</button>
+                            <button class="btn btn-outline-primary" onclick="atualizarVendas('ano')">Ano</button>
+                        </div>
+                    </div>
+
+                    <canvas id="graficoVendas" style="height:300px;"></canvas>
+
+                </div>
+                
+
+
+
+            </div>
+
+            <!-- COLUNA DIREITA -->
+            <div class="col-md-4 d-flex flex-column gap-3">
+
+                <!-- PAGAMENTOS (CARDS) -->
+                <div class="row g-3">
+
+                    <!-- PIX -->
+                    <div class="col-12 col-xl-4">
+                        <div class="card  rounded-4 h-100 p-3 bg-shadow">
+
+                            <small class=" d-flex align-items-center gap-1" style="color:#00BDAE;">
+                                <i class="bi bi-x-diamond" style="color:#00BDAE;"></i>
+                                Pix
+                            </small>
+
+                            <div class="text-light">@Model.QtdPix vendas</div>
+
+                            <h5 style="color:#00BDAE;">
+                                @("R" + Model.TotalPix.ToString("C"))
+                            </h5>
+
+                        </div>
+                    </div>
+
+                    <!-- CARTÃO -->
+                    <div class="col-12 col-xl-4">
+                        <div class="card p-3 shadow rounded-4 h-100 bg-shadow">
+
+
+                            <small style="color:mediumpurple;"><i class="bi bi-credit-card" style="color:mediumpurple;"></i> Cartão</small>
+
+                            <div class="text-light">@Model.QtdCartao vendas</div>
+
+                            <h5 style="color:mediumpurple;">
+                                @("R" + Model.TotalCartao.ToString("C"))
+                            </h5>
+
+                        </div>
+                    </div>
+
+                    <!-- DINHEIRO -->
+                    <div class="col-12 col-xl-4">
+                        <div class="card  rounded-4 h-100 p-3 bg-shadow">
+
+                            <small style="color:#198754;"><i class="bi bi-cash" style="color:#198754;"></i> Dinheiro</small>
+
+                            <div class="text-light">@Model.QtdDinheiro vendas</div>
+
+                            <h5 style="color:#198754;">
+                                @("R" + Model.TotalDinheiro.ToString("C"))
+                            </h5>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- GRÁFICO PAGAMENTOS -->
+                <div class="card  rounded-4 p-3 flex-fill bg-shadow">
+
+
+                    <!-- HEADER -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+
+                        <h6 class="mb-0 text-light">Pagamento</h6>
+
+                        <div class="btn-group btn-group-sm flex-wrap">
+                            <span class="btn btn-outline-warning" id="qtdPagamentosLabel">
+                                Total de vendas: 0
+                            </span>
+
+                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('hoje')">Hoje</button>
+                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('semana')">7d</button>
+                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('mes')">30d</button>
+                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('total')">Total</button>
+                        </div>
+                    </div>
+
+                    <!-- LABELS -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+
+                        <!-- PIX -->
+                        <div class="flex-fill">
+                            <div class="d-flex align-items-center justify-content-between rounded-3 px-3 py-2 bg-tpreto">
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="width:12px;height:12px;background:#00BDAE;"></span>
+                                    <span class="text-light">Pix</span>
+                                </div>
+
+                                <span class="text-light fw-semibold" id="lblPix">0</span>
+                            </div>
+                        </div>
+
+                        <!-- CARTÃO -->
+                        <div class="flex-fill">
+                            <div class="d-flex align-items-center justify-content-between rounded-3 px-3 py-2 bg-tpreto">
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="width:12px;height:12px;background:mediumpurple;"></span>
+                                    <span class="text-light">Cartão</span>
+                                </div>
+
+                                <span class="text-light fw-semibold" id="lblCartao">0</span>
+                            </div>
+                        </div>
+
+                        <!-- DINHEIRO -->
+                        <div class="flex-fill">
+                            <div class="d-flex align-items-center justify-content-between rounded-3 px-3 py-2 bg-tpreto">
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="width:12px;height:12px;background:#198754;"></span>
+                                    <span class="text-light">Dinheiro</span>
+                                </div>
+
+                                <span class="text-light fw-semibold" id="lblDinheiro">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- GRÁFICO -->
+                    <div class="d-flex justify-content-center align-items-center flex-fill mt-3">
+                        <canvas id="graficoPagamentos"
+                                style="max-width:280px; max-height:280px;"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="row g-3 mb-3">
+
+            <!-- Estoque -->
+            <div class="col-6 col-md-3">
+                <div class="card  rounded-3 h-100 p-3 bg-shadow" >
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-box-seam" style="color:#f59e0b;"></i>
+                        <span class="text-light">Estoque</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1" style="font-size:.75rem;">
+                            <span class="text-light">Estoque Baixo</span>
+                            <span style="color:#f59e0b;">@Model.EstoqueBaixo produtos</span>
+                        </div>
+                        <div class="rounded-pill bg-tpreto" style="height:10px;">
+                            <div class="rounded-pill" style="height:10px; width:@(Math.Min(Model.EstoqueBaixo * 10, 100))%; background:#f59e0b;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:.75rem;">
+                            <span class="text-light">Sem Estoque</span>
+                            <span style="color:#f87171;">@Model.SemEstoque produtos</span>
+                        </div>
+                        <div class="rounded-pill bg-tpreto" style="height:10px;">
+                            <div class="rounded-pill" style="height:10px; width:@(Math.Min(Model.SemEstoque * 10, 100))%; background:#f87171;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+            <!-- Produtos -->
+            <div class="col-6 col-md-3">
+                <div class="card rounded-3 h-100 p-3 bg-shadow">
+
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-bag-check" style="color:#34d399; font-size:14px;"></i>
+                        <span class="text-light">
+                            Produtos
+                        </span>
+                    </div>
+
+                    <!-- MAIS VENDIDO -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap rounded-3 mb-2 p-2 bg-tpreto">
+
+                        <span class="text-light flex-grow-1">
+                            @(Model.ProdutoMaisVendido ?? "—")
+                        </span>
+
+
+                        <div class="d-flex align-items-center gap-1">
+                           <i class="bi bi-plus-lg" style="color:#34d399; font-size:14px;"></i>
+                            <span style="color:#34d399;">Vendido</span>
+                            <i class="bi bi-trophy-fill" style="color:#34d399; font-size:14px;"></i>
+                        </div>
+
+                    </div>
+                    <!-- MAIS LUCRATIVO -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap rounded-3 mb-2 p-2 bg-tpreto">
+
+
+
+                        <span class="text-light flex-grow-1">
+                            @(Model.ProdutoMaisLucrativo ?? "—") 
+                        </span>
+
+
+                        <div class="d-flex align-items-center gap-1">
+                            <i class="bi bi-plus-lg" style="color:#34d399; font-size:14px;"></i>
+                            <span style="color:#34d399;">Lucrativo</span>
+                            <i class="bi bi-currency-dollar " style="color:#34d399;  font-size:14px;"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Em Alta TOP3 -->
+            <div class="col-6 col-md-3">
+                <div class="card  rounded-3 h-100 p-3 bg-shadow">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-fire" style="color:#f87171;"></i>
+                        <span class="text-light">Em Alta</span>
+                    </div>
+
+                    @if (Model.Top3ProdutosAlta != null && Model.Top3ProdutosAlta.Any())
+                    {
+                        string[] cores = { "#f59e0b", "#9ca3af", "#cd7f32" };
+                        for (int i = 0; i < Model.Top3ProdutosAlta.Count && i < 3; i++)
+                        {
+                            <div class="d-flex align-items-center gap-2 rounded-3 mb-2 p-2 bg-tpreto">
+                                <span style="width:20px; flex-shrink:0; color:@cores[i]; font-size:14px;">
+
+                                    @if (i == 0)
+                                    {
+                                        <i class="bi bi-1-square"></i>
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        <i class="bi bi-2-square"></i>
+                                    }
+                                    else if (i == 2)
+                                    {
+                                        <i class="bi bi-3-square"></i>
+                                    }
+
+                                </span>
+                                <span class="text-light flex-fill text-truncate" style="font-size:.8rem;">@Model.Top3ProdutosAlta[i]</span>
+                                <i class="bi bi-arrow-up-short" style="color:#34d399; font-size:14px;"></i>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <small class="text-secondary">Dados insuficientes</small>
+                    }
+                </div>
+            </div>
+
+            <!-- Cancelamentos -->
+            <div class="col-6 col-md-3">
+                <div class="card rounded-3 h-100 p-3 bg-shadow">
+
+                    <!-- HEADER -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-x-circle" style="color:#f87171;"></i>
+                        <span class="text-light">Cancelamentos</span>
+                    </div>
+
+                    <!-- LINHA 1: HOJE / SEMANA / MÊS -->
+                    <div class="row g-2 mb-3">
+
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-tpreto text-center">
+                                <div class="text-light" style="font-size:.65rem;">Hoje</div>
+                                <div class="text-light fw-semibold">
+                                    @Model.CanceladosHoje
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-tpreto text-center">
+                                <div class="text-light" style="font-size:.65rem;">Semana</div>
+                                <div class="text-light fw-semibold">
+                                    @Model.CanceladosSemana
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-tpreto text-center">
+                                <div class="text-light" style="font-size:.65rem;">Mês</div>
+                                <div class="text-light fw-semibold">
+                                    @Model.CanceladosMes
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- PRODUTO MAIS CANCELADO -->
+                    <div class="p-2 rounded-3 bg-tpreto">
+                        <div class="text-danger" style="font-size:.7rem;">
+                            Produto mais cancelado
+                        </div>
+
+                        <div class="text-light fw-semibold text-truncate">
+                            @(Model.ProdutoMaisCancelado ?? "—")
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+           
+
+        </div>
+
+    </div>
+</div>
+<script>
+    window.dashData = {
+        pagamentos: {
+            hoje: @Html.Raw(Json.Serialize(new[] { Model.PixHoje, Model.CartaoHoje, Model.DinheiroHoje })),
+            semana: @Html.Raw(Json.Serialize(new[] { Model.PixSemana, Model.CartaoSemana, Model.DinheiroSemana })),
+            mes: @Html.Raw(Json.Serialize(new[] { Model.PixMes, Model.CartaoMes, Model.DinheiroMes })),
+            total: @Html.Raw(Json.Serialize(new[] { Model.PixTotal, Model.CartaoTotal, Model.DinheiroTotal }))
+        },
+
+        vendas: {
+            hoje: @Html.Raw(Json.Serialize(Model.VendasHojeLista)),
+            semana: @Html.Raw(Json.Serialize(Model.VendasSemana)),
+            mes: @Html.Raw(Json.Serialize(Model.VendasMesGrafico)),
+            ano: @Html.Raw(Json.Serialize(Model.VendasAno))
+        }
+    };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="~/js/dash.js"></script>
+
+
+

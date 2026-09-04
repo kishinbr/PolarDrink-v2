@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Logout";
+}
+
+<div class="container d-flex justify-content-center align-items-start min-vh-100 pt-5">
+
+    <div class="rounded-4 bg-shadow p-4 mt-4 text-light" style="max-width:400px; width:100%;">
+
+        <h3 class="mb-4 text-center">Sair do Sistema</h3>
+
+        <p class="text-center">Deseja realmente encerrar sua sessão?</p>
+
+        <form method="post" asp-controller="Auth" asp-action="Logout">
+            <button class="btn btn-danger w-100 mb-2">Deslogar</button>
+        </form>
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary w-100">
+            Cancelar
+        </a>
+
+    </div>
+
+</div>
