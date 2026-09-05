@@ -15,10 +15,12 @@ builder.Services.AddScoped<IMovimentacaoEstoqueRepository, MovimentacaoEstoqueRe
 builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IVendaRepository, VendaRepository>();
+builder.Services.AddScoped<ICompraEstoqueRepository, CompraEstoqueRepository>();
 
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 builder.Services.AddScoped<IVendaService, VendaService>();
+builder.Services.AddScoped<ICompraEstoqueService, CompraEstoqueService>();
 
 
 builder.Services.AddSession(options =>

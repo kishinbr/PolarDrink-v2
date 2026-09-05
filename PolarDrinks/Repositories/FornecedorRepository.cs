@@ -28,7 +28,10 @@ namespace PolarDrinks.Repositories
                 x.FornecedorCNPJ == cnpj &&
                 (idParaIgnorar == null || x.FornecedorID != idParaIgnorar));
         }
-
+        public List<FornecedorModel> ObterAtivos()
+        {
+            return _db.Fornecedores.Where(f => f.FornecedorAtivo).ToList();
+        }
         public void Adicionar(FornecedorModel fornecedor)
         {
             _db.Fornecedores.Add(fornecedor);
