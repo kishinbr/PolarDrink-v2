@@ -33,6 +33,9 @@ namespace PolarDrinks.Data
             modelBuilder.Entity<FornecedorModel>()
                 .HasIndex(f => f.FornecedorCNPJ)
                 .IsUnique();
+            modelBuilder.Entity<ProdutoModel>()
+                .HasIndex(p => p.ProdutoCodBarra)
+                .IsUnique();    
 
             modelBuilder.Entity<CompraEstoqueModel>()
                 .Ignore(c => c.CompraValorTotal);
@@ -106,10 +109,6 @@ namespace PolarDrinks.Data
 
             modelBuilder.Entity<ItemVendaModel>()
                 .Property(iv => iv.ItemVendaCusto)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<ItemVendaModel>()
-                .Property(iv => iv.ItemVendaTotal)
                 .HasPrecision(18, 2);
 
             // VENDA FINAL

@@ -97,8 +97,8 @@ namespace PolarDrinks.Services
                         : precoBase;
 
                     item.ItemVendaPreco = precoFinal;
-                    item.ItemVendaTotal = precoFinal * item.ItemVendaQtd;
-                    totalVenda += item.ItemVendaTotal;
+                    item.ItemVendaCusto = produto.ProdutoPrecoCusto ?? 0;
+                    totalVenda += item.ItemVendaQtd * precoFinal;
                 }
                 venda.VendaValorTotal = totalVenda;
                 venda.UsuarioID = usuarioId;

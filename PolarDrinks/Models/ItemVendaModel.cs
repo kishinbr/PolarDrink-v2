@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PolarDrinks.Models
 {
@@ -12,7 +13,9 @@ namespace PolarDrinks.Models
         public decimal ItemVendaPreco { get; set; }
 
         public decimal ItemVendaCusto { get; set; }
-        public decimal ItemVendaTotal { get; set; } 
+
+        [NotMapped]
+        public decimal ItemVendaTotal => ItemVendaQtd * ItemVendaPreco;
 
         public int ProdutoID { get; set; }
         public ProdutoModel? Produto { get; set; }
