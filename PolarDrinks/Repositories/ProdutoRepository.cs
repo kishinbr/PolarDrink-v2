@@ -26,6 +26,10 @@ namespace PolarDrinks.Repositories
         {
             return _db.Produtos.FirstOrDefault(p => p.ProdutoID == id);
         }
+        public List<ProdutoModel> ObterPorIds(List<int> ids)
+        {
+            return _db.Produtos.Where(p => ids.Contains(p.ProdutoID)).ToList();
+        }
 
         public bool ExisteCodigoBarra(string codigoBarra, int? idParaIgnorar = null)
         {
