@@ -1,12 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using PolarDrinks.Data;
 using PolarDrinks.Models;
+using PolarDrinks.Repositories;
+using PolarDrinks.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IMovimentacaoEstoqueRepository, MovimentacaoEstoqueRepository>();
+builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 
 builder.Services.AddSession(options =>
 {
@@ -19,6 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 
 var app = builder.Build();
 

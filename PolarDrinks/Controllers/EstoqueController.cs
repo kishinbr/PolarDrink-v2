@@ -1,60 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PolarDrinks.Data;
 using PolarDrinks.Filters;
 using PolarDrinks.Models;
+using PolarDrinks.Services;
 
 namespace PolarDrinks.Controllers
 {
     [AuthFilter]
     public class EstoqueController : Controller
     {
-        // Injeção do contexto para acessar o banco de dados
-        readonly ApplicationDbContext _db;
+        private readonly IEstoqueService _estoqueService;
 
-        public EstoqueController(ApplicationDbContext db)
+        public EstoqueController(IEstoqueService estoqueService)
         {
-            _db = db;
+            _estoqueService = estoqueService;
         }
-        // Ação para exibir a lista de produtos
         public IActionResult Index()
         {
-            var produtos = _db.Produtos.ToList();
+            var produtos = _estoqueService.ListarProdutos();
             return View(produtos);
         }
+
         [AdminFilter]
-        // Ação para exibir o formulário de cadastro de produto
         public IActionResult Cadastrar()
         {
             return View();
         }
 
-        // Ação para processar o formulário de cadastro de produto
         [HttpPost]
         [AdminFilter]
         public IActionResult Cadastrar(ProdutoModel produto)
         {
-
-            bool codigoExiste = _db.Produtos
-                .Any(x => x.ProdutoCodBarra == produto.ProdutoCodBarra);
-
-            if (codigoExiste)
-            {
-                ModelState.AddModelError("ProdutoCodBarra", "Este código de barras já está cadastrado.");
-            }
-
-
             if (!ModelState.IsValid)
             {
                 TempData["MensagemErro"] = "Erro ao cadastrar produto.";
                 return View(produto);
             }
 
+            var resultado = _estoqueService.CadastrarProduto(produto);
 
-            _db.Produtos.Add(produto);
-            _db.SaveChanges();
+            if (!resultado.Sucesso)
+            {
+                if (resultado.CampoErro != null)
+                {
+                    ModelState.AddModelError(resultado.CampoErro, resultado.Mensagem!);
+                }
+                TempData["MensagemErro"] = "Erro ao cadastrar produto.";
+                return View(produto);
+            }
 
-            TempData["MensagemSucesso"] = "Produto cadastrado com sucesso!";
+            TempData["MensagemSucesso"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
 
@@ -67,7 +61,7 @@ namespace PolarDrinks.Controllers
                 return NotFound();
             }
 
-            var produto = _db.Produtos.FirstOrDefault(p => p.ProdutoID == id);
+            var produto = _estoqueService.ObterProduto(id.Value);
             if (produto == null) return NotFound();
 
             return View(produto);
@@ -77,43 +71,26 @@ namespace PolarDrinks.Controllers
         [AdminFilter]
         public IActionResult Editar(ProdutoModel produto)
         {
-            //verificar se o modelo é válido
-            bool codigoExiste = _db.Produtos
-            .Any(x => x.ProdutoCodBarra == produto.ProdutoCodBarra
-                   && x.ProdutoID != produto.ProdutoID);
-
-            if (codigoExiste)
-            {
-                ModelState.AddModelError("ProdutoCodBarra", "Este código de barras já está cadastrado.");
-            }
             if (!ModelState.IsValid)
             {
-                //caso contrário, retornar para a view com os erros de validação
-                var produtoOriginal = _db.Produtos
-                    .FirstOrDefault(p => p.ProdutoID == produto.ProdutoID);
-
+                var produtoOriginal = _estoqueService.ObterProduto(produto.ProdutoID);
                 return View(produtoOriginal);
             }
 
-            //caso seja válido, atualizar o produto no banco de dados
-            var produtoDb = _db.Produtos.FirstOrDefault(p => p.ProdutoID == produto.ProdutoID);
-            if (produtoDb == null) return NotFound();
+            var resultado = _estoqueService.EditarProduto(produto);
 
+            if (!resultado.Sucesso)
+            {
+                if (resultado.CampoErro != null)
+                {
+                    ModelState.AddModelError(resultado.CampoErro, resultado.Mensagem!);
+                    return View(produto);
+                }
 
-            produtoDb.ProdutoNome = produto.ProdutoNome;
-            produtoDb.ProdutoDescricao = produto.ProdutoDescricao;
-            produtoDb.ProdutoCodBarra = produto.ProdutoCodBarra;
-            produtoDb.ProdutoPrecoVenda = produto.ProdutoPrecoVenda;
-            produtoDb.ProdutoAtivo = produto.ProdutoAtivo;
-            produtoDb.ProdutoEstoqueMinimo = produto.ProdutoEstoqueMinimo;
-            produtoDb.ProdutoPrecoCusto = produto.ProdutoPrecoCusto;
-            produtoDb.ProdutoPromocao = produto.ProdutoPromocao;
-            produtoDb.ProdutoQtdEstoque = produto.ProdutoQtdEstoque;
+                return NotFound();
+            }
 
-
-            _db.SaveChanges();
-
-            TempData["MensagemSucesso"] = "Produto atualizado com sucesso!";
+            TempData["MensagemSucesso"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
 
@@ -121,40 +98,15 @@ namespace PolarDrinks.Controllers
         [AdminFilter]
         public IActionResult EdicaoRapida(int ProdutoID, decimal? ProdutoPrecoVenda, decimal? ProdutoPromocao)
         {
-            // Verificar se os dados são válidos
             if (!ModelState.IsValid)
             {
                 TempData["MensagemErro"] = "Valores inválidos!";
                 return RedirectToAction("Index");
             }
 
-            var produto = _db.Produtos.FirstOrDefault(p => p.ProdutoID == ProdutoID);
+            var resultado = _estoqueService.EdicaoRapida(ProdutoID, ProdutoPrecoVenda, ProdutoPromocao);
 
-            if (produto == null)
-            {
-                TempData["MensagemErro"] = "Produto não encontrado!";
-                return RedirectToAction("Index");
-            }
-
-            if (ProdutoPrecoVenda == null || ProdutoPrecoVenda < 0)
-            {
-                TempData["MensagemErro"] = "Preço inválido!";
-                return RedirectToAction("Index");
-            }
-
-            if (ProdutoPromocao == null || ProdutoPromocao < 0 || ProdutoPromocao > 100)
-            {
-                TempData["MensagemErro"] = "Promoção inválida!";
-                return RedirectToAction("Index");
-            }
-
-            // Atualizar os campos do produto
-            produto.ProdutoPrecoVenda = ProdutoPrecoVenda.Value;
-            produto.ProdutoPromocao = ProdutoPromocao ?? 0;
-
-            _db.SaveChanges();
-
-            TempData["MensagemSucesso"] = "Produto atualizado com sucesso!";
+            TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
 
@@ -164,71 +116,30 @@ namespace PolarDrinks.Controllers
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
 
-            var produto = _db.Produtos.FirstOrDefault(p => p.ProdutoID == ProdutoID);
-            if (produto == null) return NotFound();
+            var resultado = _estoqueService.AjustarEstoque(ProdutoID, NovaQuantidade, Descricao, usuarioId);
 
-            // Calcular a diferença entre a nova quantidade e a quantidade atual em estoque
-            int quantidadeAntiga = produto.ProdutoQtdEstoque ?? 0;
-            int diferenca = NovaQuantidade - quantidadeAntiga;
-
-            // Registrar a movimentação de estoque apenas se houver uma diferença
-            if (diferenca != 0)
-            {
-                var movimentacao = new MovimentacaoEstoqueModel
-                {
-                    ProdutoID = produto.ProdutoID,
-
-                    MovimentacaoQtd = diferenca,
-
-                    MovimentacaoData = DateTime.Now,
-                    MovimentacaoTipo = MovimentacaoEstoqueModel.Tipos.Edicao,
-                    MovimentacaoDescricao = Descricao,
-                    UsuarioID = usuarioId,
-                };
-
-                _db.MovimentacoesEstoque.Add(movimentacao);
-            }
-            // Atualizar a quantidade em estoque do produto
-            produto.ProdutoQtdEstoque = NovaQuantidade;
-
-            _db.SaveChanges();
-
-            TempData["MensagemSucesso"] = "Estoque ajustado com sucesso!";
+            TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Editar", new { id = ProdutoID });
         }
 
-
-        // Ação para exibir as movimentações de estoque de um produto
         [AdminFilter]
         public IActionResult Movimentacoes(int? produtoId)
         {
-            // Obter a lista de produtos para exibir no dropdown
-            var produtos = _db.Produtos
-                .Where(p => p.ProdutoAtivo)
-                .ToList();
-            // Passar a lista de produtos para a view
+            var produtos = _estoqueService.ListarProdutosAtivos();
             ViewBag.Produtos = produtos;
 
-            // Se nenhum produto for selecionado, exibir uma lista vazia
             if (produtoId == null)
             {
                 return View(new List<MovimentacaoEstoqueModel>());
             }
-            var produto = _db.Produtos.FirstOrDefault(p => p.ProdutoID == produtoId);
 
+            var produto = _estoqueService.ObterProduto(produtoId.Value);
             if (produto == null)
             {
                 return View(new List<MovimentacaoEstoqueModel>());
             }
-            // Obter as movimentações de estoque do produto selecionado, ordenadas pela data mais recente
-            var movimentacoes = _db.MovimentacoesEstoque
-                .Where(m => m.ProdutoID == produtoId)
-                .Include(m => m.ItemVenda)
-                    .ThenInclude(iv => iv.Venda)
-                .Include(m => m.ItemCompra)
-                .Include(m => m.Usuario)
-                .OrderByDescending(m => m.MovimentacaoData)
-                .ToList();
+
+            var movimentacoes = _estoqueService.ObterMovimentacoes(produtoId.Value);
 
             ViewBag.ProdutoSelecionado = produto;
 
