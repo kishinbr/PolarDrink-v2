@@ -12,7 +12,11 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IMovimentacaoEstoqueRepository, MovimentacaoEstoqueRepository>();
+builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+builder.Services.AddScoped<IFornecedorService, FornecedorService>();
+
 
 builder.Services.AddSession(options =>
 {
