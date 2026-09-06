@@ -5,6 +5,9 @@ using PolarDrinks.Repositories;
 using PolarDrinks.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +27,31 @@ builder.Services.AddScoped<IVendaService, VendaService>();
 builder.Services.AddScoped<ICompraEstoqueService, CompraEstoqueService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
+builder.Services.AddScoped<PolarDrinks.Services.Loja.IClienteAuthService, PolarDrinks.Services.Loja.ClienteAuthService>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.ITokenService, PolarDrinks.Services.Loja.TokenService>();
+builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IClienteRepository, PolarDrinks.Repositories.Loja.ClienteRepository>();
 
+// Autenticação JWT (Loja Online / Clientes)
+var jwtChave = builder.Configuration["Jwt:ChaveSecreta"]!;
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Emissor"],
+        ValidAudience = builder.Configuration["Jwt:Emissor"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtChave))
+    };
+});
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

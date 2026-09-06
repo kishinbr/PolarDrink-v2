@@ -17,4 +17,17 @@
         public static ResultadoOperacao Ok(string? mensagem = null) => new(true, mensagem);
         public static ResultadoOperacao Erro(string mensagem, string? campoErro = null) => new(false, mensagem, campoErro);
     }
+    public class ResultadoOperacao<T> : ResultadoOperacao
+    {
+        public T? Dado { get; }
+
+        private ResultadoOperacao(bool sucesso, string? mensagem, T? dado, string? campoErro = null)
+            : base(sucesso, mensagem, campoErro)
+        {
+            Dado = dado;
+        }
+
+        public static ResultadoOperacao<T> Ok(T dado, string? mensagem = null) => new(true, mensagem, dado);
+        public static new ResultadoOperacao<T> Erro(string mensagem, string? campoErro = null) => new(false, mensagem, default, campoErro);
+    }
 }
