@@ -11,7 +11,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IMovimentacaoEstoqueRepository, MovimentacaoEstoqueRepository>();
@@ -37,6 +41,8 @@ builder.Services.AddScoped<PolarDrinks.Services.Loja.ITokenService, PolarDrinks.
 builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IClienteRepository, PolarDrinks.Repositories.Loja.ClienteRepository>();
 builder.Services.AddScoped<PolarDrinks.Repositories.Loja.ICarrinhoRepository, PolarDrinks.Repositories.Loja.CarrinhoRepository>();
 builder.Services.AddScoped<PolarDrinks.Services.Loja.ICarrinhoService, PolarDrinks.Services.Loja.CarrinhoService>();
+builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IPedidoRepository, PolarDrinks.Repositories.Loja.PedidoRepository>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.IPedidoService, PolarDrinks.Services.Loja.PedidoService>();
 
 // Autenticação JWT (Loja Online / Clientes)
 var jwtChave = builder.Configuration["Jwt:ChaveSecreta"]!;
