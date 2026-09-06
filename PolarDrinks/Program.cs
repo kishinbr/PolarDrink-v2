@@ -30,10 +30,13 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
 
+
 builder.Services.AddScoped<PolarDrinks.Services.Loja.ICatalogoService, PolarDrinks.Services.Loja.CatalogoService>();
 builder.Services.AddScoped<PolarDrinks.Services.Loja.IClienteAuthService, PolarDrinks.Services.Loja.ClienteAuthService>();
 builder.Services.AddScoped<PolarDrinks.Services.Loja.ITokenService, PolarDrinks.Services.Loja.TokenService>();
 builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IClienteRepository, PolarDrinks.Repositories.Loja.ClienteRepository>();
+builder.Services.AddScoped<PolarDrinks.Repositories.Loja.ICarrinhoRepository, PolarDrinks.Repositories.Loja.CarrinhoRepository>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.ICarrinhoService, PolarDrinks.Services.Loja.CarrinhoService>();
 
 // Autenticação JWT (Loja Online / Clientes)
 var jwtChave = builder.Configuration["Jwt:ChaveSecreta"]!;
