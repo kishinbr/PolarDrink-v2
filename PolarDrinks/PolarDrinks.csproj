@@ -21,8 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Loja\" />
     <Folder Include="Data\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Services\Loja\" />
+    <Folder Include="Views\Loja\" />
     <Folder Include="wwwroot\uploads\produtos\" />
   </ItemGroup>
 

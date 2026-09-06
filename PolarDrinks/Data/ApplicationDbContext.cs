@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PolarDrinks.Models;
+using PolarDrinks.Models.Loja;
 
 namespace PolarDrinks.Data
 {
@@ -17,6 +18,14 @@ namespace PolarDrinks.Data
         public DbSet<ItemVendaModel> ItensVenda { get; set; }
         public DbSet<MovimentacaoEstoqueModel> MovimentacoesEstoque { get; set; }
         public DbSet<UsuarioModel> Usuarios { get; set; }
+
+        // ===== LOJA ONLINE =====
+        public DbSet<ClienteModel> Clientes { get; set; }
+        public DbSet<CategoriaModel> Categorias { get; set; }
+        public DbSet<ProdutoCategoriaModel> ProdutoCategorias { get; set; }
+        public DbSet<CarrinhoItemModel> CarrinhoItens { get; set; }
+        public DbSet<PedidoModel> Pedidos { get; set; }
+        public DbSet<ItemPedidoModel> ItensPedido { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -138,6 +147,98 @@ namespace PolarDrinks.Data
                 .WithMany()
                 .HasForeignKey(c => c.UsuarioID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ================= LOJA ONLINE =================
+
+            // CLIENTE — e-mail e CPF únicos
+            modelBuilder.Entity<ClienteModel>()
+                .HasIndex(c => c.ClienteEmail)
+                .IsUnique();
+
+            modelBuilder.Entity<ClienteModel>()
+                .HasIndex(c => c.ClienteCPF)
+                .IsUnique();
+
+            // PRODUTO_CATEGORIA — chave composta (Produto + Categoria)
+            modelBuilder.Entity<ProdutoCategoriaModel>()
+                .HasKey(pc => new { pc.ProdutoID, pc.CategoriaID });
+
+            modelBuilder.Entity<ProdutoCategoriaModel>()
+                .HasOne(pc => pc.Produto)
+                .WithMany()
+                .HasForeignKey(pc => pc.ProdutoID);
+
+            modelBuilder.Entity<ProdutoCategoriaModel>()
+                .HasOne(pc => pc.Categoria)
+                .WithMany()
+                .HasForeignKey(pc => pc.CategoriaID);
+
+            // CARRINHO ITEM -> CLIENTE
+            modelBuilder.Entity<CarrinhoItemModel>()
+                .HasOne(ci => ci.Cliente)
+                .WithMany()
+                .HasForeignKey(ci => ci.ClienteID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // CARRINHO ITEM -> PRODUTO
+            modelBuilder.Entity<CarrinhoItemModel>()
+                .HasOne(ci => ci.Produto)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProdutoID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // PEDIDO -> CLIENTE
+            modelBuilder.Entity<PedidoModel>()
+                .HasOne(p => p.Cliente)
+                .WithMany()
+                .HasForeignKey(p => p.ClienteID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // PEDIDO -> USUARIO (separou / entregou)
+            modelBuilder.Entity<PedidoModel>()
+                .HasOne(p => p.UsuarioSeparou)
+                .WithMany()
+                .HasForeignKey(p => p.UsuarioSeparouID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PedidoModel>()
+                .HasOne(p => p.UsuarioEntregou)
+                .WithMany()
+                .HasForeignKey(p => p.UsuarioEntregouID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ITEM PEDIDO -> PEDIDO
+            modelBuilder.Entity<ItemPedidoModel>()
+                .HasOne(ip => ip.Pedido)
+                .WithMany(p => p.Itens)
+                .HasForeignKey(ip => ip.PedidoID);
+
+            // ITEM PEDIDO -> PRODUTO
+            modelBuilder.Entity<ItemPedidoModel>()
+                .HasOne(ip => ip.Produto)
+                .WithMany()
+                .HasForeignKey(ip => ip.ProdutoID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // MOVIMENTAÇÃO -> ITEM PEDIDO
+            modelBuilder.Entity<MovimentacaoEstoqueModel>()
+                .HasOne(m => m.ItemPedido)
+                .WithMany()
+                .HasForeignKey(m => m.ItemPedidoID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Precisões decimais (padrão do projeto)
+            modelBuilder.Entity<ItemPedidoModel>()
+                .Property(ip => ip.ItemPedidoPreco)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ItemPedidoModel>()
+                .Property(ip => ip.ItemPedidoCusto)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<PedidoModel>()
+                .Property(p => p.PedidoValorTotal)
+                .HasPrecision(18, 2);
 
         }
     }
