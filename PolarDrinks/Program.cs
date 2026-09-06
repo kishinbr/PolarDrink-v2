@@ -20,12 +20,14 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IVendaRepository, VendaRepository>();
 builder.Services.AddScoped<ICompraEstoqueRepository, CompraEstoqueRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 builder.Services.AddScoped<IVendaService, VendaService>();
 builder.Services.AddScoped<ICompraEstoqueService, CompraEstoqueService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 builder.Services.AddScoped<PolarDrinks.Services.Loja.IClienteAuthService, PolarDrinks.Services.Loja.ClienteAuthService>();
 builder.Services.AddScoped<PolarDrinks.Services.Loja.ITokenService, PolarDrinks.Services.Loja.TokenService>();

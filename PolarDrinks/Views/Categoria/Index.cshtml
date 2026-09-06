@@ -1,0 +1,30 @@
+﻿@model List<PolarDrinks.Models.Loja.CategoriaModel>
+
+<h2>Categorias</h2>
+
+<a asp-action="Cadastrar">Nova Categoria</a>
+
+@if (TempData["MensagemSucesso"] != null)
+{
+    <p style="color:green">@TempData["MensagemSucesso"]</p>
+}
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Ativa</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var categoria in Model)
+        {
+            <tr>
+                <td>@categoria.CategoriaNome</td>
+                <td>@(categoria.CategoriaAtiva ? "Sim" : "Não")</td>
+                <td><a asp-action="Editar" asp-route-id="@categoria.CategoriaID">Editar</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
