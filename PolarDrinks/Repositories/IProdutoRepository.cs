@@ -11,5 +11,7 @@ namespace PolarDrinks.Repositories
         bool ExisteCodigoBarra(string codigoBarra, int? idParaIgnorar = null);
         void Adicionar(ProdutoModel produto);
         void SalvarAlteracoes();
+        List<int> ObterCategoriasDoProduto(int produtoId);
+        void DefinirCategoriasDoProduto(int produtoId, List<int> categoriaIds);
     }
 }

@@ -1,6 +1,10 @@
 ﻿using PolarDrinks.Models;
 using PolarDrinks.Repositories;
 using PolarDrinks.Services.Common;
+using Microsoft.AspNetCore.Http;
+using PolarDrinks.Models;
+using PolarDrinks.Repositories;
+using PolarDrinks.Services.Common;
 
 namespace PolarDrinks.Services
 {
@@ -8,13 +12,16 @@ namespace PolarDrinks.Services
     {
         private readonly IProdutoRepository _produtoRepository;
         private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
+        private readonly IArmazenamentoService _armazenamentoService;
 
         public EstoqueService(
             IProdutoRepository produtoRepository,
-            IMovimentacaoEstoqueRepository movimentacaoRepository)
+            IMovimentacaoEstoqueRepository movimentacaoRepository,
+            IArmazenamentoService armazenamentoService)
         {
             _produtoRepository = produtoRepository;
             _movimentacaoRepository = movimentacaoRepository;
+            _armazenamentoService = armazenamentoService;
         }
 
         public List<ProdutoModel> ListarProdutos()
@@ -31,6 +38,10 @@ namespace PolarDrinks.Services
         {
             return _produtoRepository.ObterPorId(id);
         }
+        public List<int> ObterCategoriasDoProduto(int produtoId)
+        {
+            return _produtoRepository.ObterCategoriasDoProduto(produtoId);
+        }
 
         public List<MovimentacaoEstoqueModel> ObterMovimentacoes(int produtoId)
         {
@@ -38,7 +49,7 @@ namespace PolarDrinks.Services
         }
 
 
-        public ResultadoOperacao CadastrarProduto(ProdutoModel produto)
+        public ResultadoOperacao CadastrarProduto(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
         {
             if (_produtoRepository.ExisteCodigoBarra(produto.ProdutoCodBarra!))
             {
@@ -48,11 +59,19 @@ namespace PolarDrinks.Services
             }
 
             _produtoRepository.Adicionar(produto);
+            _produtoRepository.SalvarAlteracoes(); // salva primeiro para gerar o ProdutoID
+
+            if (imagem != null && imagem.Length > 0)
+            {
+                produto.ProdutoImagemUrl = _armazenamentoService.SalvarImagemProduto(imagem, produto.ProdutoID);
+            }
+
+            _produtoRepository.DefinirCategoriasDoProduto(produto.ProdutoID, categoriaIds);
             _produtoRepository.SalvarAlteracoes();
 
             return ResultadoOperacao.Ok("Produto cadastrado com sucesso!");
         }
-        public ResultadoOperacao EditarProduto(ProdutoModel produto)
+        public ResultadoOperacao EditarProduto(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
         {
             if (_produtoRepository.ExisteCodigoBarra(produto.ProdutoCodBarra!, produto.ProdutoID))
             {
@@ -77,6 +96,14 @@ namespace PolarDrinks.Services
             produtoDb.ProdutoPromocao = produto.ProdutoPromocao;
             produtoDb.ProdutoQtdEstoque = produto.ProdutoQtdEstoque;
 
+            if (imagem != null && imagem.Length > 0)
+            {
+                _armazenamentoService.RemoverImagemProduto(produtoDb.ProdutoImagemUrl);
+                produtoDb.ProdutoImagemUrl = _armazenamentoService.SalvarImagemProduto(imagem, produtoDb.ProdutoID);
+            }
+            // se nenhuma imagem nova foi enviada, produtoDb.ProdutoImagemUrl simplesmente não é tocado, mantendo a atual
+
+            _produtoRepository.DefinirCategoriasDoProduto(produtoDb.ProdutoID, categoriaIds);
             _produtoRepository.SalvarAlteracoes();
 
             return ResultadoOperacao.Ok("Produto atualizado com sucesso!");

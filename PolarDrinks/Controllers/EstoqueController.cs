@@ -9,10 +9,12 @@ namespace PolarDrinks.Controllers
     public class EstoqueController : Controller
     {
         private readonly IEstoqueService _estoqueService;
+        private readonly ICategoriaService _categoriaService;
 
-        public EstoqueController(IEstoqueService estoqueService)
+        public EstoqueController(IEstoqueService estoqueService, ICategoriaService categoriaService)
         {
             _estoqueService = estoqueService;
+            _categoriaService = categoriaService;
         }
         public IActionResult Index()
         {
@@ -23,12 +25,13 @@ namespace PolarDrinks.Controllers
         [AdminFilter]
         public IActionResult Cadastrar()
         {
+            ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
             return View();
         }
 
         [HttpPost]
         [AdminFilter]
-        public IActionResult Cadastrar(ProdutoModel produto)
+        public IActionResult Cadastrar(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
         {
             if (!ModelState.IsValid)
             {
@@ -36,7 +39,7 @@ namespace PolarDrinks.Controllers
                 return View(produto);
             }
 
-            var resultado = _estoqueService.CadastrarProduto(produto);
+            var resultado = _estoqueService.CadastrarProduto(produto, categoriaIds ?? new List<int>(), imagem);
 
             if (!resultado.Sucesso)
             {
@@ -64,12 +67,15 @@ namespace PolarDrinks.Controllers
             var produto = _estoqueService.ObterProduto(id.Value);
             if (produto == null) return NotFound();
 
+            ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
+            ViewBag.CategoriasSelecionadas = _estoqueService.ObterCategoriasDoProduto(id.Value);
+
             return View(produto);
         }
 
         [HttpPost]
         [AdminFilter]
-        public IActionResult Editar(ProdutoModel produto)
+        public IActionResult Editar(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
         {
             if (!ModelState.IsValid)
             {
@@ -77,7 +83,7 @@ namespace PolarDrinks.Controllers
                 return View(produtoOriginal);
             }
 
-            var resultado = _estoqueService.EditarProduto(produto);
+            var resultado = _estoqueService.EditarProduto(produto, categoriaIds ?? new List<int>(), imagem);
 
             if (!resultado.Sucesso)
             {

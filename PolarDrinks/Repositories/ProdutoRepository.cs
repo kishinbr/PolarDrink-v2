@@ -1,5 +1,6 @@
 ﻿using PolarDrinks.Data;
 using PolarDrinks.Models;
+using PolarDrinks.Models.Loja;
 
 namespace PolarDrinks.Repositories
 {
@@ -46,6 +47,28 @@ namespace PolarDrinks.Repositories
         public void SalvarAlteracoes()
         {
             _db.SaveChanges();
+        }
+        public List<int> ObterCategoriasDoProduto(int produtoId)
+        {
+            return _db.ProdutoCategorias
+                .Where(pc => pc.ProdutoID == produtoId)
+                .Select(pc => pc.CategoriaID)
+                .ToList();
+        }
+
+        public void DefinirCategoriasDoProduto(int produtoId, List<int> categoriaIds)
+        {
+            var atuais = _db.ProdutoCategorias.Where(pc => pc.ProdutoID == produtoId);
+            _db.ProdutoCategorias.RemoveRange(atuais);
+
+            foreach (var categoriaId in categoriaIds)
+            {
+                _db.ProdutoCategorias.Add(new ProdutoCategoriaModel
+                {
+                    ProdutoID = produtoId,
+                    CategoriaID = categoriaId
+                });
+            }
         }
     }
 }
