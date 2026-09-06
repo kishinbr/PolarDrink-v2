@@ -1,4 +1,5 @@
-﻿using PolarDrinks.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PolarDrinks.Data;
 using PolarDrinks.Models;
 using PolarDrinks.Models.Loja;
 
@@ -70,5 +71,48 @@ namespace PolarDrinks.Repositories
                 });
             }
         }
+        public List<CatalogoProdutoDto> ObterCatalogo(string? termo, int? categoriaId)
+        {
+            var query = _db.Produtos.Where(p => p.ProdutoAtivo).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(termo))
+            {
+                query = query.Where(p => p.ProdutoNome.Contains(termo));
+            }
+
+            if (categoriaId.HasValue)
+            {
+                query = query.Where(p => _db.ProdutoCategorias
+                    .Any(pc => pc.ProdutoID == p.ProdutoID && pc.CategoriaID == categoriaId.Value));
+            }
+
+            var produtos = query.ToList();
+            var ids = produtos.Select(p => p.ProdutoID).ToList();
+
+            var categoriasPorProduto = _db.ProdutoCategorias
+                .Where(pc => ids.Contains(pc.ProdutoID))
+                .Include(pc => pc.Categoria)
+                .ToList()
+                .GroupBy(pc => pc.ProdutoID)
+                .ToDictionary(g => g.Key, g => g.Select(pc => pc.Categoria!.CategoriaNome).ToList());
+
+            return produtos.Select(p => new CatalogoProdutoDto
+            {
+                ProdutoID = p.ProdutoID,
+                ProdutoNome = p.ProdutoNome,
+                ProdutoDescricao = p.ProdutoDescricao,
+                ProdutoPrecoVenda = p.ProdutoPrecoVenda ?? 0,
+                ProdutoPromocao = p.ProdutoPromocao,
+                ProdutoImagemUrl = p.ProdutoImagemUrl,
+                ProdutoQtdEstoque = p.ProdutoQtdEstoque ?? 0,
+                Categorias = categoriasPorProduto.ContainsKey(p.ProdutoID) ? categoriasPorProduto[p.ProdutoID] : new List<string>()
+            }).ToList();
+        }
+
+        public CatalogoProdutoDto? ObterCatalogoPorId(int produtoId)
+        {
+            return ObterCatalogo(null, null).FirstOrDefault(p => p.ProdutoID == produtoId);
+        }
+
     }
 }

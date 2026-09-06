@@ -1,4 +1,5 @@
 ﻿using PolarDrinks.Models;
+using PolarDrinks.Models.Loja;
 
 namespace PolarDrinks.Repositories
 {
@@ -13,5 +14,9 @@ namespace PolarDrinks.Repositories
         void SalvarAlteracoes();
         List<int> ObterCategoriasDoProduto(int produtoId);
         void DefinirCategoriasDoProduto(int produtoId, List<int> categoriaIds);
+
+        List<CatalogoProdutoDto> ObterCatalogo(string? termo, int? categoriaId);
+        CatalogoProdutoDto? ObterCatalogoPorId(int produtoId);
+
     }
 }
