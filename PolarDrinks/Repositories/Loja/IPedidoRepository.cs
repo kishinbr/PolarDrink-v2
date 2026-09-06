@@ -9,5 +9,7 @@ namespace PolarDrinks.Repositories.Loja
         PedidoModel? ObterPorIdEcliente(int pedidoId, int clienteId);
         List<PedidoModel> ObterPedidosDoCliente(int clienteId);
         bool ExisteCodigoAtivo(string codigo);
+
+        List<PedidoModel> ObterPorStatus(string status);
     }
 }

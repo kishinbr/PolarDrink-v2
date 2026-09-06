@@ -1,0 +1,78 @@
+﻿@model List<PolarDrinks.Models.Loja.PedidoModel>
+@{
+    var separados = (List<PolarDrinks.Models.Loja.PedidoModel>)ViewBag.Separados;
+}
+
+<h2>Pedidos Online</h2>
+
+<a asp-action="Historico">Ver histórico</a>
+
+@if (TempData["MensagemSucesso"] != null)
+{
+    <p style="color:green">@TempData["MensagemSucesso"]</p>
+}
+@if (TempData["MensagemErro"] != null)
+{
+    <p style="color:red">@TempData["MensagemErro"]</p>
+}
+
+<div style="display:flex; gap:20px;">
+
+    <div style="flex:1; border:1px solid #ccc; padding:10px;">
+        <h3>Aguardando Separação (@Model.Count)</h3>
+
+        @foreach (var pedido in Model)
+        {
+            <div style="border:1px solid #999; margin-bottom:10px; padding:10px;">
+                <strong>Pedido #@pedido.PedidoID</strong> - Código: @pedido.PedidoCodigo<br />
+                Cliente: @pedido.Cliente?.ClienteNome<br />
+                Total: @pedido.PedidoValorTotal.ToString("C")<br />
+                Data: @pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")<br />
+
+                <ul>
+                    @foreach (var item in pedido.Itens)
+                    {
+                        <li>@item.ItemPedidoQtd x @item.Produto?.ProdutoNome</li>
+                    }
+                </ul>
+
+                <form method="post" asp-action="MarcarComoSeparado">
+                    <input type="hidden" name="id" value="@pedido.PedidoID" />
+                    <button type="submit">Marcar como Separado</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <div style="flex:1; border:1px solid #ccc; padding:10px;">
+        <h3>Separado / Pronto pra Retirada (@separados.Count)</h3>
+
+        @foreach (var pedido in separados)
+        {
+            <div style="border:1px solid #999; margin-bottom:10px; padding:10px;">
+                <strong>Pedido #@pedido.PedidoID</strong> - Código: @pedido.PedidoCodigo<br />
+                Cliente: @pedido.Cliente?.ClienteNome<br />
+                Total: @pedido.PedidoValorTotal.ToString("C")<br />
+
+                <ul>
+                    @foreach (var item in pedido.Itens)
+                    {
+                        <li>@item.ItemPedidoQtd x @item.Produto?.ProdutoNome</li>
+                    }
+                </ul>
+
+                <form method="post" asp-action="VoltarParaSeparacao" style="display:inline;">
+                    <input type="hidden" name="id" value="@pedido.PedidoID" />
+                    <button type="submit">Voltar para Separação</button>
+                </form>
+
+                <form method="post" asp-action="ConfirmarEntrega" style="display:inline;">
+                    <input type="hidden" name="id" value="@pedido.PedidoID" />
+                    <input type="text" name="codigo" placeholder="Código do cliente" maxlength="4" required />
+                    <button type="submit">Confirmar Entrega</button>
+                </form>
+            </div>
+        }
+    </div>
+
+</div>

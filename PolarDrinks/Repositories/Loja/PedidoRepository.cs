@@ -51,5 +51,15 @@ namespace PolarDrinks.Repositories.Loja
 
             return _db.Pedidos.Any(p => p.PedidoCodigo == codigo && statusAtivos.Contains(p.PedidoStatus));
         }
+        public List<PedidoModel> ObterPorStatus(string status)
+        {
+            return _db.Pedidos
+                .Include(p => p.Itens)
+                    .ThenInclude(i => i.Produto)
+                .Include(p => p.Cliente)
+                .Where(p => p.PedidoStatus == status)
+                .OrderBy(p => p.PedidoData)
+                .ToList();
+        }
     }
 }

@@ -32,6 +32,15 @@ namespace PolarDrinks.Services.Loja
         {
             return _pedidoRepository.ObterPedidosDoCliente(clienteId);
         }
+        public List<PedidoModel> ListarPorStatus(string status)
+        {
+            return _pedidoRepository.ObterPorStatus(status);
+        }
+
+        public PedidoModel? ObterPedidoAdmin(int pedidoId)
+        {
+            return _pedidoRepository.ObterPorId(pedidoId);
+        }
 
         public PedidoModel? ObterDetalhePedido(int clienteId, int pedidoId)
         {
@@ -206,5 +215,80 @@ namespace PolarDrinks.Services.Loja
 
             return ResultadoOperacao.Ok("Pedido cancelado com sucesso. O estorno será processado.");
         }
+        public ResultadoOperacao MarcarComoSeparado(int pedidoId, int usuarioId)
+        {
+            var pedido = _pedidoRepository.ObterPorId(pedidoId);
+
+            if (pedido == null)
+            {
+                return ResultadoOperacao.Erro("Pedido não encontrado.");
+            }
+
+            if (pedido.PedidoStatus != PedidoModel.Status.AguardandoSeparacao)
+            {
+                return ResultadoOperacao.Erro("Este pedido não está aguardando separação.");
+            }
+
+            pedido.PedidoStatus = PedidoModel.Status.Separado;
+            pedido.PedidoDataSeparado = DateTime.Now;
+            pedido.UsuarioSeparouID = usuarioId;
+
+            _unitOfWork.SaveChanges();
+
+            return ResultadoOperacao.Ok("Pedido marcado como separado!");
+        }
+
+        public ResultadoOperacao VoltarParaSeparacao(int pedidoId)
+        {
+            var pedido = _pedidoRepository.ObterPorId(pedidoId);
+
+            if (pedido == null)
+            {
+                return ResultadoOperacao.Erro("Pedido não encontrado.");
+            }
+
+            if (pedido.PedidoStatus != PedidoModel.Status.Separado)
+            {
+                return ResultadoOperacao.Erro("Este pedido não está separado.");
+            }
+
+            pedido.PedidoStatus = PedidoModel.Status.AguardandoSeparacao;
+            pedido.PedidoDataSeparado = null;
+            pedido.UsuarioSeparouID = null;
+
+            _unitOfWork.SaveChanges();
+
+            return ResultadoOperacao.Ok("Pedido voltou para aguardando separação.");
+        }
+
+        public ResultadoOperacao ConfirmarEntrega(int pedidoId, string codigoInformado, int usuarioId)
+        {
+            var pedido = _pedidoRepository.ObterPorId(pedidoId);
+
+            if (pedido == null)
+            {
+                return ResultadoOperacao.Erro("Pedido não encontrado.");
+            }
+
+            if (pedido.PedidoStatus != PedidoModel.Status.Separado)
+            {
+                return ResultadoOperacao.Erro("Este pedido ainda não foi separado.");
+            }
+
+            if (pedido.PedidoCodigo != codigoInformado)
+            {
+                return ResultadoOperacao.Erro("Código incorreto. Confira com o cliente.", campoErro: "codigo");
+            }
+
+            pedido.PedidoStatus = PedidoModel.Status.Concluido;
+            pedido.PedidoDataConcluido = DateTime.Now;
+            pedido.UsuarioEntregouID = usuarioId;
+
+            _unitOfWork.SaveChanges();
+
+            return ResultadoOperacao.Ok("Entrega confirmada com sucesso!");
+        }
+        
+
     }
 }
