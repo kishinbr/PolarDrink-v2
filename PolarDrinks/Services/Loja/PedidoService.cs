@@ -288,7 +288,45 @@ namespace PolarDrinks.Services.Loja
 
             return ResultadoOperacao.Ok("Entrega confirmada com sucesso!");
         }
-        
 
+        public int ExpirarPedidosNaoRetirados()
+        {
+            var pedidosSeparados = _pedidoRepository.ObterPorStatus(PedidoModel.Status.Separado);
+            var limite = DateTime.Now.AddHours(-48);
+
+            var expirados = pedidosSeparados
+                .Where(p => p.PedidoDataSeparado.HasValue && p.PedidoDataSeparado.Value <= limite)
+                .ToList();
+
+            foreach (var pedido in expirados)
+            {
+                pedido.PedidoStatus = PedidoModel.Status.CanceladoNaoRetirado;
+
+                foreach (var item in pedido.Itens)
+                {
+                    if (item.Produto != null)
+                    {
+                        item.Produto.ProdutoQtdEstoque += item.ItemPedidoQtd;
+                    }
+
+                    _movimentacaoRepository.Adicionar(new Models.MovimentacaoEstoqueModel
+                    {
+                        ProdutoID = item.ProdutoID,
+                        MovimentacaoQtd = item.ItemPedidoQtd,
+                        MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.Cancelamento,
+                        MovimentacaoData = DateTime.Now,
+                        ItemPedidoID = item.ItemPedidoID,
+                        MovimentacaoDescricao = "Expirado - nao retirado (48h)"
+                    });
+                }
+            }
+
+            if (expirados.Count > 0)
+            {
+                _unitOfWork.SaveChanges();
+            }
+
+            return expirados.Count;
+        }
     }
 }

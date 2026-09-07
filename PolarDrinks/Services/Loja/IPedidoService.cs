@@ -15,5 +15,6 @@ namespace PolarDrinks.Services.Loja
         ResultadoOperacao MarcarComoSeparado(int pedidoId, int usuarioId);
         ResultadoOperacao VoltarParaSeparacao(int pedidoId);
         ResultadoOperacao ConfirmarEntrega(int pedidoId, string codigoInformado, int usuarioId);
+        int ExpirarPedidosNaoRetirados();
     }
 }

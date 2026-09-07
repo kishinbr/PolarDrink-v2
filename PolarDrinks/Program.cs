@@ -34,6 +34,8 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
 
+builder.Services.AddHostedService<PolarDrinks.Jobs.ExpiracaoPedidosJob>();
+
 
 builder.Services.AddScoped<PolarDrinks.Services.Loja.ICatalogoService, PolarDrinks.Services.Loja.CatalogoService>();
 builder.Services.AddScoped<PolarDrinks.Services.Loja.IClienteAuthService, PolarDrinks.Services.Loja.ClienteAuthService>();
