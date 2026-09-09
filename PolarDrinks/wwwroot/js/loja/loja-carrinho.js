@@ -120,7 +120,7 @@ document.getElementById("btnFinalizarCompra").addEventListener("click", async fu
         return;
     }
 
-    window.location.href = "/loja/pedido-confirmado?id=" + resultado.dados.pedidoID;
+    window.location.href = "/loja/PedidoConfirmado?id=" + resultado.dados.pedidoID;
 });
 document.getElementById("btnLimparCarrinho").addEventListener("click", async function () {
     const confirmar = confirm("Tem certeza que deseja excluir todos os itens do carrinho?");
