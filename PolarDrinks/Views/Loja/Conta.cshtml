@@ -1,0 +1,59 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Minha Conta</title>
+</head>
+<body>
+
+    <h2>Minha Conta</h2>
+
+    <div id="mensagemErro" style="color:red; display:none;"></div>
+
+    <div id="blocoLogin">
+        <h3>Entrar</h3>
+
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" />
+
+        <label>Senha</label>
+        <input type="password" id="loginSenha" />
+
+        <button id="btnLogin">Entrar</button>
+
+        <p>Não tem conta? <a href="#" id="linkIrCadastro">Criar uma</a></p>
+    </div>
+
+    <div id="blocoCadastro" style="display:none;">
+        <h3>Criar Conta</h3>
+
+        <label>Nome</label>
+        <input type="text" id="cadNome" />
+
+        <label>E-mail</label>
+        <input type="email" id="cadEmail" />
+
+        <label>Senha</label>
+        <input type="password" id="cadSenha" />
+
+        <label>Confirmar Senha</label>
+        <input type="password" id="cadConfirmacaoSenha" />
+
+        <label>Telefone</label>
+        <input type="text" id="cadTelefone" />
+
+        <label>CPF</label>
+        <input type="text" id="cadCpf" />
+
+        <button id="btnCadastrar">Criar Conta</button>
+
+        <p>Já tem conta? <a href="#" id="linkIrLogin">Entrar</a></p>
+    </div>
+
+    <script src="~/js/loja/loja-api.js"></script>
+    <script src="~/js/loja/loja-conta.js"></script>
+</body>
+</html>
