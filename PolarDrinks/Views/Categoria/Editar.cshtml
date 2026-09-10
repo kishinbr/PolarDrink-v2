@@ -1,24 +1,35 @@
 ﻿@model PolarDrinks.Models.Loja.CategoriaModel
 
-<h2>Editar Categoria</h2>
 
-<div style="color:red" asp-validation-summary="All"></div>
+<div class="container bg-shadow p-5 rounded-5 mt-5">
+    <div class="mb-5 text-center">
+        <h1 class="text-light">Editar Categoria</h1>
+    </div>
+
 
 <form method="post">
     <input type="hidden" asp-for="CategoriaID" />
 
-    <label>Nome:</label>
-    <input type="text" asp-for="CategoriaNome" />
+        <div class="mb-4">
+            <label class="form-label text-light">Nome</label>
+            <input type="text" class="form-control bg-shadow text-light" asp-for="CategoriaNome" maxlength="100">
+            <span asp-validation-for="CategoriaNome" class="text-danger"></span>
+        </div>
 
-    <br />
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="CategoriaAtiva">
+                <label class="form-check-label text-light">
+                    Categoria ativa
+                </label>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <a class="btn btn-primary w-50" asp-action="Index" title="Voltar">Voltar</a>
+            <button type="submit" class="btn btn-success w-50" title="Salvar Alterações">Salvar Alterações</button>
 
-    <label>
-        <input type="checkbox" asp-for="CategoriaAtiva" /> Ativa
-    </label>
+        </div>
 
-    <br />
-
-    <button type="submit">Salvar</button>
 </form>
 
-<a asp-action="Index">Voltar</a>
+</div>

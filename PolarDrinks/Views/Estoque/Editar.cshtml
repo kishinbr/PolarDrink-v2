@@ -2,25 +2,24 @@
 @{
     ViewData["title"] = "Editar Produto";
 }
+@if (TempData["MensagemSucesso"] != null)
+{
+    <div class="alert bg-success text-light" role="alert">
+        @TempData["MensagemSucesso"]
+    </div>
+}
+else if (TempData["MensagemErro"] != null)
+{
+    <div class="alert bg-danger text-light" role="alert">
+        @TempData["MensagemErro"]
+    </div>
+}
 
 <div class="container bg-shadow p-5 rounded-5 mt-5">
     <div class="mb-5 text-center">
         <h1 class="text-light">Editar Produto</h1>
     </div>
  
-    @if (TempData["MensagemSucesso"] != null)
-    {
-        <div class="alert bg-success text-light" role="alert">
-            @TempData["MensagemSucesso"]
-        </div>
-    }
-    else if (TempData["MensagemErro"] != null)
-    {
-        <div class="alert bg-danger text-light" role="alert">
-            @TempData["MensagemErro"]
-        </div>
-    }
-
     <form method="post" asp-action="Editar" enctype="multipart/form-data">
         <input type="hidden" asp-for="ProdutoID" />
 

@@ -1,12 +1,43 @@
-﻿<h2>Nova Categoria</h2>
-
-<div style="color:red" asp-validation-summary="All"></div>
+﻿@model PolarDrinks.Models.Loja.CategoriaModel
+@{
+    ViewData["title"] = "Cadastrar Categoria";
+}
+<div class="container bg-shadow p-5 rounded-5 mt-5">
+    <div class="mb-5 text-center">
+        <h1 class="text-light">Cadastrar Categoria</h1>
+    </div>
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light" role="alert">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light" role="alert">
+            @TempData["MensagemErro"]
+        </div>
+    }
 
 <form method="post">
-    <label>Nome:</label>
-    <input type="text" name="categoriaNome" />
+        <div class="mb-4">
+            <label class="form-label text-light">Nome</label>
+            <input type="text" class="form-control bg-shadow text-light" asp-for="CategoriaNome" placeholder="Nome da Categoria" maxlength="100">
+            <span asp-validation-for="CategoriaNome" class="text-danger"></span>
+        </div>
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="CategoriaAtiva">
+                <label class="form-check-label text-light">
+                    Categoria ativa
+                </label>
+            </div>
+        </div>
 
-    <button type="submit">Salvar</button>
+        <div class="d-flex gap-3 mt-4">
+            <a class="btn btn-primary w-50" asp-controller="Categoria" asp-action="Index" title="Voltar">Voltar</a>
+            <button type="submit" class="btn btn-success w-50" title="Cadastrar"> Cadastrar</button>
+        </div>
 </form>
 
-<a asp-action="Index">Voltar</a>
+</div>

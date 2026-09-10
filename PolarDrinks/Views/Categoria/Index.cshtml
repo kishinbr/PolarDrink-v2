@@ -1,11 +1,5 @@
 ﻿@model List<PolarDrinks.Models.Loja.CategoriaModel>
 
-
-
-@if (TempData["MensagemSucesso"] != null)
-{
-    <p style="color:green">@TempData["MensagemSucesso"]</p>
-}
 <div class="container rounded-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3 bg-shadow text-light p-4 rounded-4 mt-2">
@@ -31,8 +25,9 @@
             @TempData["MensagemErro"]
         </div>
     }
+
     <div class="bg-shadow text-light p-4 rounded-4">
-        <table id="Categorias" class="table table-hover mb-auto bg-shadowt ">
+        <table id="Categorias" class="table table-hover mb-auto bg-shadowt">
             <thead class="bg-tpreto">
                 <tr>
                     <th style="width: 15%;">Nome</th>
@@ -84,3 +79,41 @@
         </table>
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#Categorias').DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 20, 30],
+                scrollX: true,
+                paging: true,
+
+                language: {
+                    decimal: "",
+                    emptyTable: "Nenhuma categoria cadastrada",
+                    info: "Mostrando de _START_ a _END_ de um total de _TOTAL_ categorias",
+                    infoEmpty: "Mostrando de 0 a 0 de 0 categorias",
+                    infoFiltered: "(filtrado de _MAX_ categorias no total)",
+                    lengthMenu: "Mostrar _MENU_ categorias",
+                    loadingRecords: "Carregando...",
+                    search: "Procurar:",
+                    zeroRecords: "Categoria não encontrada",
+                    paginate: {
+                        first: "Primeiro",
+                        last: "Último",
+                        next: "Próximo",
+                        previous: "Anterior"
+                    }
+                }
+            });
+
+            setTimeout(function () {
+                $(".alert").fadeOut("slow", function () {
+                    $(this).alert('close');
+                });
+            }, 3000);
+
+        });
+    </script>
+}
