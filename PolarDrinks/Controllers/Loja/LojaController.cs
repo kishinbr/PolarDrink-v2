@@ -22,5 +22,9 @@ namespace PolarDrinks.Controllers.Loja
         {
             return View();
         }
+        public IActionResult Perfil()
+        {
+            return View();
+        }
     }
 }

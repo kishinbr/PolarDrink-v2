@@ -1,23 +1,9 @@
 ﻿let categoriaAtiva = null;
 let produtosCarregados = [];
 document.addEventListener("DOMContentLoaded", async function () {
-    atualizarLinkLogin();
     await carregarCategorias();
     await carregarProdutos();
-    await atualizarContadorCarrinho();
 });
-// Função para verificar se o usuário está logado
-function atualizarLinkLogin() {
-    const linkLogin = document.getElementById("linkLogin");
-
-    if (estaLogado()) {
-        linkLogin.innerText = "Minha Conta";
-        linkLogin.href = "/loja/perfil";
-    } else {
-        linkLogin.innerText = "Login";
-        linkLogin.href = "/loja/conta";
-    }
-}
 // Função para carregar categorias e criar botões dinamicamente
 async function carregarCategorias() {
     const resultado = await chamarApi("/api/catalogo/categorias");
@@ -121,130 +107,6 @@ async function adicionarAoCarrinho(produtoId) {
 
     await atualizarContadorCarrinho();
 }
-// Função para atualizar o contador do carrinho
-async function atualizarContadorCarrinho() {
-    let quantidade = 0;
-
-    if (estaLogado()) {
-        const resultado = await chamarApi("/api/carrinho");
-        if (resultado.ok) {
-            quantidade = resultado.dados.itens.reduce((total, item) => total + item.quantidade, 0);
-        }
-    } else {
-        const carrinhoLocal = JSON.parse(localStorage.getItem("carrinho_local") || "[]");
-        quantidade = carrinhoLocal.reduce((total, item) => total + item.quantidade, 0);
-    }
-
-    const contador = document.getElementById("contadorCarrinho");
-
-    if (quantidade > 0) {
-        contador.innerText = quantidade;
-        contador.style.display = "inline";
-    } else {
-        contador.style.display = "none";
-    }
-}
-// Abrir o sidecart ao clicar no botão
-document.getElementById("btnAbrirSidecart").addEventListener("click", async function () {
-    await abrirSidecart();
-});
-// Fechar o sidecart ao clicar no botão de fechar
-document.getElementById("btnFecharSidecart").addEventListener("click", function () {
-    fecharSidecart();
-});
-// Fechar o sidecart ao clicar fora dele
-document.getElementById("sidecartOverlay").addEventListener("click", function () {
-    fecharSidecart();
-});
-// Função para fechar o sidecart
-function fecharSidecart() {
-    document.getElementById("sidecart").style.display = "none";
-    document.getElementById("sidecartOverlay").style.display = "none";
-}
-// Função para abrir o sidecart e carregar os itens
-async function abrirSidecart() {
-    document.getElementById("sidecart").style.display = "block";
-    document.getElementById("sidecartOverlay").style.display = "block";
-
-    const container = document.getElementById("sidecartItens");
-    container.innerHTML = "Carregando...";
-
-    let itens = [];
-    let total = 0;
-
-    if (estaLogado()) {
-        const resultado = await chamarApi("/api/carrinho");
-        if (resultado.ok) {
-            itens = resultado.dados.itens;
-            total = resultado.dados.total;
-        }
-    } else {
-        const carrinhoLocal = JSON.parse(localStorage.getItem("carrinho_local") || "[]");
-
-        itens = carrinhoLocal.map(i => {
-            const produto = produtosCarregados.find(p => p.produtoID === i.produtoID);
-            const precoUnitario = produto
-                ? (produto.produtoPromocao > 0
-                    ? produto.produtoPrecoVenda - (produto.produtoPrecoVenda * (produto.produtoPromocao / 100))
-                    : produto.produtoPrecoVenda)
-                : 0;
-
-            return {
-                produtoID: i.produtoID,
-                produtoNome: produto ? produto.produtoNome : "Produto #" + i.produtoID,
-                quantidade: i.quantidade,
-                subtotal: precoUnitario * i.quantidade
-            };
-        });
-
-        total = itens.reduce((soma, item) => soma + item.subtotal, 0);
-    }
-
-    container.innerHTML = "";
-
-    if (itens.length === 0) {
-        container.innerHTML = "<p>Seu carrinho está vazio.</p>";
-    } else {
-        itens.forEach(item => {
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <p>${item.quantidade}x ${item.produtoNome} - R$ ${item.subtotal.toFixed(2)}
-                    <button class="btn-remover-sidecart" data-produto-id="${item.produtoID}">Remover</button>
-                </p>
-            `;
-            container.appendChild(div);
-        });
-
-        document.querySelectorAll(".btn-remover-sidecart").forEach(botao => {
-            botao.addEventListener("click", async function () {
-                await removerDoSidecart(parseInt(botao.dataset.produtoId));
-            });
-        });
-    }
-
-    document.getElementById("sidecartTotal").innerText = "R$ " + total.toFixed(2);
-}
-// Função para remover item do sidecart
-async function removerDoSidecart(produtoId) {
-    if (estaLogado()) {
-        await chamarApi("/api/carrinho/itens/" + produtoId, "DELETE");
-    } else {
-        let carrinhoLocal = JSON.parse(localStorage.getItem("carrinho_local") || "[]");
-        carrinhoLocal = carrinhoLocal.filter(i => i.produtoID !== produtoId);
-        localStorage.setItem("carrinho_local", JSON.stringify(carrinhoLocal));
-    }
-
-    await abrirSidecart();
-    await atualizarContadorCarrinho();
-}
-// Função para prosseguir para o carrinho ou login
-document.getElementById("btnProsseguir").addEventListener("click", function () {
-    if (estaLogado()) {
-        window.location.href = "/loja/carrinho";
-    } else {
-        window.location.href = "/loja/conta?redirecionarPara=carrinho";
-    }
-});
 let timeoutBusca = null;
 // Função para buscar sugestões de produtos enquanto o usuário digita
 document.getElementById("campoBusca").addEventListener("input", function () {

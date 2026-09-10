@@ -1,0 +1,34 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Meu Perfil</title>
+</head>
+<body>
+
+    @Html.Partial("_HeaderLoja")
+
+    <h2>Meu Perfil</h2>
+
+    <h3>Pedidos em Andamento</h3>
+    <div id="listaPedidosAndamento">Carregando...</div>
+
+    <h3>Pedidos Concluídos</h3>
+    <div id="listaPedidosConcluidos">Carregando...</div>
+
+    <div id="overlayModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:30;"></div>
+
+    <div id="modalDetalhePedido" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ccc; padding:20px; z-index:31; width:400px;">
+        <button id="btnFecharModal">Fechar</button>
+        <div id="conteudoModalPedido"></div>
+    </div>
+
+    <script src="~/js/loja/loja-api.js"></script>
+    <script src="~/js/loja/loja-header.js"></script>
+    <script src="~/js/loja/loja-perfil.js"></script>
+
+</body>
+</html>
