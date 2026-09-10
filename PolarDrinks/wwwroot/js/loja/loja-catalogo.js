@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await carregarProdutos();
     await atualizarContadorCarrinho();
 });
-
+// Função para verificar se o usuário está logado
 function atualizarLinkLogin() {
     const linkLogin = document.getElementById("linkLogin");
 
@@ -18,6 +18,7 @@ function atualizarLinkLogin() {
         linkLogin.href = "/loja/conta";
     }
 }
+// Função para carregar categorias e criar botões dinamicamente
 async function carregarCategorias() {
     const resultado = await chamarApi("/api/catalogo/categorias");
 
@@ -44,6 +45,7 @@ async function carregarCategorias() {
         container.appendChild(btn);
     });
 }
+// Função para carregar produtos com base na categoria ativa e no termo de busca
 async function carregarProdutos(termo = null) {
     let url = "/api/catalogo/produtos?";
 
@@ -96,6 +98,7 @@ async function carregarProdutos(termo = null) {
         });
     });
 }
+// Função para adicionar produto ao carrinho
 async function adicionarAoCarrinho(produtoId) {
     if (estaLogado()) {
         await chamarApi("/api/carrinho/itens", "POST", {
@@ -118,6 +121,7 @@ async function adicionarAoCarrinho(produtoId) {
 
     await atualizarContadorCarrinho();
 }
+// Função para atualizar o contador do carrinho
 async function atualizarContadorCarrinho() {
     let quantidade = 0;
 
@@ -140,23 +144,24 @@ async function atualizarContadorCarrinho() {
         contador.style.display = "none";
     }
 }
+// Abrir o sidecart ao clicar no botão
 document.getElementById("btnAbrirSidecart").addEventListener("click", async function () {
     await abrirSidecart();
 });
-
+// Fechar o sidecart ao clicar no botão de fechar
 document.getElementById("btnFecharSidecart").addEventListener("click", function () {
     fecharSidecart();
 });
-
+// Fechar o sidecart ao clicar fora dele
 document.getElementById("sidecartOverlay").addEventListener("click", function () {
     fecharSidecart();
 });
-
+// Função para fechar o sidecart
 function fecharSidecart() {
     document.getElementById("sidecart").style.display = "none";
     document.getElementById("sidecartOverlay").style.display = "none";
 }
-
+// Função para abrir o sidecart e carregar os itens
 async function abrirSidecart() {
     document.getElementById("sidecart").style.display = "block";
     document.getElementById("sidecartOverlay").style.display = "block";
@@ -219,6 +224,7 @@ async function abrirSidecart() {
 
     document.getElementById("sidecartTotal").innerText = "R$ " + total.toFixed(2);
 }
+// Função para remover item do sidecart
 async function removerDoSidecart(produtoId) {
     if (estaLogado()) {
         await chamarApi("/api/carrinho/itens/" + produtoId, "DELETE");
@@ -231,6 +237,7 @@ async function removerDoSidecart(produtoId) {
     await abrirSidecart();
     await atualizarContadorCarrinho();
 }
+// Função para prosseguir para o carrinho ou login
 document.getElementById("btnProsseguir").addEventListener("click", function () {
     if (estaLogado()) {
         window.location.href = "/loja/carrinho";
@@ -238,9 +245,8 @@ document.getElementById("btnProsseguir").addEventListener("click", function () {
         window.location.href = "/loja/conta?redirecionarPara=carrinho";
     }
 });
-
 let timeoutBusca = null;
-
+// Função para buscar sugestões de produtos enquanto o usuário digita
 document.getElementById("campoBusca").addEventListener("input", function () {
     const texto = this.value.trim();
 
@@ -255,7 +261,7 @@ document.getElementById("campoBusca").addEventListener("input", function () {
         await buscarSugestoes(texto);
     }, 400);
 });
-
+// Função para buscar sugestões de produtos com base no texto digitado
 async function buscarSugestoes(texto) {
     const resultado = await chamarApi("/api/catalogo/produtos?termo=" + encodeURIComponent(texto));
 
@@ -286,13 +292,13 @@ async function buscarSugestoes(texto) {
 
     dropdown.style.display = "block";
 }
-
+// Fechar o dropdown de sugestões ao clicar fora dele
 document.addEventListener("click", function (e) {
     if (!e.target.closest("#campoBusca") && !e.target.closest("#dropdownSugestoes")) {
         document.getElementById("dropdownSugestoes").style.display = "none";
     }
 });
-
+// Executar a busca ao pressionar Enter
 document.getElementById("campoBusca").addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
         document.getElementById("dropdownSugestoes").style.display = "none";

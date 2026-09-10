@@ -8,8 +8,10 @@ namespace PolarDrinks.Models
         {
             public const string Entrada = "Entrada";
             public const string Saida = "Saida";
+            public const string SaidaOnline = "SaidaOnline";
             public const string Edicao = "Edicao";
             public const string Cancelamento = "Cancelamento";
+            public const string CancelamentoOnline = "CancelamentoOnline";
         }
 
         [Key]

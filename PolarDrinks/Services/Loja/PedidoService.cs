@@ -143,7 +143,7 @@ namespace PolarDrinks.Services.Loja
                         {
                             ProdutoID = item.ProdutoID,
                             MovimentacaoQtd = item.ItemPedidoQtd,
-                            MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.Saida,
+                            MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.SaidaOnline,
                             MovimentacaoData = DateTime.Now,
                             ItemPedidoID = item.ItemPedidoID
                         });
@@ -202,7 +202,7 @@ namespace PolarDrinks.Services.Loja
                 {
                     ProdutoID = item.ProdutoID,
                     MovimentacaoQtd = item.ItemPedidoQtd,
-                    MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.Cancelamento,
+                    MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
                     MovimentacaoData = DateTime.Now,
                     ItemPedidoID = item.ItemPedidoID,
                     MovimentacaoDescricao = "Cancelado pelo cliente"
@@ -313,7 +313,7 @@ namespace PolarDrinks.Services.Loja
                     {
                         ProdutoID = item.ProdutoID,
                         MovimentacaoQtd = item.ItemPedidoQtd,
-                        MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.Cancelamento,
+                        MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
                         MovimentacaoData = DateTime.Now,
                         ItemPedidoID = item.ItemPedidoID,
                         MovimentacaoDescricao = "Expirado - nao retirado (48h)"

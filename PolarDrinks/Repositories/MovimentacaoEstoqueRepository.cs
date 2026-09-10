@@ -25,6 +25,9 @@ namespace PolarDrinks.Repositories
                 .Include(m => m.ItemVenda)
                     .ThenInclude(iv => iv.Venda)
                 .Include(m => m.ItemCompra)
+                .Include(m => m.ItemPedido)
+                    .ThenInclude(ip => ip.Pedido)
+                        .ThenInclude(p => p.UsuarioSeparou)
                 .Include(m => m.Usuario)
                 .OrderByDescending(m => m.MovimentacaoData)
                 .ToList();
