@@ -1,0 +1,44 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Meu Carrinho</title>
+</head>
+<body>
+
+    @Html.Partial("_HeaderLoja")
+
+    <h2>Meu Carrinho</h2>
+
+    <div id="mensagemAviso" style="color:orange; display:none;"></div>
+
+    <div id="carrinhoVazio" style="display:none;">
+        <p>Seu carrinho está vazio.</p>
+        <a href="/loja/catalogo">Ver produtos</a>
+    </div>
+
+    <div id="carrinhoConteudo" style="display:none; display:flex; gap:30px; padding:20px;">
+
+        <div id="listaItensCarrinho" style="flex:2;">
+            <!-- preenchido via JavaScript -->
+        </div>
+
+        <div style="flex:1; border:1px solid #ccc; padding:15px; height:fit-content;">
+            <h3>Resumo</h3>
+            <p>Total: <strong id="totalCarrinho">R$ 0,00</strong></p>
+            <button id="btnFinalizarCompra">Finalizar Compra</button>
+            <br /><br />
+            <button id="btnLimparCarrinho">Excluir Carrinho</button>
+        </div>
+
+    </div>
+
+    <script src="~/js/loja/loja-api.js"></script>
+    <script src="~/js/loja/loja-header.js"></script>
+    <script src="~/js/loja/loja-carrinho.js"></script>
+
+</body>
+</html>

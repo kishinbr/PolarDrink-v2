@@ -40,6 +40,11 @@ namespace PolarDrinks.Models
 
         public bool ProdutoAtivo { get; set; }
 
+        public string? ProdutoImagemUrl { get; set; }
+
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
+
 
         // Propriedade calculada para indicar estoque baixo
         [NotMapped]

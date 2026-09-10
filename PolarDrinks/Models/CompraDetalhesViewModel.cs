@@ -10,5 +10,6 @@ namespace PolarDrinks.ViewModels
 
         public bool PodeConfirmar { get; set; }
         public List<ItemCompraModel> Itens { get; set; }
+        public string? UsuarioConfirmacao { get; set; }
     }
 }

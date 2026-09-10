@@ -270,12 +270,30 @@
     });
 
     // ==================== REMOVER ITEM ====================
+    function renumerarItensHidden() {
+        itensHidden.innerHTML = "";
+
+        Array.from(tabela.children).forEach((linha, index) => {
+            const produtoId = linha.getAttribute("data-id");
+            const qtd = linha.children[1].innerText;
+            const total = linha.getAttribute("data-total");
+
+            const precoTexto = linha.children[2].innerText.replace("R$", "").trim();
+
+            itensHidden.insertAdjacentHTML('beforeend', `
+                <input type="hidden" name="Itens[${index}].ProdutoID"      value="${produtoId}" />
+                <input type="hidden" name="Itens[${index}].ItemVendaQtd"   value="${qtd}" />
+                <input type="hidden" name="Itens[${index}].ItemVendaPreco" value="${precoTexto}" />
+                <input type="hidden" name="Itens[${index}].ItemVendaTotal" value="${total}" />
+            `);
+        });
+    }
+
     tabela.addEventListener("click", e => {
         const btn = e.target.closest(".btn-remover");
         if (!btn) return;
 
         const row = btn.closest("tr");
-        const index = Array.from(tabela.children).indexOf(row);
 
         const total = parseFloat(row.getAttribute("data-total")) || 0;
 
@@ -285,7 +303,7 @@
 
         row.remove();
 
-        itensHidden.querySelectorAll(`[name^="Itens[${index}]"]`).forEach(i => i.remove());
+        renumerarItensHidden();
 
         atualizarBotaoConfirmar();
     });

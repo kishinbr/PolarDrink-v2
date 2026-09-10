@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Polar Drinks - Catálogo</title>
+</head>
+<body>
+
+    @Html.Partial("_HeaderLoja")
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("areaBusca").style.display = "block";
+            });
+    </script>
+    <div style="display:flex; gap:20px; padding:20px;">
+
+        <aside style="width:200px;">
+            <h4>Categorias</h4>
+            <div id="listaCategorias">
+                <!-- preenchido via JavaScript -->
+            </div>
+        </aside>
+
+        <main style="flex:1;">
+            <div id="gridProdutos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:15px;">
+                <!-- preenchido via JavaScript -->
+            </div>
+        </main>
+
+    </div>
+    <script src="~/js/loja/loja-api.js"></script>
+    <script src="~/js/loja/loja-header.js"></script>
+    <script src="~/js/loja/loja-catalogo.js"></script>
+
+</body>
+</html>

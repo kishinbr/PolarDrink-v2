@@ -62,11 +62,11 @@ namespace PolarDrinks.Controllers
 
             model.LucroHoje = vendasHoje.Sum(v =>
                 v.Itens.Sum(i =>
-                    (i.ItemVendaPreco - (i.Produto.ProdutoPrecoCusto ?? 0)) * i.ItemVendaQtd));
+                    (i.ItemVendaPreco - (i.ItemVendaCusto)) * i.ItemVendaQtd));
 
             model.LucroMes = vendasMes.Sum(v =>
                 v.Itens.Sum(i =>
-                    (i.ItemVendaPreco - (i.Produto.ProdutoPrecoCusto ?? 0)) * i.ItemVendaQtd));
+                    (i.ItemVendaPreco - (i.ItemVendaCusto)) * i.ItemVendaQtd));
 
             // TICKET MÉDIO
             model.TicketMedio = todasVendas.Any()
@@ -116,7 +116,7 @@ namespace PolarDrinks.Controllers
                 .SelectMany(v => v.Itens)
                 .GroupBy(i => i.Produto.ProdutoNome)
                 .OrderByDescending(g => g.Sum(i =>
-                    (i.ItemVendaPreco - (i.Produto.ProdutoPrecoCusto ?? 0)) * i.ItemVendaQtd))
+                    (i.ItemVendaPreco - (i.ItemVendaCusto)) * i.ItemVendaQtd))
                 .Select(g => g.Key)
                 .FirstOrDefault();
 
