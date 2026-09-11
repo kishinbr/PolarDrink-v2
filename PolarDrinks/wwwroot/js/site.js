@@ -307,3 +307,68 @@ $(document).ready(function () {
     }, 3000);
 
 });
+
+$(document).ready(function () {
+
+    if ($('#tabelaPedidosOnline').length === 0) return;
+
+    var tablePedidosOnline = $('#tabelaPedidosOnline').DataTable({
+        pageLength: 10,
+        lengthMenu: [10, 15, 20],
+        paging: true,
+        scrollX: true,
+        scrollCollapse: true,
+
+        columnDefs: [
+            { orderable: false, targets: [6] },
+            { className: "text-center", targets: [0, 1, 2, 3, 4, 5, 6] }
+        ],
+        order: [[2, 'desc']],
+        language: {
+            "decimal": "",
+            "emptyTable": "Nenhum pedido registrado",
+            "info": "Mostrando de _START_ a _END_ de um total de _TOTAL_ pedidos",
+            "infoEmpty": "Mostrando de 0 a 0 de 0 pedidos",
+            "infoFiltered": "(filtrado de _MAX_ pedidos no total)",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ pedidos",
+            "loadingRecords": "Carregando...",
+            "search": "Procurar:",
+            "zeroRecords": "Pedido não encontrado",
+            "paginate": {
+                "first": "Primeiro",
+                "last": "Último",
+                "next": "Próximo",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "orderable": "Ordenar por esta coluna",
+                "orderableReverse": "Ordem reversa desta coluna"
+            }
+        }
+    });
+
+    tablePedidosOnline.columns.adjust().draw();
+
+    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+        if (settings.nTable.id !== "tabelaPedidosOnline") return true;
+
+        let dataInicio = $('#dataInicioPedidos').val();
+        let dataFim = $('#dataFimPedidos').val();
+
+        let linha = tablePedidosOnline.row(dataIndex).node();
+        let dataPedido = linha.children[2].getAttribute("data-order");
+
+        if (!dataInicio && !dataFim) return true;
+
+        if (dataInicio && dataPedido < dataInicio) return false;
+        if (dataFim && dataPedido > dataFim) return false;
+
+        return true;
+    });
+
+    $('#dataInicioPedidos, #dataFimPedidos').on('change', function () {
+        tablePedidosOnline.draw();
+    });
+
+});

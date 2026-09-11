@@ -201,6 +201,10 @@
                                             <strong>Total:</strong>
                                             @pedido.PedidoValorTotal.ToString("C")
                                         </div>
+                                        <div class="d-flex justify-content-between align-items-center"> 
+                                            <div> <strong>Data:</strong> @pedido.PedidoData.ToString("dd/MM/yyyy HH:mm") </div> 
+                                            <div> <strong>Separado em:</strong> @pedido.PedidoDataSeparado?.ToString("dd/MM/yyyy HH:mm") </div> 
+                                        </div>
 
                                     </div>
 

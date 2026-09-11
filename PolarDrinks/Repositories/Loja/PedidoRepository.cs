@@ -24,6 +24,8 @@ namespace PolarDrinks.Repositories.Loja
                 .Include(p => p.Itens)
                     .ThenInclude(i => i.Produto)
                 .Include(p => p.Cliente)
+                .Include(p => p.UsuarioSeparou)
+                .Include(p => p.UsuarioEntregou)
                 .FirstOrDefault(p => p.PedidoID == pedidoId);
         }
 
@@ -57,6 +59,8 @@ namespace PolarDrinks.Repositories.Loja
                 .Include(p => p.Itens)
                     .ThenInclude(i => i.Produto)
                 .Include(p => p.Cliente)
+                .Include(p => p.UsuarioSeparou)
+                .Include(p => p.UsuarioEntregou)
                 .Where(p => p.PedidoStatus == status)
                 .OrderBy(p => p.PedidoData)
                 .ToList();

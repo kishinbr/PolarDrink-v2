@@ -1,78 +1,142 @@
 ﻿@model List<PolarDrinks.Models.Loja.PedidoModel>
 @{
-    var canceladosCliente = (List<PolarDrinks.Models.Loja.PedidoModel>)ViewBag.CanceladosCliente;
-    var canceladosExpirados = (List<PolarDrinks.Models.Loja.PedidoModel>)ViewBag.CanceladosExpirados;
+    ViewData["Title"] = "Histórico de Pedidos Online";
 }
 
-<h2>Histórico de Pedidos Online</h2>
+<div class="container p-4 rounded-4">
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light">@TempData["MensagemSucesso"]</div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light">@TempData["MensagemErro"]</div>
+    }
 
-<a asp-action="Index">Voltar para pedidos ativos</a>
+    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
+        <h1 class="m-0">Histórico de Pedidos Online</h1>
+        <a asp-action="Index" asp-controller="Venda"
+           class="btn btn-primary w-30"
+           title="Ver histórico">
+            <i class="bi bi-clock-history"></i>
+            Ver histórico 
+        </a>
+    </div>
 
-<h3>Concluídos (@Model.Count)</h3>
-<table border="1">
-    <thead>
-        <tr>
-            <th>Pedido</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Data Concluído</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var pedido in Model)
-        {
-            <tr>
-                <td>#@pedido.PedidoID (@pedido.PedidoCodigo)</td>
-                <td>@pedido.Cliente?.ClienteNome</td>
-                <td>@pedido.PedidoValorTotal.ToString("C")</td>
-                <td>@pedido.PedidoDataConcluido?.ToString("dd/MM/yyyy HH:mm")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="bg-shadow text-light p-4 rounded-4">
+        <div class="mb-3 d-flex justify-content-center">
+            <div class="d-flex align-items-end gap-2 flex-wrap">
+                <div>
+                    <label class="form-label small mb-1">Início</label>
+                    <input type="date" id="dataInicioPedidos" class="form-control form-control-sm">
+                </div>
+                <div>
+                    <label class="form-label small mb-1">Fim</label>
+                    <input type="date" id="dataFimPedidos" class="form-control form-control-sm">
+                </div>
+                <a asp-action="Historico" class="btn btn-outline-secondary btn-sm px-2">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+        </div>
 
-<h3>Cancelados pelo Cliente (@canceladosCliente.Count)</h3>
-<table border="1">
-    <thead>
-        <tr>
-            <th>Pedido</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Data</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var pedido in canceladosCliente)
-        {
-            <tr>
-                <td>#@pedido.PedidoID (@pedido.PedidoCodigo)</td>
-                <td>@pedido.Cliente?.ClienteNome</td>
-                <td>@pedido.PedidoValorTotal.ToString("C")</td>
-                <td>@pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <table id="tabelaPedidosOnline" class="table table-hover mb-auto bg-shadowt">
+            <thead class="bg-tpreto">
+                <tr>
+                    <th>Pedido</th>
+                    <th>Compra</th>
+                    <th>Entrega</th>
+                    <th>Confirmado por</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th class="text-center">Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pedido in Model)
+                {
+                    <tr>
+                        <td>@pedido.PedidoID</td>
+                        <td data-order="@pedido.PedidoData.ToString("yyyy-MM-dd")">
+                            @pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>@(pedido.PedidoDataConcluido?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                        <td>@(pedido.UsuarioEntregou?.UsuarioNome ?? "-")</td>
+                        <td>@pedido.PedidoValorTotal.ToString("C")</td>
+                        <td>
+                            @if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido)
+                            {
+                                <span class="badge bg-success">Concluído</span>
+                            }
+                            else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoCliente)
+                            {
+                                <span class="badge bg-danger">Cancelado</span>
+                            }
+                            else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoNaoRetirado)
+                            {
+                                <span class="badge bg-danger">Expirado</span>
+                            }
+                            else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoAdmin)
+                            {
+                                <span class="badge bg-danger">Cancelado</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                                <a class="btn btn-primary btn-sm"
+                                   asp-action="Detalhes"
+                                   asp-route-id="@pedido.PedidoID">
+                                    <i class="bi bi-file-earmark-text-fill"></i>
+                                </a>
+                            @{
+                                var podeCancelar = pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido
+                                    && pedido.PedidoDataConcluido.HasValue
+                                    && DateTime.Now <= pedido.PedidoDataConcluido.Value.AddHours(24);
+                            }
 
-<h3>Não Retirados / Expirados (@canceladosExpirados.Count)</h3>
-<table border="1">
-    <thead>
-        <tr>
-            <th>Pedido</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Data</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var pedido in canceladosExpirados)
-        {
-            <tr>
-                <td>#@pedido.PedidoID (@pedido.PedidoCodigo)</td>
-                <td>@pedido.Cliente?.ClienteNome</td>
-                <td>@pedido.PedidoValorTotal.ToString("C")</td>
-                <td>@pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                            @if (podeCancelar)
+                            {
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalCancelar@(pedido.PedidoID)">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@foreach (var pedido in Model)
+{
+    var podeCancelarModal = pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido
+        && pedido.PedidoDataConcluido.HasValue
+        && DateTime.Now <= pedido.PedidoDataConcluido.Value.AddHours(24);
+
+    if (podeCancelarModal)
+    {
+        <div class="modal fade" id="modalCancelar@(pedido.PedidoID)" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content bg-shadow text-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cancelar Pedido #@pedido.PedidoID</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" asp-action="CancelarAposEntrega">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" value="@pedido.PedidoID" />
+                            <label>Motivo do cancelamento</label>
+                            <textarea class="form-control bg-shadow text-light" name="descricao" rows="3" required maxlength="50"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Voltar</button>
+                            <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}

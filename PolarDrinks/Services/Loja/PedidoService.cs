@@ -215,6 +215,50 @@ namespace PolarDrinks.Services.Loja
 
             return ResultadoOperacao.Ok("Pedido cancelado com sucesso. O estorno será processado.");
         }
+        public ResultadoOperacao CancelarAposEntrega(int pedidoId, string descricao, int usuarioId)
+        {
+            var pedido = _pedidoRepository.ObterPorId(pedidoId);
+
+            if (pedido == null)
+            {
+                return ResultadoOperacao.Erro("Pedido não encontrado.");
+            }
+
+            if (pedido.PedidoStatus != PedidoModel.Status.Concluido)
+            {
+                return ResultadoOperacao.Erro("Este pedido não está concluído.");
+            }
+
+            if (pedido.PedidoDataConcluido == null || DateTime.Now > pedido.PedidoDataConcluido.Value.AddHours(24))
+            {
+                return ResultadoOperacao.Erro("O prazo de 24 horas para cancelamento após a entrega já passou.");
+            }
+
+            foreach (var item in pedido.Itens)
+            {
+                if (item.Produto != null)
+                {
+                    item.Produto.ProdutoQtdEstoque += item.ItemPedidoQtd;
+                }
+
+                _movimentacaoRepository.Adicionar(new Models.MovimentacaoEstoqueModel
+                {
+                    ProdutoID = item.ProdutoID,
+                    MovimentacaoQtd = item.ItemPedidoQtd,
+                    MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
+                    MovimentacaoData = DateTime.Now,
+                    ItemPedidoID = item.ItemPedidoID,
+                    MovimentacaoDescricao = descricao,
+                    UsuarioID = usuarioId
+                });
+            }
+
+            pedido.PedidoStatus = PedidoModel.Status.CanceladoAdmin;
+
+            _unitOfWork.SaveChanges();
+
+            return ResultadoOperacao.Ok("Pedido cancelado com sucesso. O estorno será processado.");
+        }
         public ResultadoOperacao MarcarComoSeparado(int pedidoId, int usuarioId)
         {
             var pedido = _pedidoRepository.ObterPorId(pedidoId);

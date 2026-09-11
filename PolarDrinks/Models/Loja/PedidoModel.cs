@@ -40,6 +40,7 @@ namespace PolarDrinks.Models.Loja
             public const string Concluido = "Concluido";
             public const string CanceladoCliente = "CanceladoCliente";
             public const string CanceladoNaoRetirado = "CanceladoNaoRetirado";
+            public const string CanceladoAdmin = "CanceladoAdmin";
         }
     }
 }

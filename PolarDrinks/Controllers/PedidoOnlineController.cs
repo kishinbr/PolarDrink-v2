@@ -24,7 +24,15 @@ namespace PolarDrinks.Controllers
 
             return View(aguardando);
         }
+        public IActionResult Detalhes(int id)
+        {
+            var pedido = _pedidoService.ObterPedidoAdmin(id);
 
+            if (pedido == null)
+                return NotFound();
+
+            return View(pedido);
+        }
         [HttpPost]
         public IActionResult MarcarComoSeparado(int id)
         {
@@ -44,7 +52,7 @@ namespace PolarDrinks.Controllers
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
-
+        
         [HttpPost]
         public IActionResult ConfirmarEntrega(int id, string codigo)
         {
@@ -55,17 +63,28 @@ namespace PolarDrinks.Controllers
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
+        [AdminFilter]
+        [HttpPost]
+        public IActionResult CancelarAposEntrega(int id, string descricao)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
 
+            var resultado = _pedidoService.CancelarAposEntrega(id, descricao, usuarioId ?? 0);
+
+            TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
+            return RedirectToAction("Historico");
+        }
         public IActionResult Historico()
         {
-            var concluidos = _pedidoService.ListarPorStatus(PedidoModel.Status.Concluido);
-            var canceladosCliente = _pedidoService.ListarPorStatus(PedidoModel.Status.CanceladoCliente);
-            var canceladosExpirados = _pedidoService.ListarPorStatus(PedidoModel.Status.CanceladoNaoRetirado);
+            var todos = new List<PedidoModel>();
+            todos.AddRange(_pedidoService.ListarPorStatus(PedidoModel.Status.Concluido));
+            todos.AddRange(_pedidoService.ListarPorStatus(PedidoModel.Status.CanceladoCliente));
+            todos.AddRange(_pedidoService.ListarPorStatus(PedidoModel.Status.CanceladoNaoRetirado));
+            todos.AddRange(_pedidoService.ListarPorStatus(PedidoModel.Status.CanceladoAdmin));
 
-            ViewBag.CanceladosCliente = canceladosCliente;
-            ViewBag.CanceladosExpirados = canceladosExpirados;
+            todos = todos.OrderByDescending(p => p.PedidoData).ToList();
 
-            return View(concluidos);
+            return View(todos);
         }
     }
 }

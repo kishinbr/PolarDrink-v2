@@ -9,7 +9,7 @@ namespace PolarDrinks.Services.Loja
         List<PedidoModel> ListarPedidosDoCliente(int clienteId);
         PedidoModel? ObterDetalhePedido(int clienteId, int pedidoId);
         ResultadoOperacao CancelarPeloCliente(int clienteId, int pedidoId);
-
+        ResultadoOperacao CancelarAposEntrega(int pedidoId, string descricao, int usuarioId);
         List<PedidoModel> ListarPorStatus(string status);
         PedidoModel? ObterPedidoAdmin(int pedidoId);
         ResultadoOperacao MarcarComoSeparado(int pedidoId, int usuarioId);
