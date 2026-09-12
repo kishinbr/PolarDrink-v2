@@ -47,6 +47,7 @@
                     <th>Compra</th>
                     <th>Entrega</th>
                     <th>Confirmado por</th>
+                    <th>Pagamento</th>
                     <th>Total</th>
                     <th>Status</th>
                     <th class="text-center">Detalhes</th>
@@ -62,6 +63,7 @@
                         </td>
                         <td>@(pedido.PedidoDataConcluido?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
                         <td>@(pedido.UsuarioEntregou?.UsuarioNome ?? "-")</td>
+                        <td>@pedido.PedidoTipoPagamento</td>
                         <td>@pedido.PedidoValorTotal.ToString("C")</td>
                         <td>
                             @if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido)

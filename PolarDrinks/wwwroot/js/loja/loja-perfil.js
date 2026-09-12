@@ -62,6 +62,7 @@ function traduzirStatus(status) {
 
     return traducoes[status] || status;
 }
+
 function abrirModalPedido(pedido) {
     let itensHtml = "";
     pedido.itens.forEach(item => {
@@ -78,20 +79,43 @@ function abrirModalPedido(pedido) {
         historicoHtml += `<p>Retirado em: ${new Date(pedido.pedidoDataConcluido).toLocaleString("pt-BR")}</p>`;
     }
 
+    const podeCancel = pedido.pedidoStatus === "AguardandoSeparacao" || pedido.pedidoStatus === "Separado";
+
     document.getElementById("conteudoModalPedido").innerHTML = `
-    <h3>Pedido #${pedido.pedidoID}</h3>
-    <p>Código: <strong>${pedido.pedidoCodigo}</strong></p>
-    <p>Status: ${traduzirStatus(pedido.pedidoStatus)}</p>
-    ${historicoHtml}
+        <h3>Pedido #${pedido.pedidoID}</h3>
+        <p>Código: <strong>${pedido.pedidoCodigo}</strong></p>
+        <p>Status: ${traduzirStatus(pedido.pedidoStatus)}</p>
+        <p>Forma de pagamento: ${traduzirPagamento(pedido.pedidoTipoPagamento)}</p>
+        ${historicoHtml}
 
-    <h4>Itens:</h4>
-    <ul>${itensHtml}</ul>
+        <h4>Itens:</h4>
+        <ul>${itensHtml}</ul>
 
-    <p><strong>Total: R$ ${pedido.pedidoValorTotal.toFixed(2)}</strong></p>
-`;
+        <p><strong>Total: R$ ${pedido.pedidoValorTotal.toFixed(2)}</strong></p>
+
+        ${podeCancel ? `<button id="btnCancelarPedidoModal" data-pedido-id="${pedido.pedidoID}">Cancelar Pedido</button>` : ""}
+    `;
 
     document.getElementById("overlayModal").style.display = "block";
     document.getElementById("modalDetalhePedido").style.display = "block";
+
+    if (podeCancel) {
+        document.getElementById("btnCancelarPedidoModal").addEventListener("click", async function () {
+            const confirmar = confirm("Tem certeza que deseja cancelar este pedido?");
+            if (!confirmar) return;
+
+            const resultado = await chamarApi("/api/pedidos/" + pedido.pedidoID + "/cancelar", "POST");
+
+            if (!resultado.ok) {
+                alert(resultado.dados?.mensagem || "Não foi possível cancelar o pedido.");
+                return;
+            }
+
+            alert("Pedido cancelado com sucesso!");
+            fecharModal();
+            await carregarPedidos();
+        });
+    }
 }
 
 document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
@@ -100,4 +124,12 @@ document.getElementById("overlayModal").addEventListener("click", fecharModal);
 function fecharModal() {
     document.getElementById("overlayModal").style.display = "none";
     document.getElementById("modalDetalhePedido").style.display = "none";
+}
+function traduzirPagamento(tipo) {
+    const traducoes = {
+        "Cartao": "Cartão",
+        "Pix": "Pix"
+    };
+
+    return traducoes[tipo] || tipo;
 }

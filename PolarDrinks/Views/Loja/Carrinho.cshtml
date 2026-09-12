@@ -29,7 +29,13 @@
         <div style="flex:1; border:1px solid #ccc; padding:15px; height:fit-content;">
             <h3>Resumo</h3>
             <p>Total: <strong id="totalCarrinho">R$ 0,00</strong></p>
-            <button id="btnFinalizarCompra">Finalizar Compra</button>
+
+            <p>Forma de pagamento:</p>
+            <button class="btn-pagamento" data-tipo="Cartao">Cartão</button>
+            <button class="btn-pagamento" data-tipo="Pix">Pix</button>
+
+            <br /><br />
+            <button id="btnFinalizarCompra" disabled>Finalizar Compra</button>
             <br /><br />
             <button id="btnLimparCarrinho">Excluir Carrinho</button>
         </div>

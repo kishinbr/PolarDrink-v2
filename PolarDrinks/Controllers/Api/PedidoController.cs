@@ -23,10 +23,15 @@ namespace PolarDrinks.Controllers.Api
             return int.Parse(claim);
         }
 
-        [HttpPost("checkout")]
-        public IActionResult Checkout()
+        public class CheckoutRequest
         {
-            var resultado = _pedidoService.Checkout(ObterClienteId());
+            public string TipoPagamento { get; set; } = string.Empty;
+        }
+
+        [HttpPost("checkout")]
+        public IActionResult Checkout([FromBody] CheckoutRequest request)
+        {
+            var resultado = _pedidoService.Checkout(ObterClienteId(), request.TipoPagamento);
 
             if (!resultado.Sucesso)
             {

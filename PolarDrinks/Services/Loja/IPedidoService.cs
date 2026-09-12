@@ -5,7 +5,7 @@ namespace PolarDrinks.Services.Loja
 {
     public interface IPedidoService
     {
-        ResultadoOperacao<PedidoModel> Checkout(int clienteId);
+        ResultadoOperacao<PedidoModel> Checkout(int clienteId, string tipoPagamento);
         List<PedidoModel> ListarPedidosDoCliente(int clienteId);
         PedidoModel? ObterDetalhePedido(int clienteId, int pedidoId);
         ResultadoOperacao CancelarPeloCliente(int clienteId, int pedidoId);

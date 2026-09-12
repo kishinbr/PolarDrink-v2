@@ -61,8 +61,12 @@ namespace PolarDrinks.Services.Loja
             return codigo;
         }
 
-        public ResultadoOperacao<PedidoModel> Checkout(int clienteId)
+        public ResultadoOperacao<PedidoModel> Checkout(int clienteId, string tipoPagamento)
         {
+            if (tipoPagamento != PedidoModel.TipoPagamento.Cartao && tipoPagamento != PedidoModel.TipoPagamento.Pix)
+            {
+                return ResultadoOperacao<PedidoModel>.Erro("Forma de pagamento inválida.");
+            }
             const int maxTentativas = 3;
 
             for (int tentativa = 1; tentativa <= maxTentativas; tentativa++)
@@ -84,6 +88,7 @@ namespace PolarDrinks.Services.Loja
                         ClienteID = clienteId,
                         PedidoData = DateTime.Now,
                         PedidoStatus = PedidoModel.Status.AguardandoSeparacao,
+                        PedidoTipoPagamento = tipoPagamento,
                         Itens = new List<ItemPedidoModel>()
                     };
 

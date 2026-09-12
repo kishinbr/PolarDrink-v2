@@ -106,12 +106,28 @@ async function excluirItem(produtoId) {
     await chamarApi("/api/carrinho/itens/" + produtoId, "DELETE");
     await carregarCarrinho();
 }
+
+let tipoPagamentoSelecionado = null;
+
+document.querySelectorAll(".btn-pagamento").forEach(botao => {
+    botao.addEventListener("click", function () {
+        tipoPagamentoSelecionado = botao.dataset.tipo;
+
+        document.querySelectorAll(".btn-pagamento").forEach(b => b.style.fontWeight = "normal");
+        botao.style.fontWeight = "bold";
+
+        document.getElementById("btnFinalizarCompra").disabled = false;
+    });
+});
+
 document.getElementById("btnFinalizarCompra").addEventListener("click", async function () {
     const botao = this;
     botao.disabled = true;
     botao.innerText = "Processando...";
 
-    const resultado = await chamarApi("/api/pedidos/checkout", "POST");
+    const resultado = await chamarApi("/api/pedidos/checkout", "POST", {
+        tipoPagamento: tipoPagamentoSelecionado
+    });
 
     if (!resultado.ok) {
         alert(resultado.dados?.mensagem || "Erro ao finalizar a compra. Tente novamente.");

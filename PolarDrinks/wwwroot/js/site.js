@@ -320,8 +320,8 @@ $(document).ready(function () {
         scrollCollapse: true,
 
         columnDefs: [
-            { orderable: false, targets: [6] },
-            { className: "text-center", targets: [0, 1, 2, 3, 4, 5, 6] }
+            { orderable: false, targets: [7] },
+            { className: "text-center", targets: [0, 1, 2, 3, 4, 5, 6, 7] }
         ],
         order: [[2, 'desc']],
         language: {

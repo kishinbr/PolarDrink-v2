@@ -22,6 +22,9 @@ namespace PolarDrinks.Models.Loja
         public string PedidoStatus { get; set; } = Status.AguardandoSeparacao;
 
         public decimal PedidoValorTotal { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string PedidoTipoPagamento { get; set; } = string.Empty;
 
         public DateTime? PedidoDataSeparado { get; set; }
         public int? UsuarioSeparouID { get; set; }
@@ -41,6 +44,11 @@ namespace PolarDrinks.Models.Loja
             public const string CanceladoCliente = "CanceladoCliente";
             public const string CanceladoNaoRetirado = "CanceladoNaoRetirado";
             public const string CanceladoAdmin = "CanceladoAdmin";
+        }
+        public static class TipoPagamento
+        {
+            public const string Cartao = "Cartao";
+            public const string Pix = "Pix";
         }
     }
 }
