@@ -61,5 +61,22 @@ namespace PolarDrinks.Repositories
         {
             _db.Vendas.Add(venda);
         }
+        public List<VendaModel> ObterVendasAtivasComDetalhes()
+        {
+            return _db.Vendas
+                .Include(v => v.Itens)
+                    .ThenInclude(i => i.Produto)
+                .Where(v => !v.VendaCancelada)
+                .ToList();
+        }
+
+        public List<VendaModel> ObterVendasCanceladasComDetalhes()
+        {
+            return _db.Vendas
+                .Include(v => v.Itens)
+                    .ThenInclude(i => i.Produto)
+                .Where(v => v.VendaCancelada)
+                .ToList();
+        }
     }
 }

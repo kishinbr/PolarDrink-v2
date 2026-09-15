@@ -33,6 +33,7 @@ builder.Services.AddScoped<ICompraEstoqueService, CompraEstoqueService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddHostedService<PolarDrinks.Jobs.ExpiracaoPedidosJob>();
 

@@ -341,7 +341,7 @@ namespace PolarDrinks.Services.Loja
         public int ExpirarPedidosNaoRetirados()
         {
             var pedidosSeparados = _pedidoRepository.ObterPorStatus(PedidoModel.Status.Separado);
-            var limite = DateTime.Now.AddHours(-48);
+            var limite = DateTime.Now.AddHours(-24);
 
             var expirados = pedidosSeparados
                 .Where(p => p.PedidoDataSeparado.HasValue && p.PedidoDataSeparado.Value <= limite)

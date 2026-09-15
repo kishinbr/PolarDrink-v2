@@ -8,5 +8,8 @@ namespace PolarDrinks.Repositories
         VendaModel? ObterPorId(int id);
         (string? Descricao, string? UsuarioNome)? ObterMotivoCancelamento(int vendaId);
         void Adicionar(VendaModel venda);
+
+        List<VendaModel> ObterVendasAtivasComDetalhes();
+        List<VendaModel> ObterVendasCanceladasComDetalhes();
     }
 }
