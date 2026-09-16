@@ -11,5 +11,6 @@ namespace PolarDrinks.Repositories.Loja
         bool ExisteCodigoAtivo(string codigo);
 
         List<PedidoModel> ObterPorStatus(string status);
+        List<PedidoModel> ObterTodosComDetalhes();
     }
 }

@@ -59,5 +59,57 @@
         public int CanceladosSemana { get; set; }
         public int CanceladosMes { get; set; }
         public string? ProdutoMaisCancelado { get; set; }
+
+        // LOJA ONLINE
+        public decimal TotalOnlineHoje { get; set; }
+        public decimal TotalOnlineMes { get; set; }
+        public decimal LucroOnlineHoje { get; set; }
+        public decimal LucroOnlineMes { get; set; }
+
+        // COMBINADO (Presencial + Online)
+        public decimal TotalCombinadoHoje { get; set; }
+        public decimal TotalCombinadoMes { get; set; }
+        public decimal LucroCombinadoHoje { get; set; }
+        public decimal LucroCombinadoMes { get; set; }
+        public decimal TicketMedioCombinado { get; set; }
+        // COMPARATIVO PRESENCIAL vs ONLINE
+        public decimal PercentualPresencialMes { get; set; }
+        public decimal PercentualOnlineMes { get; set; }
+        // PRODUTOS POR CANAL
+        public string? ProdutoMaisVendidoOnline { get; set; }
+        public string? ProdutoMaisLucrativoOnline { get; set; }
+        public string? ProdutoMaisVendidoTotal { get; set; }
+        public string? ProdutoMaisLucrativoTotal { get; set; }
+
+        // CANCELAMENTOS - ONLINE
+        public int CanceladosOnlineHoje { get; set; }
+        public int CanceladosOnlineSemana { get; set; }
+        public int CanceladosOnlineMes { get; set; }
+        public string? ProdutoMaisCanceladoOnline { get; set; }
+
+        // CANCELAMENTOS - TOTAL (Presencial + Online)
+        public int CanceladosTotalHoje { get; set; }
+        public int CanceladosTotalSemana { get; set; }
+        public int CanceladosTotalMes { get; set; }
+        // OPERAÇÃO DA LOJA ONLINE
+        public decimal TaxaNaoRetiradaMes { get; set; }
+        public double? TempoMedioRetiradaHoras { get; set; }
+        public int? HorarioPicoPedidos { get; set; }
+        public decimal FaturamentoPorExpiracaoMes { get; set; }
+
+        // PREVISÃO - ONLINE E COMBINADA
+        public decimal PrevisaoAmanhaOnline { get; set; }
+        public decimal PrevisaoAmanhaCombinada { get; set; }
+
+        // GIRO DE ESTOQUE
+        public List<GiroProdutoDto> ProdutosGiroLento { get; set; } = new List<GiroProdutoDto>();
+
+    }
+    
+    public class GiroProdutoDto
+    {
+        public string ProdutoNome { get; set; } = string.Empty;
+        public int EstoqueAtual { get; set; }
+        public double? GiroDias { get; set; }
     }
 }

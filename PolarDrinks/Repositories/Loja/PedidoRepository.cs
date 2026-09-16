@@ -65,5 +65,12 @@ namespace PolarDrinks.Repositories.Loja
                 .OrderBy(p => p.PedidoData)
                 .ToList();
         }
+        public List<PedidoModel> ObterTodosComDetalhes()
+        {
+            return _db.Pedidos
+                .Include(p => p.Itens)
+                    .ThenInclude(i => i.Produto)
+                .ToList();
+        }
     }
 }
