@@ -114,6 +114,7 @@
         public decimal TotalPixGeral { get; set; }
         public decimal TotalCartaoGeral { get; set; }
         public decimal TotalDinheiroGeral { get; set; }
+        public Dictionary<string, Dictionary<string, PagamentoResumoDto>> PagamentosPorCanalEPeriodo { get; set; } = new();
 
         // GIRO DE ESTOQUE
         public List<GiroProdutoDto> ProdutosGiroLento { get; set; } = new List<GiroProdutoDto>();
@@ -125,5 +126,14 @@
         public string ProdutoNome { get; set; } = string.Empty;
         public int EstoqueAtual { get; set; }
         public double? GiroDias { get; set; }
+    }
+    public class PagamentoResumoDto
+    {
+        public int QtdPix { get; set; }
+        public int QtdCartao { get; set; }
+        public int QtdDinheiro { get; set; }
+        public decimal TotalPix { get; set; }
+        public decimal TotalCartao { get; set; }
+        public decimal TotalDinheiro { get; set; }
     }
 }

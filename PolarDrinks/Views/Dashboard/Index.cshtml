@@ -4,118 +4,6 @@
 @model PolarDrinks.Models.DashboardViewModel
 @using System.Globalization
 
-@*
-    ============================================================
-    Dashboard Serv Festa - Presencial + Online (Combinado)
-    Tema dark. Seletor de canal: Presencial / Online / Geral.
-    Os novos elementos online foram distribuídos pelo layout.
-    ============================================================
-*@
-
-<style>
-    .servfesta-dash {
-        --sf-bg: #0c0d11;
-        --sf-card: #16181f;
-        --sf-card-2: #1b1e27;
-        --sf-inset: #0f1116;
-        --sf-border: rgba(255,255,255,.06);
-        --sf-muted: #9aa0ac;
-        background: radial-gradient(1200px 600px at 100% -10%, rgba(59,130,246,.08), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgba(167,139,250,.07), transparent 55%), var(--sf-bg);
-        min-height: 100vh;
-        color: #e7e9ee;
-    }
-
-        .servfesta-dash .card {
-            background-color: transparent;
-            border: 0;
-        }
-
-        .servfesta-dash .bg-shadow {
-            background: linear-gradient(180deg, var(--sf-card-2) 0%, var(--sf-card) 100%);
-            border: 1px solid var(--sf-border);
-            box-shadow: 0 10px 30px -18px rgba(0,0,0,.9);
-            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
-        }
-
-            .servfesta-dash .bg-shadow:hover {
-                transform: translateY(-2px);
-                border-color: rgba(255,255,255,.12);
-                box-shadow: 0 18px 40px -20px rgba(0,0,0,.95);
-            }
-
-        .servfesta-dash .bg-tpreto {
-            background: var(--sf-inset);
-            border: 1px solid var(--sf-border);
-        }
-
-        .servfesta-dash .text-light {
-            color: #e7e9ee !important;
-        }
-
-        .servfesta-dash .text-secondary {
-            color: var(--sf-muted) !important;
-        }
-
-    .sf-segment {
-        display: inline-flex;
-        padding: 4px;
-        gap: 4px;
-        border-radius: 999px;
-        background: var(--sf-inset);
-        border: 1px solid var(--sf-border);
-    }
-
-        .sf-segment button {
-            border: 0;
-            background: transparent;
-            color: var(--sf-muted);
-            font-size: .8rem;
-            font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all .18s ease;
-        }
-
-            .sf-segment button:hover {
-                color: #e7e9ee;
-            }
-
-            .sf-segment button.active {
-                color: #fff;
-                background: linear-gradient(135deg,#3b82f6,#6366f1);
-                box-shadow: 0 6px 18px -6px rgba(59,130,246,.7);
-            }
-
-                .sf-segment button.active[data-ch="online"] {
-                    background: linear-gradient(135deg,#00bdae,#0ea5a0);
-                    box-shadow: 0 6px 18px -6px rgba(0,189,174,.7);
-                }
-
-                .sf-segment button.active[data-ch="geral"] {
-                    background: linear-gradient(135deg,#a78bfa,#8b5cf6);
-                    box-shadow: 0 6px 18px -6px rgba(167,139,250,.7);
-                }
-
-    .sf-chip {
-        font-size: .65rem;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 999px;
-        border: 1px solid var(--sf-border);
-        background: var(--sf-inset);
-    }
-
-    .sf-kpibar {
-        height: 3px;
-        width: 36px;
-        border-radius: 999px;
-    }
-</style>
-
 <div class="servfesta-dash">
     <div class="container-fluid px-3 px-lg-4 py-4">
 
@@ -240,10 +128,10 @@
                         <h6 class="mb-0 d-flex align-items-center gap-2"><i class="bi bi-activity" style="color:#3b82f6;"></i> Vendas</h6>
                         <div class="btn-group btn-group-sm flex-wrap">
                             <span class="btn btn-outline-primary" id="totalVendasLabel">Quantidade vendas: 0</span>
-                            <button class="btn btn-outline-primary" onclick="atualizarVendas('hoje')">Hoje</button>
-                            <button class="btn btn-outline-primary" onclick="atualizarVendas('semana')">7d</button>
-                            <button class="btn btn-outline-primary" onclick="atualizarVendas('mes')">30d</button>
-                            <button class="btn btn-outline-primary" onclick="atualizarVendas('ano')">Ano</button>
+                            <button class="btn btn-outline-primary filtro-vendas" data-periodo="hoje" onclick="atualizarVendas('hoje')">Hoje</button>
+                            <button class="btn btn-outline-primary filtro-vendas" data-periodo="semana" onclick="atualizarVendas('semana')">7d</button>
+                            <button class="btn btn-outline-primary filtro-vendas" data-periodo="mes" onclick="atualizarVendas('mes')">30d</button>
+                            <button class="btn btn-outline-primary filtro-vendas" data-periodo="ano" onclick="atualizarVendas('ano')">Ano</button>
                         </div>
                     </div>
                     <canvas id="graficoVendas" style="height:300px;"></canvas>
@@ -255,7 +143,7 @@
                         <div class="card rounded-4 p-3 h-100 bg-shadow">
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <i class="bi bi-pie-chart-fill" style="color:#a78bfa;"></i>
-                                <span class="text-light">Participação no Mês</span>
+                                <span class="text-light">Canal de Vendas Mensal</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2" style="font-size:.8rem;">
                                 <span style="color:#3b82f6;"><i class="bi bi-shop me-1"></i>Presencial @Model.PercentualPresencialMes%</span>
@@ -285,7 +173,7 @@
                     <div class="col-md-6">
                         <div class="card rounded-4 p-3 h-100 bg-shadow">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-truck" style="color:#00BDAE;"></i> Operação Online</span>
+                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-truck" style="color:#00BDAE;"></i>  Online</span>
                                 <span class="sf-chip" style="color:#00BDAE;">Retirada</span>
                             </div>
                             <div class="row g-2">
@@ -330,15 +218,10 @@
                     <!-- CARDS PAGAMENTO -->
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-4">
-                            <div class="card rounded-4 h-100 p-3 bg-shadow">
+
+                            <div class="card rounded-4  p-3 bg-shadow">
                                 <small class="d-flex align-items-center gap-1" style="color:#00BDAE;"><i class="bi bi-x-diamond" style="color:#00BDAE;"></i> Pix</small>
-                                <div class="text-secondary" style="font-size:.75rem;"
-                                     data-presencial="@Model.QtdPix vendas"
-                                     data-online="@Model.QtdPixOnline vendas"
-                                     data-geral="@Model.QtdPixGeral vendas">
-                                    @Model.QtdPix vendas
-                                </div>
-                                <h5 class="mt-1 mb-0" style="color:#00BDAE; font-size:1rem;"
+                                <h5 id="valPix" class="mt-1 mb-0" style="color:#00BDAE; font-size:1rem;"
                                     data-presencial="@("R" + Model.TotalPix.ToString("C"))"
                                     data-online="@("R" + Model.TotalPixOnline.ToString("C"))"
                                     data-geral="@("R" + Model.TotalPixGeral.ToString("C"))">
@@ -347,15 +230,9 @@
                             </div>
                         </div>
                         <div class="col-12 col-sm-4">
-                            <div class="card rounded-4 h-100 p-3 bg-shadow">
+                            <div class="card rounded-4 p-3 bg-shadow">
                                 <small style="color:mediumpurple;"><i class="bi bi-credit-card" style="color:mediumpurple;"></i> Cartão</small>
-                                <div class="text-secondary" style="font-size:.75rem;"
-                                     data-presencial="@Model.QtdCartao vendas"
-                                     data-online="@Model.QtdCartaoOnline vendas"
-                                     data-geral="@Model.QtdCartaoGeral vendas">
-                                    @Model.QtdCartao vendas
-                                </div>
-                                <h5 class="mt-1 mb-0" style="color:mediumpurple; font-size:1rem;"
+                                <h5 id="valCartao" class="mt-1 mb-0" style="color:mediumpurple; font-size:1rem;"
                                     data-presencial="@("R" + Model.TotalCartao.ToString("C"))"
                                     data-online="@("R" + Model.TotalCartaoOnline.ToString("C"))"
                                     data-geral="@("R" + Model.TotalCartaoGeral.ToString("C"))">
@@ -366,13 +243,13 @@
                         <div class="col-12 col-sm-4">
                             <div class="card rounded-4 h-100 p-3 bg-shadow">
                                 <small style="color:#198754;"><i class="bi bi-cash" style="color:#198754;"></i> Dinheiro</small>
-                                <div class="text-secondary" style="font-size:.75rem;"
+                                @* <div class="text-secondary" style="font-size:.75rem;"
                                      data-presencial="@Model.QtdDinheiro vendas"
                                      data-online="0 vendas"
                                      data-geral="@Model.QtdDinheiroGeral vendas">
                                     @Model.QtdDinheiro vendas
-                                </div>
-                                <h5 class="mt-1 mb-0" style="color:#198754; font-size:1rem;"
+                                </div> *@
+                                <h5 id="valDinheiro" class="mt-1 mb-0" style="color:#198754; font-size:1rem;"
                                     data-presencial="@("R" + Model.TotalDinheiro.ToString("C"))"
                                     data-online="R$ 0,00"
                                     data-geral="@("R" + Model.TotalDinheiroGeral.ToString("C"))">
@@ -384,13 +261,15 @@
 
 
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
                         <h6 class="mb-0 text-light d-flex align-items-center gap-2"><i class="bi bi-wallet2" style="color:#f59e0b;"></i> Pagamento</h6>
+                        <span class="sf-chip text-secondary m-auto" id="chipProdutos">Presencial</span>
                         <div class="btn-group btn-group-sm flex-wrap">
                             <span class="btn btn-outline-warning" id="qtdPagamentosLabel">Total: 0</span>
-                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('hoje')">Hoje</button>
-                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('semana')">7d</button>
-                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('mes')">30d</button>
-                            <button class="btn btn-outline-warning" onclick="atualizarPagamentos('total')">Total</button>
+                            <button class="btn btn-outline-warning filtro-pagamento" data-periodo="hoje" onclick="atualizarPagamentos('hoje')">Hoje</button>
+                            <button class="btn btn-outline-warning filtro-pagamento" data-periodo="semana" onclick="atualizarPagamentos('semana')">7d</button>
+                            <button class="btn btn-outline-warning filtro-pagamento" data-periodo="mes" onclick="atualizarPagamentos('mes')">30d</button>
+                            <button class="btn btn-outline-warning filtro-pagamento" data-periodo="total" onclick="atualizarPagamentos('total')">Total</button>
                         </div>
                     </div>
 
@@ -408,10 +287,12 @@
                             <span class="text-light fw-semibold" id="lblDinheiro">0</span>
                         </div>
                     </div>
-
+                    
                     <div class="d-flex justify-content-center align-items-center flex-fill mt-2">
                         <canvas id="graficoPagamentos" style="max-width:280px; max-height:280px;"></canvas>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -535,7 +416,7 @@
         <div class="row g-3 mt-0">
             <div class="col-12">
                 <div class="card rounded-4 p-3 bg-shadow">
-                    <div class="d-flex align-items-center gap-2 mb-3"><i class="bi bi-arrow-repeat" style="color:#f59e0b;"></i><span class="text-light">Giro de Estoque · Top 5 mais lento</span></div>
+                    <div class="d-flex align-items-center gap-2 mb-3"><i class="bi bi-arrow-repeat" style="color:#f59e0b;"></i><span class="text-light">Giro de Estoque</span></div>
                     <div class="row g-2">
                         @foreach (var g in Model.ProdutosGiroLento)
                         {
@@ -543,7 +424,7 @@
                                 <div class="bg-tpreto rounded-3 p-3 h-100">
                                     <div class="text-light text-truncate mb-2" style="font-size:.8rem;">@g.ProdutoNome</div>
                                     <div class="d-flex justify-content-between align-items-end">
-                                        <div><div class="text-secondary" style="font-size:.6rem;">Estoque</div><div class="fw-semibold text-light">@g.EstoqueAtual</div></div>
+                                        <div><div class="text-secondary" style="font-size:.6rem;">Estoque atual</div><div class="fw-semibold text-light">@g.EstoqueAtual</div></div>
                                         <div class="text-end">
                                             <div class="text-secondary" style="font-size:.6rem;">Giro</div>
                                             <div class="fw-semibold" style="color:@(g.GiroDias.HasValue ? "#f59e0b" : "#f87171");">@(g.GiroDias.HasValue ? g.GiroDias.Value.ToString("0.0") + "d" : "sem venda")</div>
@@ -566,7 +447,7 @@
         new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
 
     // Alterna todos os elementos que têm data-presencial / data-online / data-geral
-    function sfSetCanal(canal) {
+        function sfSetCanal(canal) {
         document.querySelectorAll('.sf-segment button').forEach(b => b.classList.toggle('active', b.dataset.ch === canal));
         const rotulo = { presencial: 'Presencial', online: 'Online', geral: 'Geral' }[canal];
         ['chipCanal', 'chipProdutos', 'chipCancel'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = rotulo; });
@@ -574,16 +455,15 @@
             const v = el.getAttribute('data-' + canal);
             if (v !== null) el.textContent = v;
         });
+
+        if (window.atualizarCanalPagamentos) {
+            window.atualizarCanalPagamentos(canal);
+        }
     }
 
     // Dados dos gráficos vindos do Model (mantém sua estrutura atual)
-    window.dashData = {
-        pagamentos: {
-            hoje:   @Html.Raw(Json.Serialize(new[] { Model.PixHoje, Model.CartaoHoje, Model.DinheiroHoje })),
-            semana: @Html.Raw(Json.Serialize(new[] { Model.PixSemana, Model.CartaoSemana, Model.DinheiroSemana })),
-            mes:    @Html.Raw(Json.Serialize(new[] { Model.PixMes, Model.CartaoMes, Model.DinheiroMes })),
-            total:  @Html.Raw(Json.Serialize(new[] { Model.PixTotal, Model.CartaoTotal, Model.DinheiroTotal }))
-            },
+        window.dashData = {
+        pagamentosPorCanal: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PagamentosPorCanalEPeriodo)),
         vendas: {
             hoje:   @Html.Raw(Json.Serialize(Model.VendasHojeLista)),
             semana: @Html.Raw(Json.Serialize(Model.VendasSemana)),

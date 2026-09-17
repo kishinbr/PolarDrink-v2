@@ -1,5 +1,10 @@
 ﻿let graficoPagamentos;
 let graficoVendas;
+function atualizarBotaoPeriodoVendas(periodo) {
+    document.querySelectorAll('.filtro-vendas').forEach(botao => {
+        botao.classList.toggle('active', botao.dataset.periodo === periodo);
+    });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -7,20 +12,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const pagamentos = window.dashData.pagamentos;
     const vendas = window.dashData.vendas;
 
-    // ================== PAGAMENTOS ==================
-    graficoPagamentos = new Chart(document.getElementById('graficoPagamentos'), {
+        // ================== PAGAMENTOS ==================
+    let canalAtual = "presencial";
+    let periodoPagamentoAtual = "hoje";
+    function atualizarBotaoPeriodoPagamento(periodo) {
+    document.querySelectorAll('.filtro-pagamento').forEach(botao => {
+        botao.classList.toggle('active', botao.dataset.periodo === periodo);
+    });
+    }
+
+       graficoPagamentos = new Chart(document.getElementById('graficoPagamentos'), {
         type: 'doughnut',
         data: {
-            //labels: ['Pix', 'Cartão', 'Dinheiro'],
+            labels: ['Pix', 'Cartão', 'Dinheiro'],
             datasets: [{
-                data: pagamentos.hoje,
+                data: [0, 0, 0],
                 backgroundColor: ['#00BDAE', 'mediumpurple', '#198754'],
                 borderWidth: 2,
-                borderColor: '#13161d' // separa as fatias no tema escuro
+                borderColor: '#13161d'
             }]
         },
         options: {
-            cutout: '65%', // furo no meio
+            cutout: '65%',
             plugins: {
                 legend: {
                     position: 'top',
@@ -33,22 +46,38 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    window.atualizarPagamentos = function (tipo) {
+    window.atualizarPagamentos = function (periodo) {
+        periodoPagamentoAtual = periodo;
+        atualizarBotaoPeriodoPagamento(periodo);
+        renderizarPagamentos();
+    };
 
-        const dados = pagamentos[tipo];
+    window.atualizarCanalPagamentos = function (canal) {
+        canalAtual = canal;
+        renderizarPagamentos();
+    };
+
+    function renderizarPagamentos() {
+        const resumo = window.dashData.pagamentosPorCanal[canalAtual][periodoPagamentoAtual];
+        
+        const dados = [resumo.QtdPix, resumo.QtdCartao, resumo.QtdDinheiro];
 
         graficoPagamentos.data.datasets[0].data = dados;
         graficoPagamentos.update();
 
         const total = dados.reduce((a, b) => a + b, 0);
-        document.getElementById("qtdPagamentosLabel").innerText =
-            `Total de vendas: ${total}`;
+        document.getElementById("qtdPagamentosLabel").innerText = `Total de vendas: ${total}`;
 
-        document.getElementById("lblPix").innerText = dados[0];
-        document.getElementById("lblCartao").innerText = dados[1];
-        document.getElementById("lblDinheiro").innerText = dados[2];
-    };
+        document.getElementById("lblPix").innerText = resumo.QtdPix;
+        document.getElementById("lblCartao").innerText = resumo.QtdCartao;
+        document.getElementById("lblDinheiro").innerText = resumo.QtdDinheiro;
 
+        const fmt = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+        document.getElementById("valPix").innerText = fmt(resumo.TotalPix);
+        document.getElementById("valCartao").innerText = fmt(resumo.TotalCartao);
+        document.getElementById("valDinheiro").innerText = fmt(resumo.TotalDinheiro);
+    }
     // ================== VENDAS ==================
     graficoVendas = new Chart(document.getElementById('graficoVendas'), {
         type: 'bar',
@@ -57,7 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
             datasets: [{
                 label: 'Vendas',
                 data: [],
-                backgroundColor: '#4f8ef7'
+                backgroundColor: '#4f8ef7',
+                tension: 0.4
             }]
         },
 
@@ -96,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     window.atualizarVendas = function (tipo) {
+        atualizarBotaoPeriodoVendas(tipo);
 
         const dados = vendas[tipo];
         let labels = [];
@@ -137,4 +168,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // inicialização
     atualizarVendas("semana");
     atualizarPagamentos("hoje");
+    atualizarCanalPagamentos("presencial");
 });

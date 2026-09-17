@@ -20,7 +20,32 @@ namespace PolarDrinks.Services
             _produtoRepository = produtoRepository;
             _pedidoRepository = pedidoRepository;
         }
+        private PagamentoResumoDto MontarResumoPagamento(List<VendaModel> vendas, List<PedidoModel> pedidos, string canal)
+        {
+            var resumo = new PagamentoResumoDto();
 
+            if (canal == "presencial" || canal == "geral")
+            {
+                resumo.QtdPix += vendas.Count(v => v.VendaTipoPagamento == "Pix");
+                resumo.QtdCartao += vendas.Count(v => v.VendaTipoPagamento == "Cartão");
+                resumo.QtdDinheiro += vendas.Count(v => v.VendaTipoPagamento == "Dinheiro");
+
+                resumo.TotalPix += vendas.Where(v => v.VendaTipoPagamento == "Pix").Sum(v => v.VendaValorTotal);
+                resumo.TotalCartao += vendas.Where(v => v.VendaTipoPagamento == "Cartão").Sum(v => v.VendaValorTotal);
+                resumo.TotalDinheiro += vendas.Where(v => v.VendaTipoPagamento == "Dinheiro").Sum(v => v.VendaValorTotal);
+            }
+
+            if (canal == "online" || canal == "geral")
+            {
+                resumo.QtdPix += pedidos.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix);
+                resumo.QtdCartao += pedidos.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao);
+
+                resumo.TotalPix += pedidos.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix).Sum(p => p.PedidoValorTotal);
+                resumo.TotalCartao += pedidos.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao).Sum(p => p.PedidoValorTotal);
+            }
+
+            return resumo;
+        }
 
         public DashboardViewModel GerarDashboard()
         {
@@ -81,6 +106,7 @@ namespace PolarDrinks.Services
             model.CartaoTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Cartão");
             model.DinheiroTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Dinheiro");
 
+
             // ESTOQUE
             model.SemEstoque = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) == 0);
             model.EstoqueBaixo = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) <= p.ProdutoEstoqueMinimo);
@@ -134,6 +160,42 @@ namespace PolarDrinks.Services
                 ? somaTotalTransacoes / quantidadeTransacoesTotal
                 : 0;
             model.TicketMedioOnline = pedidosValidos.Any() ? pedidosValidos.Average(p => p.PedidoValorTotal) : 0;
+
+            // ===== NOVA ESTRUTURA: PAGAMENTOS POR CANAL E PERÍODO =====
+            var pedidosHojeParaPagamento = todosPedidos.Where(p => p.PedidoData.Date == hoje).ToList();
+            var pedidos7DiasParaPagamento = todosPedidos.Where(p => p.PedidoData.Date >= hoje.AddDays(-6)).ToList();
+            var pedidos30DiasParaPagamento = todosPedidos.Where(p => p.PedidoData >= inicio30Dias).ToList();
+            var todosPedidosParaPagamento = todosPedidos;
+
+            var canais = new[] { "presencial", "online", "geral" };
+
+            var periodosVendas = new Dictionary<string, List<VendaModel>>
+            {
+                ["hoje"] = vendasHoje,
+                ["semana"] = vendas7Dias,
+                ["mes"] = vendas30Dias,
+                ["total"] = todasVendas
+            };
+
+            var periodosPedidos = new Dictionary<string, List<PedidoModel>>
+            {
+                ["hoje"] = pedidosHojeParaPagamento,
+                ["semana"] = pedidos7DiasParaPagamento,
+                ["mes"] = pedidos30DiasParaPagamento,
+                ["total"] = todosPedidosParaPagamento
+            };
+
+            foreach (var canal in canais)
+            {
+                model.PagamentosPorCanalEPeriodo[canal] = new Dictionary<string, PagamentoResumoDto>();
+
+                foreach (var periodo in periodosVendas.Keys)
+                {
+                    model.PagamentosPorCanalEPeriodo[canal][periodo] =
+                        MontarResumoPagamento(periodosVendas[periodo], periodosPedidos[periodo], canal);
+                }
+            }
+
             // GIRO DE ESTOQUE (baseado nos últimos 30 dias, Presencial + Online)
             var vendidoPorProdutoPresencial = vendas30Dias
                 .SelectMany(v => v.Itens)

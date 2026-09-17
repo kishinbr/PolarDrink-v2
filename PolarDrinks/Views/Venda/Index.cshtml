@@ -1,117 +1,295 @@
 ﻿@model IEnumerable<PolarDrinks.Models.VendaModel>
+
 @{
     ViewData["Title"] = "Histórico de Vendas";
 }
 
-<div class="container p-4 rounded-4 ">
-    @if (TempData["MensagemSucesso"] != null)
-    {
-        <div class="alert bg-success text-light">
-            @TempData["MensagemSucesso"]
-        </div>
-    }
-    else if (TempData["MensagemErro"] != null)
-    {
-        <div class="alert bg-danger text-light">
-            @TempData["MensagemErro"]
-        </div>
-    }
+<div class="tema-dark">
+    <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
 
-    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
-        <h1 class="m-0">Histórico de Vendas</h1>
-        <a asp-action="Historico" asp-controller="PedidoOnline"
-           class="btn btn-primary w-30"
-           title="Ver histórico">
-            <i class="bi bi-clock-history"></i>
-            Ver histórico Online
-        </a>
-    </div>
-    <div class="bg-shadow text-light p-4 rounded-4">
-        <div class="mb-3 d-flex justify-content-center ">
-            <div class="d-flex align-items-end gap-2 flex-wrap">
-                <div>
-                    <label class="form-label small mb-1">Início</label>
-                    <input type="date" id="dataInicio" class="form-control form-control-sm">
+        <!-- Header -->
+        <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="sf-icon-badge"
+                     style="background: linear-gradient(135deg,#3b82f6,#6366f1); box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
+
+                    <i class="bi bi-receipt-cutoff fs-4 text-white"></i>
+
                 </div>
+
                 <div>
-                    <label class="form-label small mb-1">Fim</label>
-                    <input type="date" id="dataFim" class="form-control form-control-sm">
+                    <h1 class="m-0 fs-3 fw-bold">
+                        Histórico de Vendas
+                    </h1>
                 </div>
-                <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-2">
-                    <i class="bi bi-x-lg"></i>
-                </a>
+
             </div>
+
+
+            <a asp-action="Historico"
+               asp-controller="PedidoOnline"
+               class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
+               style="background: linear-gradient(135deg,#3b82f6,#6366f1);"
+               title="Ver histórico online">
+
+                <i class="bi bi-clock-history me-2"></i>
+                Ver histórico Online
+
+            </a>
+
         </div>
 
-        <table id="tabelaVendas" class="table table-hover mb-auto bg-shadowt" >
-            <thead class="bg-tpreto">
-                <tr>
-                    <th>ID</th>
-                    <th>Data / Hora</th>
-                    <th>Valor Total</th>
-                    <th>Tipo Pagamento</th>
-                    <th>Status</th>
-                    <th class="text-center">Detalhes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var venda in Model)
-                {
-                    <tr>
-                        <td>@venda.VendaID</td>
-                        <td data-order="@venda.VendaData.ToString("yyyy-MM-dd")">
-                            @venda.VendaData.ToString("dd/MM/yyyy HH:mm")
-                        </td>
-                        <td>@("R" + venda.VendaValorTotal.ToString("C"))</td>
-                        <td>
-                            @if (venda.VendaTipoPagamento == "Pix")
-                            {
-                                <span class="badge" style="background-color:#00BDAE">Pix</span>
-                            }
-                            else if (venda.VendaTipoPagamento == "Dinheiro")
-                            {
-                                <span class="badge bg-warning text-dark">Dinheiro</span>
-                            }
-                            else
-                            {
-                                <span class="badge text-dark" style="background-color:#a78bfa">Cartão</span>
-                            }
-                        </td>
-                        <td>
-                            @if (venda.VendaCancelada)
-                            {
-                                <span class="badge bg-danger">Cancelada</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success">Concluído</span>
-                            }
-                        <td class="text-center">
-                            <a class="btn btn-primary btn-sm"
-                                   asp-action="Detalhes"
-                                   asp-route-id="@venda.VendaID">
-                                <i class="bi bi-file-earmark-text-fill"></i>
-                            </a>
 
-                                @{
-                                    var podeCancelar = DateTime.Now <= venda.VendaData.AddHours(24);
-                                }
-                           
+        <!-- Mensagens -->
+        @if (TempData["MensagemSucesso"] != null)
+        {
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;"
+                 role="alert">
 
-                                @if (!venda.VendaCancelada && podeCancelar)
-                                {
-                                    <a class="btn btn-danger btn-sm"
-                                           asp-action="Cancelar"
-                                           asp-route-id="@venda.VendaID">
-                                        <i class="bi bi-x-circle"></i>
-                                    </a>
-                                }
-                         
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                <i class="bi bi-check-circle-fill me-2"
+                   style="color:#34d399;"></i>
+
+                @TempData["MensagemSucesso"]
+
+            </div>
+        }
+        else if (TempData["MensagemErro"] != null)
+        {
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;"
+                 role="alert">
+
+                <i class="bi bi-exclamation-triangle-fill me-2"
+                   style="color:#f87171;"></i>
+
+                @TempData["MensagemErro"]
+
+            </div>
+        }
+
+
+        <!-- Conteúdo -->
+        <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
+
+            <!-- Filtros -->
+            <div class="d-flex justify-content-center mb-3">
+
+                <div class="d-flex align-items-end gap-2 flex-wrap">
+
+                    <div>
+                        <label class="form-label text-secondary small mb-1">
+                            Início
+                        </label>
+
+                        <input type="date"
+                               id="dataInicio"
+                               class="form-control form-control-sm bg-tpreto text-light border-0"
+                               style="box-shadow:none;">
+                    </div>
+
+
+                    <div>
+                        <label class="form-label text-secondary small mb-1">
+                            Fim
+                        </label>
+
+                        <input type="date"
+                               id="dataFim"
+                               class="form-control form-control-sm bg-tpreto text-light border-0"
+                               style="box-shadow:none;">
+                    </div>
+
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-light btn-sm px-2"
+                       title="Limpar filtros">
+
+                        <i class="bi bi-x-lg"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Tabela -->
+            <div class="table-responsive">
+
+                <table id="tabelaVendas"
+                       class="table table-hover align-middle mb-0 text-light">
+
+                    <thead>
+                        <tr class="bg-tpreto text-secondary sf-thead">
+
+                            <th class="py-3 ps-4">
+                                ID
+                            </th>
+
+                            <th class="py-3">
+                                Data / Hora
+                            </th>
+
+                            <th class="py-3">
+                                Valor Total
+                            </th>
+
+                            <th class="py-3">
+                                Tipo Pagamento
+                            </th>
+
+                            <th class="py-3">
+                                Status
+                            </th>
+
+                            <th class="py-3 text-center pe-4">
+                                Detalhes
+                            </th>
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var venda in Model)
+                        {
+                            <tr>
+
+                                <!-- ID -->
+                                <td class="ps-4"
+                                    data-order="@venda.VendaID">
+
+                                    <span class="sf-badge"
+                                          style="background:rgba(255,255,255,.08); color:#e7e9ee; border-color:rgba(255,255,255,.08);">
+
+                                        #@venda.VendaID
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Data -->
+                                <td class="sf-num"
+                                    data-order="@venda.VendaData.ToString("yyyy-MM-dd HH:mm:ss")">
+
+                                    @venda.VendaData.ToString("dd/MM/yyyy HH:mm")
+
+                                </td>
+
+
+                                <!-- Valor -->
+                                <td class="fw-semibold sf-num">
+
+                                    @("R" + venda.VendaValorTotal.ToString("C"))
+
+                                </td>
+
+
+                                <!-- Pagamento -->
+                                <td>
+
+                                    @if (venda.VendaTipoPagamento == "Pix")
+                                    {
+                                        <span class="sf-badge"
+                                              style="background:rgba(0,189,174,.14); color:#2dd4bf; border-color:rgba(0,189,174,.3);">
+
+                                            Pix
+
+                                        </span>
+                                    }
+                                    else if (venda.VendaTipoPagamento == "Dinheiro")
+                                    {
+                                        <span class="sf-badge sf-badge-baixo">
+                                            Dinheiro
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sf-badge"
+                                              style="background:rgba(167,139,250,.14); color:#c4b5fd; border-color:rgba(167,139,250,.3);">
+
+                                            Cartão
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Status -->
+                                <td>
+
+                                    @if (venda.VendaCancelada)
+                                    {
+                                        <span class="sf-badge sf-badge-zerado">
+                                            Cancelada
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sf-badge sf-badge-ok">
+                                            Concluído
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Ações -->
+                                <td class="text-center pe-4">
+
+                                    <div class="d-inline-flex gap-2">
+
+                                        <!-- Detalhes -->
+                                        <a class="btn btn-sm border-0 text-white sf-btn-edit"
+                                           asp-action="Detalhes"
+                                           asp-route-id="@venda.VendaID"
+                                           title="Ver detalhes">
+
+                                            <i class="bi bi-file-earmark-text-fill"></i>
+
+                                        </a>
+
+
+                                        @{
+                                            var podeCancelar =
+                                            DateTime.Now <= venda.VendaData.AddHours(24);
+                                        }
+
+
+                                        @if (!venda.VendaCancelada && podeCancelar)
+                                        {
+                                            <a class="btn btn-sm border-0 text-white"
+                                               style="background: linear-gradient(135deg,#ef4444,#dc2626);"
+                                               asp-action="Cancelar"
+                                               asp-route-id="@venda.VendaID"
+                                               title="Cancelar venda">
+
+                                                <i class="bi bi-x-circle"></i>
+
+                                            </a>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
 </div>
 

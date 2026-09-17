@@ -1,0 +1,169 @@
+.tema-dark {
+    --sf-card: #16181f;
+    --sf-card-2: #1b1e27;
+    --sf-inset: #0f1116;
+    --sf-border: rgba(255,255,255,.06);
+    --sf-muted: #9aa0ac;
+    background: radial-gradient(1200px 600px at 100% -10%, rgba(59,130,246,.08), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgba(167,139,250,.07), transparent 55%), #0c0d11;
+    min-height: 100vh;
+    color: #e7e9ee;
+}
+
+    .tema-dark .bg-shadow {
+        background: linear-gradient(180deg, var(--sf-card-2) 0%, var(--sf-card) 100%);
+        border: 1px solid var(--sf-border);
+        box-shadow: 0 10px 30px -18px rgba(0,0,0,.9);
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+
+    .tema-dark .bg-tpreto {
+        background: var(--sf-inset) !important;
+        border: 1px solid var(--sf-border);
+    }
+
+    .tema-dark .text-secondary {
+        color: var(--sf-muted) !important;
+    }
+
+    .tema-dark .sf-icon-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: .75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tema-dark .sf-kpi-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: .5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tema-dark .sf-num {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tema-dark .sf-thead th {
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        border: 0;
+    }
+
+    .tema-dark .table {
+        --bs-table-bg: transparent;
+    }
+
+        .tema-dark .table > :not(caption) > * > * {
+            background-color: transparent;
+            color: #e7e9ee;
+            border-bottom-color: rgba(255,255,255,.05);
+        }
+
+    .tema-dark .table-hover > tbody > tr:hover > * {
+        background-color: rgba(255,255,255,.03);
+        color: #e7e9ee;
+    }
+
+    .tema-dark .sf-badge {
+        display: inline-block;
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-variant-numeric: tabular-nums;
+        border: 1px solid transparent;
+    }
+
+    .tema-dark .sf-badge-ok {
+        background: rgba(16,185,129,.14);
+        color: #34d399;
+        border-color: rgba(16,185,129,.3);
+    }
+
+    .tema-dark .sf-badge-baixo {
+        background: rgba(245,158,11,.14);
+        color: #fbbf24;
+        border-color: rgba(245,158,11,.3);
+    }
+
+    .tema-dark .sf-badge-zerado {
+        background: rgba(239,68,68,.14);
+        color: #f87171;
+        border-color: rgba(239,68,68,.3);
+    }
+
+    .tema-dark .sf-badge-ativo {
+        background: rgba(59,130,246,.14);
+        color: #60a5fa;
+        border-color: rgba(59,130,246,.3);
+    }
+
+    .tema-dark .sf-badge-inativo {
+        background: rgba(239,68,68,.14);
+        color: #f87171;
+        border-color: rgba(239,68,68,.3);
+    }
+
+    .tema-dark .sf-btn-edit {
+        background: linear-gradient(135deg,#f59e0b,#d97706);
+    }
+
+    .tema-dark .sf-btn-promo {
+        background: linear-gradient(135deg,#a78bfa,#8b5cf6);
+    }
+
+    .tema-dark .form-control::placeholder {
+        color: #6b7280;
+    }
+
+    .tema-dark .form-control:focus {
+        background: var(--sf-inset);
+        color: #e7e9ee;
+        border-color: rgba(59,130,246,.5);
+        box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    }
+
+    /* Segmented filtro */
+    .tema-dark .sf-segment {
+        display: inline-flex;
+        padding: 4px;
+        gap: 4px;
+        border-radius: 999px;
+        background: var(--sf-inset);
+        border: 1px solid var(--sf-border);
+    }
+
+        .tema-dark .sf-segment button {
+            border: 0;
+            background: transparent;
+            color: var(--sf-muted);
+            font-size: .8rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+            .tema-dark .sf-segment button:hover {
+                color: #e7e9ee;
+            }
+
+            .tema-dark .sf-segment button.active {
+                color: #fff;
+                background: linear-gradient(135deg,#3b82f6,#6366f1);
+                box-shadow: 0 6px 18px -6px rgba(59,130,246,.7);
+            }
+
+    .tema-dark .modal-content.bg-shadow {
+        box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);
+    }

@@ -3,142 +3,408 @@
     ViewData["Title"] = "Histórico de Pedidos Online";
 }
 
-<div class="container p-4 rounded-4">
-    @if (TempData["MensagemSucesso"] != null)
-    {
-        <div class="alert bg-success text-light">@TempData["MensagemSucesso"]</div>
-    }
-    else if (TempData["MensagemErro"] != null)
-    {
-        <div class="alert bg-danger text-light">@TempData["MensagemErro"]</div>
-    }
+<div class="tema-dark">
 
-    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
-        <h1 class="m-0">Histórico de Pedidos Online</h1>
-        <a asp-action="Index" asp-controller="Venda"
-           class="btn btn-primary w-30"
-           title="Ver histórico">
-            <i class="bi bi-clock-history"></i>
-            Ver histórico 
-        </a>
-    </div>
+    <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
 
-    <div class="bg-shadow text-light p-4 rounded-4">
-        <div class="mb-3 d-flex justify-content-center">
-            <div class="d-flex align-items-end gap-2 flex-wrap">
-                <div>
-                    <label class="form-label small mb-1">Início</label>
-                    <input type="date" id="dataInicioPedidos" class="form-control form-control-sm">
-                </div>
-                <div>
-                    <label class="form-label small mb-1">Fim</label>
-                    <input type="date" id="dataFimPedidos" class="form-control form-control-sm">
-                </div>
-                <a asp-action="Historico" class="btn btn-outline-secondary btn-sm px-2">
-                    <i class="bi bi-x-lg"></i>
-                </a>
+        <!-- ALERTAS -->
+        @if (TempData["MensagemSucesso"] != null)
+        {
+            <div class="alert text-light mb-3"
+                 style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;">
+                <i class="bi bi-check-circle-fill me-2" style="color:#34d399;"></i>
+                @TempData["MensagemSucesso"]
             </div>
+        }
+        else if (TempData["MensagemErro"] != null)
+        {
+            <div class="alert text-light mb-3"
+                 style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;">
+                <i class="bi bi-exclamation-circle-fill me-2" style="color:#f87171;"></i>
+                @TempData["MensagemErro"]
+            </div>
+        }
+
+
+        <!-- CABEÇALHO -->
+        <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="sf-icon-badge"
+                     style="background: linear-gradient(135deg,#3b82f6,#6366f1);
+                            box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
+
+                    <i class="bi bi-bag-check-fill fs-4 text-white"></i>
+
+                </div>
+
+                <div>
+                    <h1 class="m-0 fs-3 fw-bold">
+                        Histórico de Pedidos Online
+                    </h1>
+                </div>
+
+            </div>
+
+
+            <a asp-action="Index"
+               asp-controller="Venda"
+               class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
+               style="background: linear-gradient(135deg,#3b82f6,#6366f1);"
+               title="Ver histórico">
+
+                <i class="bi bi-clock-history me-2"></i>
+                Ver histórico
+
+            </a>
+
         </div>
 
-        <table id="tabelaPedidosOnline" class="table table-hover mb-auto bg-shadowt">
-            <thead class="bg-tpreto">
-                <tr>
-                    <th>Pedido</th>
-                    <th>Compra</th>
-                    <th>Entrega</th>
-                    <th>Confirmado por</th>
-                    <th>Pagamento</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th class="text-center">Detalhes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var pedido in Model)
-                {
-                    <tr>
-                        <td>@pedido.PedidoID</td>
-                        <td data-order="@pedido.PedidoData.ToString("yyyy-MM-dd")">
-                            @pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")
-                        </td>
-                        <td>@(pedido.PedidoDataConcluido?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                        <td>@(pedido.UsuarioEntregou?.UsuarioNome ?? "-")</td>
-                        <td>@pedido.PedidoTipoPagamento</td>
-                        <td>@pedido.PedidoValorTotal.ToString("C")</td>
-                        <td>
-                            @if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido)
-                            {
-                                <span class="badge bg-success">Concluído</span>
-                            }
-                            else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoCliente)
-                            {
-                                <span class="badge bg-danger">Cancelado</span>
-                            }
-                            else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoNaoRetirado)
-                            {
-                                <span class="badge bg-danger">Expirado</span>
-                            }
-                            else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoAdmin)
-                            {
-                                <span class="badge bg-danger">Cancelado</span>
-                            }
-                        </td>
-                        <td class="text-center">
-                                <a class="btn btn-primary btn-sm"
-                                   asp-action="Detalhes"
-                                   asp-route-id="@pedido.PedidoID">
-                                    <i class="bi bi-file-earmark-text-fill"></i>
-                                </a>
-                            @{
-                                var podeCancelar = pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido
-                                    && pedido.PedidoDataConcluido.HasValue
-                                    && DateTime.Now <= pedido.PedidoDataConcluido.Value.AddHours(24);
-                            }
 
-                            @if (podeCancelar)
-                            {
-                                <button type="button" class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalCancelar@(pedido.PedidoID)">
-                                    <i class="bi bi-x-circle"></i>
-                                </button>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <!-- TABELA -->
+        <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
+
+            <!-- FILTROS -->
+            <div class="mb-3 d-flex justify-content-center">
+
+                <div class="d-flex align-items-end gap-2 flex-wrap">
+
+                    <div>
+
+                        <label class="form-label small mb-1">
+                            Início
+                        </label>
+
+                        <input type="date"
+                               id="dataInicioPedidos"
+                               class="form-control form-control-sm bg-tpreto text-light">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label small mb-1">
+                            Fim
+                        </label>
+
+                        <input type="date"
+                               id="dataFimPedidos"
+                               class="form-control form-control-sm bg-tpreto text-light">
+
+                    </div>
+
+
+                    <a asp-action="Historico"
+                       class="btn btn-outline-light btn-sm px-2"
+                       title="Limpar filtros">
+
+                        <i class="bi bi-x-lg"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table id="tabelaPedidosOnline"
+                       class="table table-hover align-middle mb-0 text-light">
+
+                    <thead>
+
+                        <tr class="bg-tpreto text-secondary sf-thead">
+
+                            <th class="py-3 ps-3">
+                                Pedido
+                            </th>
+
+                            <th class="py-3">
+                                Compra
+                            </th>
+
+                            <th class="py-3">
+                                Entrega
+                            </th>
+
+                            <th class="py-3">
+                                Confirmado por
+                            </th>
+
+                            <th class="py-3">
+                                Pagamento
+                            </th>
+
+                            <th class="py-3 text-end">
+                                Total
+                            </th>
+
+                            <th class="py-3">
+                                Status
+                            </th>
+
+                            <th class="py-3 text-center pe-3">
+                                Detalhes
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var pedido in Model)
+                        {
+                            <tr>
+
+                                <!-- PEDIDO -->
+                                <td class="ps-3">
+
+                                    <span class="sf-badge"
+                                          style="background: rgba(255,255,255,.05);
+                                                 color:#e7e9ee;
+                                                 border-color:rgba(255,255,255,.1);">
+
+                                        #@pedido.PedidoID
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- COMPRA -->
+                                <td class="sf-num"
+                                    data-order="@pedido.PedidoData.ToString("yyyy-MM-dd HH:mm:ss")">
+
+                                    @pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")
+
+                                </td>
+
+
+                                <!-- ENTREGA -->
+                                <td class="sf-num">
+
+                                    @(pedido.PedidoDataConcluido?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+
+                                </td>
+
+
+                                <!-- CONFIRMADO POR -->
+                                <td>
+
+                                    @(pedido.UsuarioEntregou?.UsuarioNome ?? "-")
+
+                                </td>
+
+
+                                <!-- PAGAMENTO -->
+                                <td>
+
+                                    @if (pedido.PedidoTipoPagamento == "Pix")
+                                    {
+                                        <span class="sf-badge"
+                                              style="background:rgba(0,189,174,.14);
+                                                     color:#2dd4bf;
+                                                     border-color:rgba(0,189,174,.3);">
+                                            Pix
+                                        </span>
+                                    }
+                                    else if (pedido.PedidoTipoPagamento == "Dinheiro")
+                                    {
+                                        <span class="sf-badge sf-badge-baixo">
+                                            Dinheiro
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sf-badge"
+                                              style="background:rgba(167,139,250,.14);
+                                                     color:#c4b5fd;
+                                                     border-color:rgba(167,139,250,.3);">
+                                            Cartão
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- TOTAL -->
+                                <td class="text-end fw-semibold sf-num">
+
+                                    @pedido.PedidoValorTotal.ToString("C")
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    @if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido)
+                                    {
+                                        <span class="sf-badge sf-badge-ok">
+                                            Concluído
+                                        </span>
+                                    }
+                                    else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoCliente)
+                                    {
+                                        <span class="sf-badge sf-badge-zerado">
+                                            Cancelado
+                                        </span>
+                                    }
+                                    else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoNaoRetirado)
+                                    {
+                                        <span class="sf-badge sf-badge-zerado">
+                                            Expirado
+                                        </span>
+                                    }
+                                    else if (pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoAdmin)
+                                    {
+                                        <span class="sf-badge sf-badge-zerado">
+                                            Cancelado
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- AÇÕES -->
+                                <td class="text-center pe-3">
+
+                                    <a class="btn btn-sm border-0 text-white sf-btn-edit"
+                                       asp-action="Detalhes"
+                                       asp-route-id="@pedido.PedidoID"
+                                       title="Ver detalhes">
+
+                                        <i class="bi bi-file-earmark-text-fill"></i>
+
+                                    </a>
+
+
+                                    @{
+                                        var podeCancelar =
+                                            pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido
+                                            && pedido.PedidoDataConcluido.HasValue
+                                            && DateTime.Now <= pedido.PedidoDataConcluido.Value.AddHours(24);
+                                    }
+
+
+                                    @if (podeCancelar)
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm border-0 text-white"
+                                                style="background:linear-gradient(135deg,#ef4444,#dc2626);"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalCancelar@(pedido.PedidoID)"
+                                                title="Cancelar pedido">
+
+                                            <i class="bi bi-x-circle"></i>
+
+                                        </button>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
+
 </div>
 
+
+<!-- MODAIS DE CANCELAMENTO -->
 @foreach (var pedido in Model)
 {
-    var podeCancelarModal = pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido
+    var podeCancelarModal =
+        pedido.PedidoStatus == PolarDrinks.Models.Loja.PedidoModel.Status.Concluido
         && pedido.PedidoDataConcluido.HasValue
         && DateTime.Now <= pedido.PedidoDataConcluido.Value.AddHours(24);
 
     if (podeCancelarModal)
     {
-        <div class="modal fade" id="modalCancelar@(pedido.PedidoID)" tabindex="-1">
+        <div class="modal fade"
+             id="modalCancelar@(pedido.PedidoID)"
+             tabindex="-1">
+
             <div class="modal-dialog">
+
                 <div class="modal-content bg-shadow text-light">
+
                     <div class="modal-header">
-                        <h5 class="modal-title">Cancelar Pedido #@pedido.PedidoID</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+                        <h5 class="modal-title">
+                            Cancelar Pedido #@pedido.PedidoID
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close btn-close-white"
+                                data-bs-dismiss="modal">
+                        </button>
+
                     </div>
-                    <form method="post" asp-action="CancelarAposEntrega">
+
+
+                    <form method="post"
+                          asp-action="CancelarAposEntrega">
+
                         <div class="modal-body">
-                            <input type="hidden" name="id" value="@pedido.PedidoID" />
-                            <label>Motivo do cancelamento</label>
-                            <textarea class="form-control bg-shadow text-light" name="descricao" rows="3" required maxlength="50"></textarea>
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@pedido.PedidoID" />
+
+                            <label class="form-label">
+                                Motivo do cancelamento
+                            </label>
+
+                            <textarea class="form-control bg-tpreto text-light"
+                                      name="descricao"
+                                      rows="3"
+                                      required
+                                      maxlength="50"></textarea>
+
                         </div>
+
+
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Voltar</button>
-                            <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+
+                            <button type="button"
+                                    class="btn btn-outline-light"
+                                    data-bs-dismiss="modal">
+
+                                Voltar
+
+                            </button>
+
+                            <button type="submit"
+                                    class="btn btn-danger">
+
+                                <i class="bi bi-x-circle me-1"></i>
+                                Confirmar Cancelamento
+
+                            </button>
+
                         </div>
+
                     </form>
+
                 </div>
+
             </div>
+
         </div>
     }
 }
+

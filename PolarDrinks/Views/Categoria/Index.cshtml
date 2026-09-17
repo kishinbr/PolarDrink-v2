@@ -1,91 +1,174 @@
 ﻿@model List<PolarDrinks.Models.Loja.CategoriaModel>
 
-<div class="container rounded-4">
+@{
+    ViewData["Title"] = "Categorias";
+    var isAdmin = Context.Session.GetString("Perfil") == "Admin";
+}
 
-    <div class="d-flex justify-content-between align-items-center mb-3 bg-shadow text-light p-4 rounded-4 mt-2">
+<div class="tema-dark">
+    <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
 
-        <h1 class="m-0">Categorias</h1>
-        @if (Context.Session.GetString("Perfil") == "Admin")
+        <!-- Header -->
+        <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="sf-icon-badge"
+                     style="background: linear-gradient(135deg,#3b82f6,#6366f1); box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
+                    <i class="bi bi-tags-fill fs-4 text-white"></i>
+                </div>
+
+                <div>
+                    <h1 class="m-0 fs-3 fw-bold">Categorias</h1>
+                </div>
+            </div>
+
+            @if (isAdmin)
+            {
+                <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
+                   style="background: linear-gradient(135deg,#10b981,#059669);"
+                   asp-controller="Categoria"
+                   asp-action="Cadastrar"
+                   data-bs-toggle="tooltip"
+                   title="Cadastrar">
+
+                    <i class="bi bi-file-earmark-plus-fill me-2"></i>
+                    Cadastrar nova Categoria
+                </a>
+            }
+
+        </div>
+
+
+        <!-- Mensagens -->
+        @if (TempData["MensagemSucesso"] != null)
         {
-            <a class="btn btn-success mx-2" asp-controller="Categoria" asp-action="Cadastrar" data-bs-toggle="tooltip" title="Cadastrar">
-                <i class="bi bi-file-earmark-plus-fill mx-2"></i>Cadastrar nova Categoria
-            </a>
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;"
+                 role="alert">
+
+                <i class="bi bi-check-circle-fill me-2"
+                   style="color:#34d399;"></i>
+
+                @TempData["MensagemSucesso"]
+            </div>
         }
-    </div>
+        else if (TempData["MensagemErro"] != null)
+        {
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;"
+                 role="alert">
 
-    @if (TempData["MensagemSucesso"] != null)
-    {
-        <div class="alert bg-success text-light" role="alert">
-            @TempData["MensagemSucesso"]
-        </div>
-    }
-    else if (TempData["MensagemErro"] != null)
-    {
-        <div class="alert bg-danger text-light" role="alert">
-            @TempData["MensagemErro"]
-        </div>
-    }
+                <i class="bi bi-exclamation-triangle-fill me-2"
+                   style="color:#f87171;"></i>
 
-    <div class="bg-shadow text-light p-4 rounded-4">
-        <table id="Categorias" class="table table-hover mb-auto bg-shadowt">
-            <thead class="bg-tpreto">
-                <tr>
-                    <th style="width: 15%;">Nome</th>
-                    <th style="width: 15%;">Ativa</th>
-                    @if (Context.Session.GetString("Perfil") == "Admin")
-                    {
-                        <th style="width: 10%;" class="text-center">Edição</th>
-                    }
-                </tr>
-            </thead>
+                @TempData["MensagemErro"]
+            </div>
+        }
 
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var categoria in Model)
-                    {
-                        <tr>
-                            <td>@categoria.CategoriaNome</td>
 
-                            <td>
-                                @if (categoria.CategoriaAtiva)
-                                {
-                                    <span class="badge bg-primary">Ativa</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Inativa</span>
-                                }
-                            </td>
+        <!-- Tabela -->
+        <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
 
-                            @if (Context.Session.GetString("Perfil") == "Admin")
+            <div class="table-responsive">
+
+                <table id="Categorias"
+                       class="table table-hover align-middle mb-0 text-light">
+
+                    <thead>
+                        <tr class="bg-tpreto text-secondary sf-thead">
+
+                            <th class="py-3 ps-4">
+                                Nome
+                            </th>
+
+                            <th class="py-3 text-center">
+                                Status
+                            </th>
+
+                            @if (isAdmin)
                             {
-                                <td class="text-center">
-                                    <a class="btn btn-warning btn-sm mx-1"
-                                       asp-controller="Categoria"
-                                       asp-action="Editar"
-                                       asp-route-id="@categoria.CategoriaID"
-                                       data-bs-toggle="tooltip"
-                                       title="Edição completa">
-
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                </td>
+                                <th class="py-3 text-center pe-4">
+                                    Edição
+                                </th>
                             }
+
                         </tr>
-                    }
-                }
-            </tbody>
-        </table>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null)
+                        {
+                            @foreach (var categoria in Model)
+                            {
+                                <tr>
+
+                                    <td class="ps-4 fw-semibold">
+                                        @categoria.CategoriaNome
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @if (categoria.CategoriaAtiva)
+                                        {
+                                            <span class="sf-badge sf-badge-ativo">
+                                                Ativa
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="sf-badge sf-badge-inativo">
+                                                Inativa
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    @if (isAdmin)
+                                    {
+                                        <td class="text-center pe-4">
+
+                                            <a class="btn btn-sm border-0 text-white sf-btn-edit"
+                                               asp-controller="Categoria"
+                                               asp-action="Editar"
+                                               asp-route-id="@categoria.CategoriaID"
+                                               data-bs-toggle="tooltip"
+                                               title="Edição completa">
+
+                                                <i class="bi bi-pencil-square"></i>
+
+                                            </a>
+
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
 </div>
+
+
 @section Scripts {
+
     <script>
+
         $(document).ready(function () {
 
             $('#Categorias').DataTable({
+
                 pageLength: 10,
                 lengthMenu: [10, 20, 30],
+
                 scrollX: true,
                 paging: true,
 
@@ -99,6 +182,7 @@
                     loadingRecords: "Carregando...",
                     search: "Procurar:",
                     zeroRecords: "Categoria não encontrada",
+
                     paginate: {
                         first: "Primeiro",
                         last: "Último",
@@ -106,14 +190,20 @@
                         previous: "Anterior"
                     }
                 }
+
             });
 
+
             setTimeout(function () {
+
                 $(".alert").fadeOut("slow", function () {
                     $(this).alert('close');
                 });
+
             }, 3000);
 
         });
+
     </script>
 }
+

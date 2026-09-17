@@ -3,128 +3,295 @@
     ViewData["Title"] = "Vendas";
 }
 
-<div class="container bg-shadow p-4 rounded-4 mt-4 mb-4 shadow-lg">
+<div class="tema-dark">
 
-    @if (TempData["MensagemSucesso"] != null)
-    {
-        <div class="alert bg-success text-light">
-            @TempData["MensagemSucesso"]
-        </div>
-    }
-    else if (TempData["MensagemErro"] != null)
-    {
-        <div class="alert bg-danger text-light">
-            @TempData["MensagemErro"]
-        </div>
-    }
+    <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
 
-    <h2 class="text-light text-center mb-3">Vendas</h2>
-
-    <form asp-action="FinalizarVenda" method="post" id="formVenda" class="row g-3">
-
-        <!-- BUSCA -->
-        <div class="col-12">
-            <label class="form-label text-light">Buscar Produto</label>
-            <div class="position-relative">
-                <input type="text" id="buscaProduto" class="form-control bg-shadow text-light" placeholder="Código ou nome" autocomplete="off">
-                <div id="listaSugestoes" class="list-group position-absolute w-100" style="z-index:1000;"></div>
+        <!-- ALERTAS -->
+        @if (TempData["MensagemSucesso"] != null)
+        {
+            <div class="alert text-light mb-3"
+                 style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;">
+                <i class="bi bi-check-circle-fill me-2" style="color:#34d399;"></i>
+                @TempData["MensagemSucesso"]
             </div>
-        </div>
+        }
+        else if (TempData["MensagemErro"] != null)
+        {
+            <div class="alert text-light mb-3"
+                 style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;">
+                <i class="bi bi-exclamation-circle-fill me-2" style="color:#f87171;"></i>
+                @TempData["MensagemErro"]
+            </div>
+        }
 
-        <!-- LADO ESQUERDO -->
-        <div class="col-lg-4 d-flex flex-column">
+        <!-- CABEÇALHO -->
+        <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex align-items-center gap-3">
 
-            <div class="bg-shadow p-3 rounded-3 mb-3">
-
-                <div class="mb-2">
-                    <label class="form-label text-light">Quantidade</label>
-                    <input type="text" id="quantidade" class="form-control bg-shadow text-light" value="0" maxlength="4">
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label text-light">Valor Unitário</label>
-                    <input type="text" id="valorUnitario" class="form-control bg-shadowi text-light" readonly>
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label text-light">Total</label>
-                    <input type="text" id="valorTotal" class="form-control bg-shadowi text-light" readonly>
-                </div>
-
-                <button type="button" id="btnAdicionar"
-                        class="btn btn-success w-100 mt-2 "
-                        style="height:60px; font-size:18px; " title="Adicionar Produto" >
-                    Adicionar Produto
-                </button>
-
-                <hr class="text-light">
-
-                <!-- PAGAMENTO -->
-                <label class="form-label text-light fw-bold">Tipo de Pagamento</label>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="VendaTipoPagamento" id="pagDinheiro" value="Dinheiro">
-                    <label class="form-check-label text-light" for="pagDinheiro">Dinheiro</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="VendaTipoPagamento" id="pagPix" value="Pix">
-                    <label class="form-check-label text-light" for="pagPix">Pix</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="VendaTipoPagamento" id="pagCartao" value="Cartão">
-                    <label class="form-check-label text-light" for="pagCartao">Cartão</label>
-                </div>
-
+            <div class="sf-icon-badge"
+                 style="background: linear-gradient(135deg,#3b82f6,#6366f1);
+                        box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
+                <i class="bi bi-cart-check-fill fs-4 text-white"></i>
             </div>
 
-            <!-- TOTAL FIXO -->
-            <div class="bg-shadowi p-3 rounded-3 text-center mt-auto">
-                <h3 class="text-light m-0">
-                   Valor Total: <span id="totalVenda">R$ 0.00</span>
-                </h3>
+            <div>
+                <h1 class="m-0 fs-3 fw-bold">Vendas</h1>
             </div>
 
         </div>
 
-        <!-- LADO DIREITO -->
-        <div class="col-lg-8 d-flex flex-column ">
 
-            <!-- TABELA COM SCROLL -->
-            <div class="bg-shadow rounded-3 p-2 flex-grow-1 overflow-auto" style="min-height:300px; max-height:60vh;">
-                <table class="table bg-secondary table-hover mb-0">
-                    <thead class="bg-tpreto">
-                        <tr>
-                            <th>Produto</th>
-                            <th class="text-end">Qtd</th>
-                            <th class="text-end">Unitário</th>
-                            <th class="text-end">Total</th>
-                            <th class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaItens"></tbody>
-                </table>
+        <form asp-action="FinalizarVenda" method="post" id="formVenda" class="row g-3">
+
+            <!-- BUSCA -->
+            <div class="col-12">
+
+                <div class="bg-shadow p-3 rounded-4">
+
+                    <label class="form-label text-light fw-semibold">
+                        <i class="bi bi-search me-1"></i>
+                        Buscar Produto
+                    </label>
+
+                    <div class="position-relative">
+
+                        <input type="text"
+                               id="buscaProduto"
+                               class="form-control bg-tpreto text-light"
+                               placeholder="Código ou nome"
+                               autocomplete="off">
+
+                        <div id="listaSugestoes"
+                             class="list-group position-absolute w-100"
+                             style="z-index:1000;">
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <!-- BOTÃO CONFIRMAR -->
-            <div class="mt-3">
-                <button id="btnConfirmar" type="submit" class="btn btn-success w-100" disabled title="Confirmar Venda">
-                    Confirmar Venda
-                </button>
+
+            <!-- LADO ESQUERDO -->
+            <div class="col-lg-4 d-flex flex-column">
+
+                <div class="bg-shadow p-3 rounded-4 h-100">
+
+                    <!-- QUANTIDADE -->
+                    <div class="mb-3">
+
+                        <label class="form-label text-light">
+                            Quantidade
+                        </label>
+
+                        <input type="text"
+                               id="quantidade"
+                               class="form-control bg-tpreto text-light"
+                               value="0"
+                               maxlength="4">
+
+                    </div>
+
+
+                    <!-- VALOR UNITÁRIO -->
+                    <div class="mb-3">
+
+                        <label class="form-label text-light">
+                            Valor Unitário
+                        </label>
+
+                        <input type="text"
+                               id="valorUnitario"
+                               class="form-control bg-shadowi text-light"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- TOTAL DO ITEM -->
+                    <div class="mb-3">
+
+                        <label class="form-label text-light">
+                            Total
+                        </label>
+
+                        <input type="text"
+                               id="valorTotal"
+                               class="form-control bg-shadowi text-light"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- ADICIONAR -->
+                    <button type="button"
+                            id="btnAdicionar"
+                            class="btn btn-success w-100 mt-1"
+                            style="height:60px; font-size:18px;"
+                            title="Adicionar Produto">
+
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Adicionar Produto
+
+                    </button>
+
+
+                    <hr class="text-light my-4">
+
+
+                    <!-- PAGAMENTO -->
+                    <label class="form-label text-light fw-bold">
+                        <i class="bi bi-credit-card me-1"></i>
+                        Tipo de Pagamento
+                    </label>
+
+
+                    <div class="form-check mb-2">
+
+                        <input class="form-check-input"
+                               type="radio"
+                               name="VendaTipoPagamento"
+                               id="pagDinheiro"
+                               value="Dinheiro">
+
+                        <label class="form-check-label text-light" for="pagDinheiro">
+                            Dinheiro
+                        </label>
+
+                    </div>
+
+
+                    <div class="form-check mb-2">
+
+                        <input class="form-check-input"
+                               type="radio"
+                               name="VendaTipoPagamento"
+                               id="pagPix"
+                               value="Pix">
+
+                        <label class="form-check-label text-light" for="pagPix">
+                            Pix
+                        </label>
+
+                    </div>
+
+
+                    <div class="form-check">
+
+                        <input class="form-check-input"
+                               type="radio"
+                               name="VendaTipoPagamento"
+                               id="pagCartao"
+                               value="Cartão">
+
+                        <label class="form-check-label text-light" for="pagCartao">
+                            Cartão
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOTAL FIXO -->
+                <div class="bg-shadowi p-3 rounded-4 text-center mt-3">
+
+                    <h3 class="text-light m-0 fs-4">
+
+                        Valor Total:
+
+                        <span id="totalVenda" class="fw-bold">
+                            R$ 0.00
+                        </span>
+
+                    </h3>
+
+                </div>
+
             </div>
 
-        </div>
 
-        <div id="itensHidden"></div>
+            <!-- LADO DIREITO -->
+            <div class="col-lg-8 d-flex flex-column">
 
-    </form>
+                <div class="bg-shadow rounded-4 p-3 flex-grow-1 overflow-hidden">
+
+                    <div class="table-responsive overflow-auto"
+                         style="min-height:300px; max-height:60vh;">
+
+                        <table class="table table-hover align-middle mb-0 text-light">
+
+                            <thead>
+                                <tr class="bg-tpreto text-secondary sf-thead">
+
+                                    <th class="py-3 ps-3">
+                                        Produto
+                                    </th>
+
+                                    <th class="py-3 text-end">
+                                        Qtd
+                                    </th>
+
+                                    <th class="py-3 text-end">
+                                        Unitário
+                                    </th>
+
+                                    <th class="py-3 text-end">
+                                        Total
+                                    </th>
+
+                                    <th class="py-3 text-center pe-3">
+                                        Ações
+                                    </th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody id="tabelaItens"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOTÃO CONFIRMAR -->
+                <div class="mt-3">
+
+                    <button id="btnConfirmar"
+                            type="submit"
+                            class="btn btn-success w-100 py-3 fw-semibold"
+                            disabled
+                            title="Confirmar Venda">
+
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        Confirmar Venda
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div id="itensHidden"></div>
+
+        </form>
+
+    </div>
+
 </div>
 
+
 @section Scripts {
+
     <script>
         const produtos = @Html.Raw(Json.Serialize(ViewBag.Produtos));
     </script>
 
     <script src="~/js/vendas.js"></script>
+
 }
+

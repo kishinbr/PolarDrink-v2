@@ -3,106 +3,99 @@
     ViewData["Title"] = "Usuários";
 }
 
-<div class="container p-4 rounded-4">
+<div class="tema-dark">
+    <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
 
+        <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="sf-icon-badge" style="background: linear-gradient(135deg,#3b82f6,#6366f1); box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
+                    <i class="bi bi-people-fill fs-4 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="m-0 fs-3 fw-bold">Usuários</h1>
+                </div>
+            </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-5 bg-shadow text-light p-4 rounded-4 mt-2">
-
-        <h1 class="m-0">Usuários</h1>
-
-        <a asp-action="Cadastrar" class="btn btn-success" title="Cadastrar">
-            <i class="bi bi-person-plus-fill me-1"></i>
-            Cadastrar novo Usuário
-        </a>
-
-    </div>
-
-
-    @if (TempData["MensagemSucesso"] != null)
-    {
-        <div class="alert bg-success text-light">
-            @TempData["MensagemSucesso"]
+            <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0" style="background: linear-gradient(135deg,#10b981,#059669);" 
+                asp-action="Cadastrar" title="Cadastrar">
+                <i class="bi bi-person-plus-fill me-1"></i>
+                Cadastrar novo Usuário
+            </a>
         </div>
-    }
-    else if (TempData["MensagemErro"] != null)
-    {
-        <div class="alert bg-danger text-light">
-            @TempData["MensagemErro"]
+
+        @if (TempData["MensagemSucesso"] != null)
+        {
+            <div class="bg-shadow text-light p-3 rounded-4 mb-3" style="background: rgba(16,185,129,.15) !important; border-left: 3px solid #10b981 !important;">
+                <i class="bi bi-check-circle-fill me-2" style="color:#34d399;"></i>
+                @TempData["MensagemSucesso"]
+            </div>
+        }
+        else if (TempData["MensagemErro"] != null)
+        {
+            <div class="bg-shadow text-light p-3 rounded-4 mb-3" style="background: rgba(239,68,68,.15) !important; border-left: 3px solid #ef4444 !important;">
+                <i class="bi bi-exclamation-circle-fill me-2" style="color:#f87171;"></i>
+                @TempData["MensagemErro"]
+            </div>
+        }
+
+        <div class="bg-shadow p-4 rounded-4">
+            <div class="table-responsive">
+                <table id="tabelaUsuarios" class="table table-hover align-middle mb-0 text-light">
+                    <thead class="bg-tpreto text-secondary sf-thead">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Usuário</th>
+                            <th>Perfil</th>
+                            <th>Criado em</th>
+                            <th>Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">@u.UsuarioNome</td>
+                                <td class="align-middle">@u.UsuarioLogin</td>
+                                <td class="align-middle">
+                                    @if (u.UsuarioPerfil == "Admin")
+                                    {
+                                        <span class="sf-badge sf-badge-ativo">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sf-badge" style="background:rgba(148,163,184,.14); color:#cbd5e1; border-color:rgba(148,163,184,.3);">Funcionário</span>
+                                    }
+                                </td>
+                                <td class="align-middle">@u.UsuarioCriadoEm.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="align-middle">
+                                    @if (u.UsuarioAtivo)
+                                    {
+                                        <span class="sf-badge sf-badge-ok">Ativo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sf-badge sf-badge-inativo">Inativo</span>
+                                    }
+                                </td>
+                                <td class="text-center align-middle">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="AlterarSenha" asp-route-id="@u.UsuarioID" class="btn btn-sm btn-warning" title="Alterar Senha">
+                                            <i class="bi bi-key-fill me-1"></i>Alterar Senha
+                                        </a>
+                                        <a asp-action="Desativar" asp-route-id="@u.UsuarioID" class="btn btn-sm @(u.UsuarioAtivo ? "btn-danger" : "btn-success")">
+                                            <i class="bi @(u.UsuarioAtivo ? "bi-person-x-fill" : "bi-person-check-fill") me-1"></i>
+                                            @(u.UsuarioAtivo ? "Desativar" : "Ativar")
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    }
 
-    <!-- TABELA -->
-    <div class="container rounded-4 bg-shadow p-4 mt-4">
-    <table id="tabelaUsuarios" class="table bg-shadowt table-hover mb-auto">
-
-        <thead class="bg-tpreto">
-            <tr>
-                <th>Nome</th>
-                <th>Usuário</th>
-                <th>Perfil</th>
-                <th>Criado em</th>
-                <th>Status</th>
-                <th class="text-center">Ações</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var u in Model)
-            {
-                <tr>
-
-                    <td class="align-middle">@u.UsuarioNome</td>
-                    <td class="align-middle">@u.UsuarioLogin</td>
-
-                    <td class="align-middle">
-                        @if (u.UsuarioPerfil == "Admin")
-                        {
-                            <span class="badge bg-primary">Admin</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Funcionário</span>
-                        }
-                    </td>
-
-                    <td class="align-middle">
-                        @u.UsuarioCriadoEm.ToString("dd/MM/yyyy HH:mm")
-                    </td>
-
-                    <td class="align-middle">
-                        @if (u.UsuarioAtivo)
-                        {
-                            <span class="badge bg-success">Ativo</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Inativo</span>
-                        }
-                    </td>
-
-                    <td class="text-center align-middle">
-                        <div class="d-flex justify-content-center gap-2">
-
-                            <a asp-action="AlterarSenha"
-                                   asp-route-id="@u.UsuarioID"
-                                   class="btn btn-sm btn-warning" title="Alterar Senha">
-                                Alterar Senha
-                            </a>
-
-                            <a asp-action="Desativar"
-                                   asp-route-id="@u.UsuarioID"
-                                   class="btn btn-sm @(u.UsuarioAtivo ? "btn-danger" : "btn-success")">
-                                @(u.UsuarioAtivo ? "Desativar" : "Ativar")
-                            </a>
-
-                        </div>
-                    </td>
-
-                </tr>
-            }
-        </tbody>
-
-    </table>
     </div>
 </div>
 @section Scripts {

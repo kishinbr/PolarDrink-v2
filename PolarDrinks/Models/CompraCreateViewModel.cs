@@ -28,7 +28,7 @@ namespace PolarDrinks.ViewModels
         public string? ProdutoNome { get; set; }
 
         [Required(ErrorMessage = "Informe a quantidade")]
-        [Range(1, int.MaxValue, ErrorMessage = "Quantidade inválida")]
+        [Range(1, int.MaxValue, ErrorMessage = "Quantia inválida")]
         public int Quantidade { get; set; }
 
         [Required(ErrorMessage = "Informe o preço")]
