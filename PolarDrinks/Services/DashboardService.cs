@@ -105,6 +105,21 @@ namespace PolarDrinks.Services
 
             model.LucroOnlineMes = pedidosMes.Sum(p =>
                 p.Itens.Sum(i => (i.ItemPedidoPreco - i.ItemPedidoCusto) * i.ItemPedidoQtd));
+            // PAGAMENTOS - ONLINE (Hoje)
+            model.QtdPixOnline = pedidosHoje.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix);
+            model.QtdCartaoOnline = pedidosHoje.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao);
+
+            model.TotalPixOnline = pedidosHoje.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix).Sum(p => p.PedidoValorTotal);
+            model.TotalCartaoOnline = pedidosHoje.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao).Sum(p => p.PedidoValorTotal);
+
+            // PAGAMENTOS - GERAL Hoje (Presencial + Online)
+            model.QtdPixGeral = model.QtdPix + model.QtdPixOnline;
+            model.QtdCartaoGeral = model.QtdCartao + model.QtdCartaoOnline;
+            model.QtdDinheiroGeral = model.QtdDinheiro; // Dinheiro só existe no Presencial
+
+            model.TotalPixGeral = model.TotalPix + model.TotalPixOnline;
+            model.TotalCartaoGeral = model.TotalCartao + model.TotalCartaoOnline;
+            model.TotalDinheiroGeral = model.TotalDinheiro; // Dinheiro só existe no Presencial
 
             // ===== COMBINADO (Presencial + Online) =====
             model.TotalCombinadoHoje = model.TotalHoje + model.TotalOnlineHoje;
@@ -118,6 +133,7 @@ namespace PolarDrinks.Services
             model.TicketMedioCombinado = quantidadeTransacoesTotal > 0
                 ? somaTotalTransacoes / quantidadeTransacoesTotal
                 : 0;
+            model.TicketMedioOnline = pedidosValidos.Any() ? pedidosValidos.Average(p => p.PedidoValorTotal) : 0;
             // GIRO DE ESTOQUE (baseado nos últimos 30 dias, Presencial + Online)
             var vendidoPorProdutoPresencial = vendas30Dias
                 .SelectMany(v => v.Itens)
@@ -498,7 +514,30 @@ namespace PolarDrinks.Services
             model.CanceladosTotalHoje = model.CanceladosHoje + model.CanceladosOnlineHoje;
             model.CanceladosTotalSemana = model.CanceladosSemana + model.CanceladosOnlineSemana;
             model.CanceladosTotalMes = model.CanceladosMes + model.CanceladosOnlineMes;
+            var canceladosPorProdutoPresencial = vendasCanceladas
+                .SelectMany(v => v.Itens)
+                .Where(i => i.Produto != null)
+                .GroupBy(i => i.Produto!.ProdutoNome)
+                .ToDictionary(g => g.Key, g => g.Count());
 
+            var canceladosPorProdutoOnline = pedidosCancelados
+                .SelectMany(p => p.Itens)
+                .Where(i => i.Produto != null)
+                .GroupBy(i => i.Produto!.ProdutoNome)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var todosNomesCancelados = canceladosPorProdutoPresencial.Keys.Union(canceladosPorProdutoOnline.Keys);
+
+            model.ProdutoMaisCanceladoTotal = todosNomesCancelados
+                .Select(nome => new
+                {
+                    Nome = nome,
+                    Total = (canceladosPorProdutoPresencial.ContainsKey(nome) ? canceladosPorProdutoPresencial[nome] : 0) +
+                            (canceladosPorProdutoOnline.ContainsKey(nome) ? canceladosPorProdutoOnline[nome] : 0)
+                })
+                .OrderByDescending(x => x.Total)
+                .Select(x => x.Nome)
+                .FirstOrDefault();
 
 
             return model;

@@ -51,14 +51,15 @@
         public List<decimal> VendasMesGrafico { get; set; } = new();
         public List<decimal> VendasAno { get; set; } = new();
 
-        // MÉTRICAS NOVAS
         public decimal TicketMedio { get; set; }
+        public decimal TicketMedioOnline { get; set; }
 
         // CANCELAMENTOS
         public int CanceladosHoje { get; set; }
         public int CanceladosSemana { get; set; }
         public int CanceladosMes { get; set; }
         public string? ProdutoMaisCancelado { get; set; }
+        public string? ProdutoMaisCanceladoTotal { get; set; }
 
         // LOJA ONLINE
         public decimal TotalOnlineHoje { get; set; }
@@ -100,6 +101,19 @@
         // PREVISÃO - ONLINE E COMBINADA
         public decimal PrevisaoAmanhaOnline { get; set; }
         public decimal PrevisaoAmanhaCombinada { get; set; }
+        // PAGAMENTOS - ONLINE (Hoje)
+        public int QtdPixOnline { get; set; }
+        public int QtdCartaoOnline { get; set; }
+        public decimal TotalPixOnline { get; set; }
+        public decimal TotalCartaoOnline { get; set; }
+
+        // PAGAMENTOS - GERAL Hoje (Presencial + Online)
+        public int QtdPixGeral { get; set; }
+        public int QtdCartaoGeral { get; set; }
+        public int QtdDinheiroGeral { get; set; }
+        public decimal TotalPixGeral { get; set; }
+        public decimal TotalCartaoGeral { get; set; }
+        public decimal TotalDinheiroGeral { get; set; }
 
         // GIRO DE ESTOQUE
         public List<GiroProdutoDto> ProdutosGiroLento { get; set; } = new List<GiroProdutoDto>();
