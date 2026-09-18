@@ -25,7 +25,6 @@
             </div>
         }
 
-
         <!-- CABEÇALHO -->
         <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
 
@@ -47,7 +46,6 @@
 
             </div>
 
-
             <a asp-action="Index"
                asp-controller="Venda"
                class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
@@ -61,53 +59,113 @@
 
         </div>
 
+        <!-- FILTROS -->
+        <div class="bg-shadow text-light p-3 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
 
-        <!-- TABELA -->
-        <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
+            <div class="sf-segment" id="filtroPedidos">
 
-            <!-- FILTROS -->
-            <div class="mb-3 d-flex justify-content-center">
+                <button type="button"
+                        class="active"
+                        data-filtro="todos">
+                    Todos
+                </button>
 
-                <div class="d-flex align-items-end gap-2 flex-wrap">
+                <button type="button"
+                        data-filtro="cartao"
+                        class="sf-badge"
+                        style="background:rgba(167,139,250,.14);
+                               color:#c4b5fd;
+                               border-color:rgba(167,139,250,.3);">
+                    Cartão
+                </button>
 
-                    <div>
+                <button type="button"
+                        data-filtro="pix"
+                        class="sf-badge"
+                        style="background:rgba(0,189,174,.14);
+                               color:#2dd4bf;
+                               border-color:rgba(0,189,174,.3);">
+                    Pix
+                </button>
 
-                        <label class="form-label small mb-1">
-                            Início
-                        </label>
+                <button type="button"
+                        data-filtro="concluido"
+                        class="sf-badge"
+                        style="background:#203D3D;
+                               color:#30D38D;
+                               border-color:#1C594C;">
+                    Concluído
+                </button>
 
-                        <input type="date"
-                               id="dataInicioPedidos"
-                               class="form-control form-control-sm bg-tpreto text-light">
+                <button type="button"
+                        data-filtro="cancelado"
+                        class="sf-badge"
+                        style="background:#402D35;
+                               color:#DA4435;
+                               border-color:#753439;">
+                    Cancelado
+                </button>
 
-                    </div>
+                <button type="button"
+                        data-filtro="expirado"
+                        class="sf-badge"
+                        style="background:#402D35;
+                               color:#DA4435;
+                               border-color:#753439;">
+                    Expirado
+                </button>
 
 
-                    <div>
-
-                        <label class="form-label small mb-1">
-                            Fim
-                        </label>
-
-                        <input type="date"
-                               id="dataFimPedidos"
-                               class="form-control form-control-sm bg-tpreto text-light">
-
-                    </div>
-
-
-                    <a asp-action="Historico"
-                       class="btn btn-outline-light btn-sm px-2"
-                       title="Limpar filtros">
-
-                        <i class="bi bi-x-lg"></i>
-
-                    </a>
-
-                </div>
 
             </div>
 
+
+            <div class="d-flex align-items-end gap-2 flex-wrap">
+
+                <div>
+
+                    <label class="form-label text-secondary small mb-1">
+                        Início
+                    </label>
+
+                    <input type="date"
+                           id="dataInicioPedidos"
+                           class="form-control form-control-sm bg-tpreto text-light border-0"
+                           style="box-shadow:none;">
+
+                </div>
+
+
+                <div>
+
+                    <label class="form-label text-secondary small mb-1">
+                        Fim
+                    </label>
+
+                    <input type="date"
+                           id="dataFimPedidos"
+                           class="form-control form-control-sm bg-tpreto text-light border-0"
+                           style="box-shadow:none;">
+
+                </div>
+
+
+                <button type="button"
+                        id="limparFiltrosPedidos"
+                        class="btn btn-outline-light btn-sm px-2"
+                        title="Limpar filtros">
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABELA -->
+        <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
 
             <div class="table-responsive">
 
@@ -159,7 +217,26 @@
 
                         @foreach (var pedido in Model)
                         {
-                            <tr>
+                            var filtroPagamento = pedido.PedidoTipoPagamento?.ToLower() switch
+                            {
+                                "cartão" => "cartao",
+                                "cartao" => "cartao",
+                                "pix" => "pix",
+                                _ => ""
+                            };
+
+                            var filtroStatus = pedido.PedidoStatus switch
+                            {
+                                PolarDrinks.Models.Loja.PedidoModel.Status.Concluido => "concluido",
+                                PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoCliente => "cancelado",
+                                PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoAdmin => "cancelado",
+                                PolarDrinks.Models.Loja.PedidoModel.Status.CanceladoNaoRetirado => "expirado",
+                                _ => ""
+                            };
+
+                            <tr data-pagamento="@filtroPagamento"
+                                data-status="@filtroStatus"
+                                data-data="@pedido.PedidoData.ToString("yyyy-MM-dd")">
 
                                 <!-- PEDIDO -->
                                 <td class="ps-3">
@@ -213,12 +290,8 @@
                                             Pix
                                         </span>
                                     }
-                                    else if (pedido.PedidoTipoPagamento == "Dinheiro")
-                                    {
-                                        <span class="sf-badge sf-badge-baixo">
-                                            Dinheiro
-                                        </span>
-                                    }
+
+
                                     else
                                     {
                                         <span class="sf-badge"
@@ -407,4 +480,130 @@
         </div>
     }
 }
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var segment = document.getElementById('filtroPedidos');
+        var dataInicio = document.getElementById('dataInicioPedidos');
+        var dataFim = document.getElementById('dataFimPedidos');
+        var limparFiltros = document.getElementById('limparFiltrosPedidos');
+
+        var linhas = Array.from(
+            document.querySelectorAll('#tabelaPedidosOnline tbody tr')
+        );
+
+        var filtroAtivo = 'todos';
+
+
+        function aplicarFiltros() {
+
+            var inicio = dataInicio.value;
+            var fim = dataFim.value;
+
+
+            linhas.forEach(function (tr) {
+
+                var pagamento = tr.getAttribute('data-pagamento');
+                var status = tr.getAttribute('data-status');
+                var data = tr.getAttribute('data-data');
+
+                var matchFiltro = true;
+
+
+                if (filtroAtivo === 'cartao') {
+                    matchFiltro = pagamento === 'cartao';
+                }
+                else if (filtroAtivo === 'pix') {
+                    matchFiltro = pagamento === 'pix';
+                }
+                else if (filtroAtivo === 'concluido') {
+                    matchFiltro = status === 'concluido';
+                }
+                else if (filtroAtivo === 'cancelado') {
+                    matchFiltro = status === 'cancelado';
+                }
+                else if (filtroAtivo === 'expirado') {
+                    matchFiltro = status === 'expirado';
+                }
+
+
+                var matchDataInicio =
+                    !inicio || data >= inicio;
+
+                var matchDataFim =
+                    !fim || data <= fim;
+
+
+                tr.style.display =
+                    (matchFiltro && matchDataInicio && matchDataFim)
+                        ? ''
+                        : 'none';
+
+            });
+
+        }
+
+
+        segment.querySelectorAll('button').forEach(function (btn) {
+
+            btn.addEventListener('click', function () {
+
+                segment.querySelectorAll('button').forEach(function (b) {
+                    b.classList.remove('active');
+                });
+
+                btn.classList.add('active');
+
+                filtroAtivo =
+                    btn.getAttribute('data-filtro');
+
+                aplicarFiltros();
+
+            });
+
+        });
+
+
+        dataInicio.addEventListener(
+            'change',
+            aplicarFiltros
+        );
+
+
+        dataFim.addEventListener(
+            'change',
+            aplicarFiltros
+        );
+
+
+        limparFiltros.addEventListener(
+            'click',
+            function () {
+
+                filtroAtivo = 'todos';
+
+
+                segment.querySelectorAll('button').forEach(function (b) {
+                    b.classList.remove('active');
+                });
+
+
+                segment
+                    .querySelector('[data-filtro="todos"]')
+                    .classList.add('active');
+
+
+                dataInicio.value = '';
+                dataFim.value = '';
+
+
+                aplicarFiltros();
+
+            }
+        );
+
+    });
+</script>
 

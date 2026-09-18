@@ -96,12 +96,13 @@
 
         <!-- Filtros + busca -->
         <div class="bg-shadow text-light p-3 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
-            <div class="sf-segment" id="filtroEstoque">
-                <button type="button" class="active" data-filtro="todos"> Todos</button>
-                <button type="button" data-filtro="baixo"> Estoque baixo</button>
-                <button type="button" data-filtro="zerado">Zerados</button>
-                <button type="button" data-filtro="promo"> Em promoção</button>
-            </div>
+        <div class="sf-segment" id="filtroEstoque">
+            <button type="button" class="active" data-filtro="todos">Todos</button>
+            <button type="button" data-filtro="baixo" class="sf-badge" style="background:#403B2D;color:#DAB435;border-color:#756334;">Estoque baixo</button>
+            <button type="button" data-filtro="zerado" class="sf-badge" style="background:#402D35;color:#DA4435;border-color:#753439;">Zerados</button>
+            <button type="button" data-filtro="promo" class="sf-badge" style="background:#382D40;color:#C4B5FD;border-color:#634C75;">Em promoção</button>
+        </div>
+
             <div class="position-relative" style="min-width:260px; flex:0 1 320px;">
                 <i class="bi bi-search position-absolute text-secondary" style="left:14px; top:50%; transform:translateY(-50%);"></i>
                 <input type="text" id="buscaProduto" placeholder="Buscar por nome, código ou descrição..."

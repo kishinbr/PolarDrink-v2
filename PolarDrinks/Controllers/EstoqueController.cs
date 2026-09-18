@@ -36,6 +36,7 @@ namespace PolarDrinks.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["MensagemErro"] = "Erro ao cadastrar produto.";
+                ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
                 return View(produto);
             }
 
@@ -47,13 +48,17 @@ namespace PolarDrinks.Controllers
                 {
                     ModelState.AddModelError(resultado.CampoErro, resultado.Mensagem!);
                 }
+
                 TempData["MensagemErro"] = "Erro ao cadastrar produto.";
+                ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
                 return View(produto);
             }
 
             TempData["MensagemSucesso"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
+
+
 
         [HttpGet]
         [AdminFilter]

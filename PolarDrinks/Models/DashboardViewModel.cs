@@ -33,6 +33,8 @@
         public decimal CartaoTotal { get; set; }
         public decimal DinheiroTotal { get; set; }
 
+        public Dictionary<string, Dictionary<string, List<decimal>>> VendasPorCanalEPeriodo { get; set; } = new();
+
         // ESTOQUE
         public int EstoqueBaixo { get; set; }
         public int SemEstoque { get; set; }

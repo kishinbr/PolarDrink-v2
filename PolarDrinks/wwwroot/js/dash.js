@@ -6,11 +6,11 @@ function atualizarBotaoPeriodoVendas(periodo) {
     });
 }
 
+
 document.addEventListener("DOMContentLoaded", () => {
 
-    // 🔥 pega dados da view
-    const pagamentos = window.dashData.pagamentos;
-    const vendas = window.dashData.vendas;
+    let canalVendasAtual = "presencial";
+    let periodoVendasAtual = "semana";
 
         // ================== PAGAMENTOS ==================
     let canalAtual = "presencial";
@@ -125,17 +125,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    window.atualizarVendas = function (tipo) {
-        atualizarBotaoPeriodoVendas(tipo);
+        window.atualizarVendas = function (periodo) {
+        periodoVendasAtual = periodo;
+        atualizarBotaoPeriodoVendas(periodo);
+        renderizarVendas();
+    };
 
-        const dados = vendas[tipo];
+    window.atualizarCanalVendas = function (canal) {
+        canalVendasAtual = canal;
+        renderizarVendas();
+    };
+
+    function renderizarVendas() {
+        const dados = window.dashData.vendasPorCanal[canalVendasAtual][periodoVendasAtual];
         let labels = [];
 
-        if (tipo === "hoje") {
+        if (periodoVendasAtual === "hoje") {
             labels = dados.map((_, i) => `${i}h`);
         }
 
-        else if (tipo === "semana") {
+        else if (periodoVendasAtual === "semana") {
             const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
             const hoje = new Date();
 
@@ -146,11 +155,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        else if (tipo === "mes") {
+        else if (periodoVendasAtual === "mes") {
             labels = dados.map((_, i) => `${i + 1}`);
         }
 
-        else if (tipo === "ano") {
+        else if (periodoVendasAtual === "ano") {
             const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
                 "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
             labels = dados.map((_, i) => meses[i]);
@@ -163,10 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const total = dados.reduce((a, b) => a + b, 0);
         document.getElementById("totalVendasLabel").innerText =
             `Total de vendas: ${total}`;
-    };
+    }
 
     // inicialização
     atualizarVendas("semana");
     atualizarPagamentos("hoje");
     atualizarCanalPagamentos("presencial");
+    atualizarCanalVendas("presencial");
 });

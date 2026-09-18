@@ -84,11 +84,11 @@
         <a asp-controller="CompraEstoque" asp-action="Index">
             <i class="bi bi-box-arrow-in-down"></i> Reabastecer
         </a>
-        <div class="menu-section">ACESSIBILIDADE</div>
+        @* <div class="menu-section">ACESSIBILIDADE</div>
 
         <a href="javascript:void(0)" onclick="toggleLibras()" id="btnLibras">
             <i class="bi bi-universal-access"></i> Ativar LIBRAS
-        </a>
+        </a> *@
         <div class="menu-section">Acesso</div>
 
         <a asp-controller="Usuario" asp-action="Index">
@@ -155,11 +155,11 @@
         <a class="menu-item" href="/CompraEstoque/Index">
             <i class="bi bi-box-arrow-in-down"></i> Reabastecer
         </a>
-        <div class="menu-section">ACESSIBILIDADE</div>
+@*         <div class="menu-section">ACESSIBILIDADE</div>
 
         <a class="menu-item" href="javascript:void(0)" onclick="toggleLibras()" id="btnLibrasMobile">
             <i class="bi bi-universal-access"></i> Ativar LIBRAS
-        </a>
+        </a> *@
 
         <div class="menu-section">Acesso</div>
             
@@ -188,73 +188,8 @@
         </div>
     </div>
 
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>
-        new window.VLibras.Widget('https://vlibras.gov.br/app');
-    </script>
-    <script>
-        let vlibrasAtivo = false;
-        let vlibrasWidget = null;
 
-        function ajustarPosicaoVLibras() {
-        const btn = document.querySelector('[vw-access-button]');
 
-        if (btn) {
-        btn.style.position = "fixed";
-        btn.style.top = "80px";
-        btn.style.right = "20px";
-        btn.style.bottom = "auto";
-        btn.style.zIndex = "9999";
-        }
-        }
-
-        // 🔥 Observa mudanças no DOM (garante que sempre funcione)
-        const observer = new MutationObserver(() => {
-        ajustarPosicaoVLibras();
-        });
-
-        observer.observe(document.body, {
-        childList: true,
-        subtree: true
-        });
-
-        function toggleLibras() {
-        const container = document.getElementById("vlibras-container");
-        const btn = document.getElementById("btnLibras");
-        const btnMobile = document.getElementById("btnLibrasMobile");
-
-        if (!vlibrasAtivo) {
-        container.style.display = "block";
-
-        if (!vlibrasWidget) {
-        vlibrasWidget = new window.VLibras.Widget('https://vlibras.gov.br/app');
-        }
-
-        btn.innerHTML = '<i class="bi bi-universal-access"></i> Desativar LIBRAS';
-        btnMobile.innerHTML = '<i class="bi bi-universal-access"></i> Desativar LIBRAS';
-
-        vlibrasAtivo = true;
-        localStorage.setItem("vlibrasAtivo", "true");
-
-        } else {
-        container.style.display = "none";
-
-        btn.innerHTML = '<i class="bi bi-universal-access"></i> Ativar LIBRAS';
-        btnMobile.innerHTML = '<i class="bi bi-universal-access"></i> Ativar LIBRAS';
-
-        vlibrasAtivo = false;
-        localStorage.setItem("vlibrasAtivo", "false");
-        }
-        }
-
-        window.addEventListener("load", function () {
-        const ativoSalvo = localStorage.getItem("vlibrasAtivo");
-
-        if (ativoSalvo === "true") {
-        toggleLibras();
-        }
-        });
-    </script>
     <!-- SCRIPTS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

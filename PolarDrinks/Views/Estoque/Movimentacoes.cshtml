@@ -1,42 +1,29 @@
 ﻿@model IEnumerable<MovimentacaoEstoqueModel>
-
 @{
     ViewData["Title"] = "Movimentações do Estoque";
 }
 
 <div class="tema-dark">
     <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
-
         <!-- Header + Busca + Produto selecionado -->
         <div class="bg-shadow text-light p-4 rounded-4 mb-3">
-
             <!-- Header -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-
                 <div class="d-flex align-items-center gap-3">
                     <div class="sf-icon-badge"
-                         style="background: linear-gradient(135deg,#3b82f6,#6366f1); box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
-
+                         style="background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 8px 20px -8px rgba(59,130,246,.8);">
                         <i class="bi bi-arrow-left-right fs-4 text-white"></i>
-
                     </div>
-
                     <div>
-                        <h1 class="m-0 fs-3 fw-bold">
-                            Histórico de Movimentações
-                        </h1>
+                        <h1 class="m-0 fs-3 fw-bold">Histórico de Movimentações</h1>
                     </div>
                 </div>
-
             </div>
-
 
             <!-- Busca -->
             <div class="position-relative mb-3">
-
                 <i class="bi bi-search position-absolute text-secondary"
-                   style="left:14px; top:50%; transform:translateY(-50%); z-index:2;"></i>
-
+                   style="left:14px;top:50%;transform:translateY(-50%);z-index:2;"></i>
                 <input type="text"
                        id="buscaProduto"
                        class="form-control bg-tpreto text-light border-0 ps-5 py-2 rounded-3"
@@ -44,221 +31,158 @@
                        autocomplete="off"
                        maxlength="100"
                        style="box-shadow:none;">
-
                 <div id="listaSugestoes"
                      class="list-group position-absolute w-100"
-                     style="z-index:1000;">
-                </div>
-
+                     style="z-index:1000;"></div>
             </div>
 
-
             <!-- Produto selecionado -->
-            @if (ViewBag.ProdutoSelecionado != null)
-            {
-                <div class="bg-tpreto text-light p-3 rounded-4">
 
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-
-                        <div>
-                            <div class="text-secondary"
-                                 style="font-size:.78rem;">
-                                Produto selecionado
+                @if (ViewBag.ProdutoSelecionado != null)
+                {
+                    <div class="bg-tpreto text-light p-3 rounded-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <div class="text-secondary" style="font-size:.78rem;">Produto selecionado</div>
+                                <div class="fw-semibold mt-1">@ViewBag.ProdutoSelecionado.ProdutoNome</div>
                             </div>
-
-                            <div class="fw-semibold mt-1">
-                                @ViewBag.ProdutoSelecionado.ProdutoNome
+                            <div class="text-center">
+                                <div class="text-secondary" style="font-size:.78rem;">Estoque Atual / Mínimo</div>
+                                @if (ViewBag.ProdutoSelecionado.ProdutoQtdEstoque <= ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo)
+                                {
+                                    <span class="sf-badge sf-badge-baixo mt-1">
+                                        @ViewBag.ProdutoSelecionado.ProdutoQtdEstoque / @ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-ok mt-1">
+                                        @ViewBag.ProdutoSelecionado.ProdutoQtdEstoque / @ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo
+                                    </span>
+                                }
                             </div>
                         </div>
-
-
-                        <div class="text-center">
-
-                            <div class="text-secondary"
-                                 style="font-size:.78rem;">
-                                Estoque Atual / Mínimo
-                            </div>
-
-                            @if (ViewBag.ProdutoSelecionado.ProdutoQtdEstoque <= ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo)
-                            {
-                                <span class="sf-badge sf-badge-baixo mt-1">
-                                    @ViewBag.ProdutoSelecionado.ProdutoQtdEstoque /
-                                    @ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="sf-badge sf-badge-ok mt-1">
-                                    @ViewBag.ProdutoSelecionado.ProdutoQtdEstoque /
-                                    @ViewBag.ProdutoSelecionado.ProdutoEstoqueMinimo
-                                </span>
-                            }
-
-                        </div>
-
                     </div>
-
-                </div>
-            }
+                }
 
         </div>
+
+            @if (ViewBag.ProdutoSelecionado != null)
+            {
+                <div class="bg-shadow text-light p-3 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div class="sf-segment" id="filtroMovimentacoes">
+                        <button type="button" class="active" data-filtro="todos">Todos</button>
+                        <button type="button" data-filtro="Entrada" class="sf-badge" style="background:#203D3D;color:#30D38D;border-color:#1C594C;">Reabastecimento</button>
+                        <button type="button" data-filtro="Saida" class="sf-badge" style="background:rgba(59,130,246,.14);color:#60a5fa;border-color:rgba(59,130,246,.3);">Venda</button>
+                        <button type="button" data-filtro="SaidaOnline" class="sf-badge" style="background:rgba(6,182,212,.14);color:#22d3ee;border-color:rgba(6,182,212,.3);">Venda Online</button>
+                        <button type="button" data-filtro="Cancelamento" class="sf-badge" style="background:#402D35;color:#DA4435;border-color:#753439;">Cancelamento</button>
+                        <button type="button" data-filtro="CancelamentoOnline" class="sf-badge" style="background:#402D35;color:#DA4435;border-color:#753439;">Cancelamento Online</button>
+                    </div>
+                </div>
+            }
 
 
         <!-- Tabela -->
         <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
-
             <div class="table-responsive">
-
-                <table id="tabelaMovimentacoes"
-                       class="table table-hover align-middle mb-0 text-light">
-
+                <table id="tabelaMovimentacoes" class="table table-hover align-middle mb-0 text-light">
                     <thead>
                         <tr class="bg-tpreto text-secondary sf-thead">
-
-                            <th class="py-3 ps-4">
-                                COD Movi
-                            </th>
-
-                            <th class="py-3">
-                                Data
-                            </th>
-
-                            <th class="py-3 text-center">
-                                Tipo
-                            </th>
-
-                            <th class="py-3 text-center">
-                                QTD
-                            </th>
-
-                            <th class="py-3 text-center">
-                                COD Venda/Compra
-                            </th>
-
-                            <th class="py-3">
-                                Responsável
-                            </th>
-
-                            <th class="py-3 pe-4">
-                                Descrição
-                            </th>
-
+                            <th class="py-3 ps-4">COD Movi</th>
+                            <th class="py-3">Data</th>
+                            <th class="py-3 text-center">Tipo</th>
+                            <th class="py-3 text-center">QTD</th>
+                            <th class="py-3 text-center">COD Venda/Compra</th>
+                            <th class="py-3">Responsável</th>
+                            <th class="py-3 pe-4">Descrição</th>
                         </tr>
                     </thead>
-
-
                     <tbody>
-
                         @if (Model != null && Model.Any())
                         {
                             foreach (var mov in Model)
                             {
-                                <tr>
+                                var tipoFiltro = mov.MovimentacaoTipo;
+                                if (tipoFiltro != "Entrada" &&
+                                    tipoFiltro != "Saida" &&
+                                    tipoFiltro != "SaidaOnline" &&
+                                    tipoFiltro != "Cancelamento" &&
+                                    tipoFiltro != "CancelamentoOnline")
+                                {
+                                    tipoFiltro = "Edicao";
+                                }
 
+                                <tr data-tipo="@tipoFiltro">
                                     <!-- Código da movimentação -->
-                                    <td class="ps-4"
-                                        data-order="@mov.MovimentacaoID">
-
+                                    <td class="ps-4" data-order="@mov.MovimentacaoID">
                                         <span class="sf-badge"
-                                              style="background:rgba(255,255,255,.08); color:#e7e9ee; border-color:rgba(255,255,255,.08);">
-
+                                              style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">
                                             #@mov.MovimentacaoID
-
                                         </span>
-
                                     </td>
-
 
                                     <!-- Data -->
                                     <td class="sf-num">
                                         @mov.MovimentacaoData.ToString("dd/MM/yyyy HH:mm")
                                     </td>
 
-
                                     <!-- Tipo -->
                                     <td class="text-center">
-
                                         @if (mov.MovimentacaoTipo == "Entrada")
                                         {
-                                            <span class="sf-badge sf-badge-ok">
-                                                Reabastecimento
-                                            </span>
+                                            <span class="sf-badge sf-badge-ok">Reabastecimento</span>
                                         }
                                         else if (mov.MovimentacaoTipo == "Saida")
                                         {
-                                            <span class="sf-badge sf-badge-ativo">
-                                                Venda
-                                            </span>
+                                            <span class="sf-badge sf-badge-ativo">Venda</span>
                                         }
                                         else if (mov.MovimentacaoTipo == "SaidaOnline")
                                         {
                                             <span class="sf-badge"
-                                                  style="background:rgba(6,182,212,.14); color:#22d3ee; border-color:rgba(6,182,212,.3);">
+                                                  style="background:rgba(6,182,212,.14);color:#22d3ee;border-color:rgba(6,182,212,.3);">
                                                 Venda Online
                                             </span>
                                         }
                                         else if (mov.MovimentacaoTipo == "Cancelamento")
                                         {
-                                            <span class="sf-badge sf-badge-zerado">
-                                                Cancelamento
-                                            </span>
+                                            <span class="sf-badge sf-badge-zerado">Cancelamento</span>
                                         }
                                         else if (mov.MovimentacaoTipo == "CancelamentoOnline")
                                         {
-                                            <span class="sf-badge sf-badge-zerado">
-                                                Cancelamento Online
-                                            </span>
+                                            <span class="sf-badge sf-badge-zerado">Cancelamento Online</span>
                                         }
                                         else
                                         {
-                                            <span class="sf-badge sf-badge-baixo">
-                                                Edição
-                                            </span>
+                                            <span class="sf-badge sf-badge-baixo">Edição</span>
                                         }
-
                                     </td>
-
 
                                     <!-- Quantidade -->
                                     <td class="text-center sf-num">
-
                                         @if (mov.MovimentacaoTipo == "Entrada")
                                         {
-                                            <span class="text-success fw-semibold">
-                                                +@mov.MovimentacaoQtd
-                                            </span>
+                                            <span class="text-success fw-semibold">+@mov.MovimentacaoQtd</span>
                                         }
-                                        else if (mov.MovimentacaoTipo == "Saida" ||
-                                                 mov.MovimentacaoTipo == "SaidaOnline")
+                                        else if (mov.MovimentacaoTipo == "Saida" || mov.MovimentacaoTipo == "SaidaOnline")
                                         {
-                                            <span class="text-danger fw-semibold">
-                                                -@mov.MovimentacaoQtd
-                                            </span>
+                                            <span class="text-danger fw-semibold">-@mov.MovimentacaoQtd</span>
                                         }
                                         else
                                         {
                                             if (mov.MovimentacaoQtd > 0)
                                             {
-                                                <span class="text-success fw-bold">
-                                                    +@mov.MovimentacaoQtd
-                                                </span>
+                                                <span class="text-success fw-bold">+@mov.MovimentacaoQtd</span>
                                             }
                                             else if (mov.MovimentacaoQtd < 0)
                                             {
-                                                <span class="text-danger fw-bold">
-                                                    @mov.MovimentacaoQtd
-                                                </span>
+                                                <span class="text-danger fw-bold">@mov.MovimentacaoQtd</span>
                                             }
                                             else
                                             {
-                                                <span class="text-secondary">
-                                                    0
-                                                </span>
+                                                <span class="text-secondary">0</span>
                                             }
                                         }
-
                                     </td>
-
 
                                     <!-- Código Venda / Compra / Pedido -->
                                     <td class="text-center"
@@ -269,39 +193,29 @@
                                             : mov.ItemPedido != null
                                             ? mov.ItemPedido.PedidoID
                                             : 0)">
-
                                         @if (mov.ItemVenda != null)
                                         {
-                                            <span class="sf-badge sf-badge-ativo">
-                                                #@mov.ItemVenda.VendaID
-                                            </span>
+                                            <span class="sf-badge sf-badge-ativo">#@mov.ItemVenda.VendaID</span>
                                         }
                                         else if (mov.ItemCompra != null)
                                         {
-                                            <span class="sf-badge sf-badge-ok">
-                                                #@mov.ItemCompra.CompraID
-                                            </span>
+                                            <span class="sf-badge sf-badge-ok">#@mov.ItemCompra.CompraID</span>
                                         }
                                         else if (mov.ItemPedido != null)
                                         {
                                             <span class="sf-badge"
-                                                  style="background:rgba(6,182,212,.14); color:#22d3ee; border-color:rgba(6,182,212,.3);">
+                                                  style="background:rgba(6,182,212,.14);color:#22d3ee;border-color:rgba(6,182,212,.3);">
                                                 #@mov.ItemPedido.PedidoID
                                             </span>
                                         }
                                         else
                                         {
-                                            <span class="text-secondary">
-                                                -
-                                            </span>
+                                            <span class="text-secondary">-</span>
                                         }
-
                                     </td>
-
 
                                     <!-- Responsável -->
                                     <td>
-
                                         @if (mov.ItemPedido != null)
                                         {
                                             @(mov.ItemPedido.Pedido?.UsuarioSeparou?.UsuarioNome ?? "-")
@@ -310,56 +224,34 @@
                                         {
                                             @mov.Usuario?.UsuarioNome
                                         }
-
                                     </td>
-
 
                                     <!-- Descrição -->
-                                    <td class="pe-4"
-                                        title="@mov.MovimentacaoDescricao">
-
-                                        <span class="d-inline-block text-truncate"
-                                              style="max-width:220px;">
-
-                                            @(mov.MovimentacaoDescricao != null &&
-                                              mov.MovimentacaoDescricao.Length > 20
+                                    <td class="pe-4" title="@mov.MovimentacaoDescricao">
+                                        <span class="d-inline-block text-truncate" style="max-width:220px;">
+                                            @(mov.MovimentacaoDescricao != null && mov.MovimentacaoDescricao.Length > 20
                                                 ? mov.MovimentacaoDescricao.Substring(0, 20) + "..."
                                                 : mov.MovimentacaoDescricao)
-
                                         </span>
-
                                     </td>
-
                                 </tr>
                             }
                         }
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </div>
 </div>
 
-
 @section Scripts {
-
     <script>
-
         const produtos = @Html.Raw(Json.Serialize(ViewBag.Produtos));
-
         const buscaInput = document.getElementById("buscaProduto");
         const lista = document.getElementById("listaSugestoes");
 
-
         function renderLista(filtro = "") {
-
             lista.innerHTML = "";
-
             const filtrados = produtos
                 .filter(p =>
                     p.produtoNome.toLowerCase().includes(filtro) ||
@@ -367,155 +259,109 @@
                 )
                 .slice(0, 8);
 
-
             filtrados.forEach(p => {
-
                 const item = document.createElement("a");
-
-                item.classList.add(
-                    "list-group-item",
-                    "list-group-item-action"
-                );
-
-
+                item.classList.add("list-group-item", "list-group-item-action");
                 item.innerHTML = `
-                    <div style="display:flex; justify-content:space-between;">
+                    <div style="display:flex;justify-content:space-between;">
                         <span>${p.produtoNome} [${p.produtoCodBarra}]</span>
                         <span>${p.produtoQtdEstoque} QTD</span>
                     </div>
                 `;
-
-
                 item.onclick = () => {
-
-                    window.location.href =
-                        `/Estoque/Movimentacoes?produtoId=${p.produtoID}`;
-
+                    window.location.href = `/Estoque/Movimentacoes?produtoId=${p.produtoID}`;
                 };
-
-
                 lista.appendChild(item);
-
             });
-
         }
 
-
         buscaInput.addEventListener("focus", () => {
-
-            renderLista(
-                buscaInput.value.toLowerCase()
-            );
-
+            renderLista(buscaInput.value.toLowerCase());
         });
-
 
         buscaInput.addEventListener("input", () => {
-
-            renderLista(
-                buscaInput.value.toLowerCase()
-            );
-
+            renderLista(buscaInput.value.toLowerCase());
         });
-
 
         document.addEventListener("click", e => {
-
-            if (!buscaInput.contains(e.target) &&
-                !lista.contains(e.target)) {
-
+            if (!buscaInput.contains(e.target) && !lista.contains(e.target)) {
                 lista.innerHTML = "";
-
             }
-
         });
 
-
         $(document).ready(function () {
+            var filtroAtivo = "todos";
 
-            $('#tabelaMovimentacoes').DataTable({
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                if (settings.nTable.id !== "tabelaMovimentacoes") {
+                    return true;
+                }
 
+                if (filtroAtivo === "todos") {
+                    return true;
+                }
+
+                var linha = settings.aoData[dataIndex].nTr;
+                return linha.getAttribute("data-tipo") === filtroAtivo;
+            });
+
+            var tabela = $('#tabelaMovimentacoes').DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 30],
-
                 scrollX: true,
                 scrollCollapse: true,
-
                 paging: true,
-
                 order: [],
-
                 columnDefs: [
                     { orderable: false, targets: [5] },
                     { className: "text-center", targets: [2, 3, 4] }
                 ],
-
                 language: {
-
                     decimal: "",
-
-                    emptyTable:
-                        "Movimentações não encontradas",
-
-                    info:
-                        "Mostrando de _START_ a _END_ de um total de _TOTAL_ movimentações",
-
-                    infoEmpty:
-                        "Mostrando de 0 a 0 de 0 movimentações",
-
-                    infoFiltered:
-                        "(filtrado de _MAX_ movimentações no total)",
-
+                    emptyTable: "Movimentações não encontradas",
+                    info: "Mostrando de _START_ a _END_ de um total de _TOTAL_ movimentações",
+                    infoEmpty: "Mostrando de 0 a 0 de 0 movimentações",
+                    infoFiltered: "(filtrado de _MAX_ movimentações no total)",
                     thousands: ",",
-
-                    lengthMenu:
-                        "Mostrar _MENU_ movimentações",
-
-                    loadingRecords:
-                        "Carregando...",
-
-                    search:
-                        "Procurar:",
-
-                    zeroRecords:
-                        "Movimentação não encontrada",
-
+                    lengthMenu: "Mostrar _MENU_ movimentações",
+                    loadingRecords: "Carregando...",
+                    search: "Procurar:",
+                    zeroRecords: "Movimentação não encontrada",
                     paginate: {
-
                         first: "Primeiro",
                         last: "Último",
                         next: "Próximo",
                         previous: "Anterior"
-
                     },
-
                     aria: {
-
-                        orderable:
-                            "Ordenar por esta coluna",
-
-                        orderableReverse:
-                            "Ordem reversa desta coluna"
-
+                        orderable: "Ordenar por esta coluna",
+                        orderableReverse: "Ordem reversa desta coluna"
                     }
-
                 }
-
             });
 
+            const filtroMovimentacoes = document.getElementById("filtroMovimentacoes");
+
+            if (filtroMovimentacoes) {
+                filtroMovimentacoes.querySelectorAll("button").forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        filtroMovimentacoes.querySelectorAll("button").forEach(function (b) {
+                            b.classList.remove("active");
+                        });
+
+                        btn.classList.add("active");
+                        filtroAtivo = btn.getAttribute("data-filtro");
+                        tabela.draw();
+                    });
+                });
+            }
 
             setTimeout(function () {
-
                 $(".alert").fadeOut("slow", function () {
-
                     $(this).alert('close');
-
                 });
-
             }, 3000);
-
         });
-
     </script>
 }
 

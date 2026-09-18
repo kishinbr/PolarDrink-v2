@@ -494,10 +494,12 @@ namespace PolarDrinks.Services
             model.PrevisaoAmanhaCombinada = model.PrevisaoAmanha + model.PrevisaoAmanhaOnline;
 
             // GRÁFICOS
-            model.VendasHojeLista = vendasHoje
+            var vendasHojePorHora = vendasHoje
                 .GroupBy(v => v.VendaData.Hour)
-                .OrderBy(g => g.Key)
-                .Select(g => (decimal)g.Count())
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            model.VendasHojeLista = Enumerable.Range(0, 24)
+                .Select(hora => (decimal)(vendasHojePorHora.ContainsKey(hora) ? vendasHojePorHora[hora] : 0))
                 .ToList();
 
             var ultimos7Dias = Enumerable.Range(0, 7)
@@ -535,6 +537,68 @@ namespace PolarDrinks.Services
             model.VendasAno = mesesAno
                 .Select(mes => (decimal)(vendasAgrupadasAno.ContainsKey(mes) ? vendasAgrupadasAno[mes] : 0))
                 .ToList();
+            // ===== VENDAS POR CANAL E PERÍODO (Presencial + Online) =====
+            var vendasOnlineHojePorHora = pedidosHoje
+                .GroupBy(p => p.PedidoData.Hour)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var vendasOnlineHojeLista = Enumerable.Range(0, 24)
+                .Select(hora => (decimal)(vendasOnlineHojePorHora.ContainsKey(hora) ? vendasOnlineHojePorHora[hora] : 0))
+                .ToList();
+
+            var pedidos7DiasParaGrafico = pedidosValidos.Where(p => p.PedidoData.Date >= hoje.AddDays(-6)).ToList();
+            var vendasOnlineAgrupadas = pedidos7DiasParaGrafico
+                .GroupBy(p => p.PedidoData.Date)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var vendasOnlineSemana = ultimos7Dias
+                .Select(dia => (decimal)(vendasOnlineAgrupadas.ContainsKey(dia) ? vendasOnlineAgrupadas[dia] : 0))
+                .ToList();
+
+            var pedidos30DiasParaGrafico = pedidosValidos.Where(p => p.PedidoData >= inicio30Dias).ToList();
+            var vendasOnlineAgrupadasMes = pedidos30DiasParaGrafico
+                .GroupBy(p => p.PedidoData.Date)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var vendasOnlineMesGrafico = ultimos30Dias
+                .Select(dia => (decimal)(vendasOnlineAgrupadasMes.ContainsKey(dia) ? vendasOnlineAgrupadasMes[dia] : 0))
+                .ToList();
+
+            var vendasOnlineAgrupadasAno = pedidosValidos
+                .Where(p => p.PedidoData >= inicioAno)
+                .GroupBy(p => p.PedidoData.Month)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var vendasOnlineAno = mesesAno
+                .Select(mes => (decimal)(vendasOnlineAgrupadasAno.ContainsKey(mes) ? vendasOnlineAgrupadasAno[mes] : 0))
+                .ToList();
+
+            List<decimal> Somar(List<decimal> a, List<decimal> b) =>
+                a.Zip(b, (x, y) => x + y).ToList();
+
+            model.VendasPorCanalEPeriodo["presencial"] = new Dictionary<string, List<decimal>>
+            {
+                ["hoje"] = model.VendasHojeLista,
+                ["semana"] = model.VendasSemana,
+                ["mes"] = model.VendasMesGrafico,
+                ["ano"] = model.VendasAno
+            };
+
+            model.VendasPorCanalEPeriodo["online"] = new Dictionary<string, List<decimal>>
+            {
+                ["hoje"] = vendasOnlineHojeLista,
+                ["semana"] = vendasOnlineSemana,
+                ["mes"] = vendasOnlineMesGrafico,
+                ["ano"] = vendasOnlineAno
+            };
+
+            model.VendasPorCanalEPeriodo["geral"] = new Dictionary<string, List<decimal>>
+            {
+                ["hoje"] = Somar(model.VendasHojeLista, vendasOnlineHojeLista),
+                ["semana"] = Somar(model.VendasSemana, vendasOnlineSemana),
+                ["mes"] = Somar(model.VendasMesGrafico, vendasOnlineMesGrafico),
+                ["ano"] = Somar(model.VendasAno, vendasOnlineAno)
+            };
 
             // CANCELAMENTOS
             var vendasCanceladas = _vendaRepository.ObterVendasCanceladasComDetalhes();
