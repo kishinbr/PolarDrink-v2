@@ -139,9 +139,9 @@
                     <canvas id="graficoVendas" style="height:300px;"></canvas>
                 </div>
 
-                <!-- PARTICIPAÇÃO + OPERAÇÃO ONLINE -->
+                <!-- PARTICIPAÇÃO + OPERAÇÃO ONLINE + ESTOQUE -->
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card rounded-4 p-3 h-100 bg-shadow">
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <i class="bi bi-pie-chart-fill" style="color:#a78bfa;"></i>
@@ -172,10 +172,10 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card rounded-4 p-3 h-100 bg-shadow">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-truck" style="color:#00BDAE;"></i>  Online</span>
+                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-globe2 ms-1" style="color:#00BDAE;"></i> Online</span>
                                 <span class="sf-chip" style="color:#00BDAE;">Retirada</span>
                             </div>
                             <div class="row g-2">
@@ -210,6 +210,45 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="card rounded-4 p-3 h-100 bg-shadow">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-truck" style="color:#00BDAE;"></i>  Produto em Estoque</span>
+                            </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="bg-tpreto rounded-3 p-2 h-100">
+                                    <i class="bi bi-boxes" style="color:#34d399; font-size:14px;"></i>
+                                    <div class="text-secondary mt-1" style="font-size:.65rem;">Produtos Disponíveis</div>
+                                    <div class="fw-semibold " style="color:#34d399;">@Model.ProdutosCadastrados</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-tpreto rounded-3 p-2 h-100">
+                                    <i class="bi bi-cash-stack" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div class="text-secondary mt-1" style="font-size:.65rem;">Preço estimado do estoque</div>
+                                    <div class="fw-semibold" style="color:#f59e0b;">R$ @Model.ValorEstoqueAproximado.ToString("N2")</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-tpreto rounded-3 p-2 h-100">
+                                    <i class="bi bi-tag-fill" style="color:#c4b5fd; font-size:14px;"></i>
+                                    <div class="text-secondary mt-1" style="font-size:.65rem;">Produtos em Promoção</div>
+                                    <div class="fw-semibold" style="color:#c4b5fd;">@Model.ProdutosEmPromocao</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-tpreto rounded-3 p-2 h-100">
+                                    <i class="bi bi-box-seam" style="color:#f87171; font-size:14px;"></i>
+                                    <div class="text-secondary mt-1" style="font-size:.65rem;">Produtos Indisponíveis</div>
+                                    <div class="fw-semibold" style="color:#f87171;">@Model.ProdutosIndisponiveis</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -220,43 +259,26 @@
                     <!-- CARDS PAGAMENTO -->
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-4">
-                            
                             <div class="card rounded-4  p-3 bg-shadow">
                                 <small class="d-flex align-items-center gap-1" style="color:#00BDAE;"><i class="bi bi-x-diamond" style="color:#00BDAE;"></i> Pix</small>
-                                <h5 id="valPix" class="mt-1 mb-0" style="color:#00BDAE; font-size:1rem;"
-                                    data-presencial="@("R" + Model.TotalPix.ToString("C"))"
-                                    data-online="@("R" + Model.TotalPixOnline.ToString("C"))"
-                                    data-geral="@("R" + Model.TotalPixGeral.ToString("C"))">
-                                    @("R" + Model.TotalPix.ToString("C"))
+                                <h5 id="valPix" class="mt-1 mb-0" style="color:#00BDAE; font-size:1rem;">
+                                    @("R" + Model.PagamentosPorCanalEPeriodo["presencial"]["hoje"].TotalPix.ToString("C"))
                                 </h5>
                             </div>
                         </div>
                         <div class="col-12 col-sm-4">
                             <div class="card rounded-4 p-3 bg-shadow">
-
                                 <small style="color:mediumpurple;"><i class="bi bi-credit-card" style="color:mediumpurple;"></i> Cartão</small>
-                                <h5 id="valCartao" class="mt-1 mb-0" style="color:mediumpurple; font-size:1rem;"
-                                    data-presencial="@("R" + Model.TotalCartao.ToString("C"))"
-                                    data-online="@("R" + Model.TotalCartaoOnline.ToString("C"))"
-                                    data-geral="@("R" + Model.TotalCartaoGeral.ToString("C"))">
-                                    @("R" + Model.TotalCartao.ToString("C"))
+                                <h5 id="valCartao" class="mt-1 mb-0" style="color:mediumpurple; font-size:1rem;">
+                                    @("R" + Model.PagamentosPorCanalEPeriodo["presencial"]["hoje"].TotalCartao.ToString("C"))
                                 </h5>
                             </div>
                         </div>
                         <div class="col-12 col-sm-4">
                             <div class="card rounded-4 h-100 p-3 bg-shadow">
                                 <small style="color:#198754;"><i class="bi bi-cash" style="color:#198754;"></i> Dinheiro</small>
-                                @* <div class="text-secondary" style="font-size:.75rem;"
-                                     data-presencial="@Model.QtdDinheiro vendas"
-                                     data-online="0 vendas"
-                                     data-geral="@Model.QtdDinheiroGeral vendas">
-                                    @Model.QtdDinheiro vendas
-                                </div> *@
-                                <h5 id="valDinheiro" class="mt-1 mb-0" style="color:#198754; font-size:1rem;"
-                                    data-presencial="@("R" + Model.TotalDinheiro.ToString("C"))"
-                                    data-online="R$ 0,00"
-                                    data-geral="@("R" + Model.TotalDinheiroGeral.ToString("C"))">
-                                    @("R" + Model.TotalDinheiro.ToString("C"))
+                                <h5 id="valDinheiro" class="mt-1 mb-0" style="color:#198754; font-size:1rem;">
+                                    @("R" + Model.PagamentosPorCanalEPeriodo["presencial"]["hoje"].TotalDinheiro.ToString("C"))
                                 </h5>
                             </div>
                         </div>

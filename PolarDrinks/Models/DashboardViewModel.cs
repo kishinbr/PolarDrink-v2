@@ -8,36 +8,41 @@
         public decimal LucroHoje { get; set; }
         public decimal LucroMes { get; set; }
 
-        // PAGAMENTOS (CARDS - HOJE)
-        public int QtdPix { get; set; }
-        public int QtdCartao { get; set; }
-        public int QtdDinheiro { get; set; }
-        public decimal TotalPix { get; set; }
-        public decimal TotalCartao { get; set; }
-        public decimal TotalDinheiro { get; set; }
+        //// PAGAMENTOS (CARDS - HOJE)
+        //public int QtdPix { get; set; }
+        //public int QtdCartao { get; set; }
+        //public int QtdDinheiro { get; set; }
+        //public decimal TotalPix { get; set; }
+        //public decimal TotalCartao { get; set; }
+        //public decimal TotalDinheiro { get; set; }
 
-        // PAGAMENTOS (GRÁFICO)
-        public decimal PixHoje { get; set; }
-        public decimal CartaoHoje { get; set; }
-        public decimal DinheiroHoje { get; set; }
+        //// PAGAMENTOS (GRÁFICO)
+        //public decimal PixHoje { get; set; }
+        //public decimal CartaoHoje { get; set; }
+        //public decimal DinheiroHoje { get; set; }
 
-        public decimal PixSemana { get; set; }
-        public decimal CartaoSemana { get; set; }
-        public decimal DinheiroSemana { get; set; }
+        //public decimal PixSemana { get; set; }
+        //public decimal CartaoSemana { get; set; }
+        //public decimal DinheiroSemana { get; set; }
 
-        public decimal PixMes { get; set; }
-        public decimal CartaoMes { get; set; }
-        public decimal DinheiroMes { get; set; }
+        //public decimal PixMes { get; set; }
+        //public decimal CartaoMes { get; set; }
+        //public decimal DinheiroMes { get; set; }
 
-        public decimal PixTotal { get; set; }
-        public decimal CartaoTotal { get; set; }
-        public decimal DinheiroTotal { get; set; }
+        //public decimal PixTotal { get; set; }
+        //public decimal CartaoTotal { get; set; }
+        //public decimal DinheiroTotal { get; set; }
 
         public Dictionary<string, Dictionary<string, List<decimal>>> VendasPorCanalEPeriodo { get; set; } = new();
 
         // ESTOQUE
         public int EstoqueBaixo { get; set; }
         public int SemEstoque { get; set; }
+        // PRODUTOS EM ESTOQUE (RESUMO)
+        public int ProdutosCadastrados { get; set; }
+        public int ProdutosIndisponiveis { get; set; }
+        public int ProdutosEmPromocao { get; set; }
+        public decimal ValorEstoqueAproximado { get; set; }
 
         // PRODUTOS
         public string? ProdutoMaisVendido { get; set; }
@@ -104,18 +109,18 @@
         public decimal PrevisaoAmanhaOnline { get; set; }
         public decimal PrevisaoAmanhaCombinada { get; set; }
         // PAGAMENTOS - ONLINE (Hoje)
-        public int QtdPixOnline { get; set; }
-        public int QtdCartaoOnline { get; set; }
-        public decimal TotalPixOnline { get; set; }
-        public decimal TotalCartaoOnline { get; set; }
+        //public int QtdPixOnline { get; set; }
+        //public int QtdCartaoOnline { get; set; }
+        //public decimal TotalPixOnline { get; set; }
+        //public decimal TotalCartaoOnline { get; set; }
 
         // PAGAMENTOS - GERAL Hoje (Presencial + Online)
-        public int QtdPixGeral { get; set; }
-        public int QtdCartaoGeral { get; set; }
-        public int QtdDinheiroGeral { get; set; }
-        public decimal TotalPixGeral { get; set; }
-        public decimal TotalCartaoGeral { get; set; }
-        public decimal TotalDinheiroGeral { get; set; }
+        //public int QtdPixGeral { get; set; }
+        //public int QtdCartaoGeral { get; set; }
+        //public int QtdDinheiroGeral { get; set; }
+        //public decimal TotalPixGeral { get; set; }
+        //public decimal TotalCartaoGeral { get; set; }
+        //public decimal TotalDinheiroGeral { get; set; }
         public Dictionary<string, Dictionary<string, PagamentoResumoDto>> PagamentosPorCanalEPeriodo { get; set; } = new();
 
         // GIRO DE ESTOQUE

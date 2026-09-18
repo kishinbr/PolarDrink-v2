@@ -5,35 +5,29 @@
 @model IEnumerable<ProdutoModel>
 @using System.Globalization
 
-@{
-    var produtos = Model ?? Enumerable.Empty<ProdutoModel>();
-    var totalProdutos = produtos.Count();
-    var estoqueBaixo = produtos.Count(p => p.ProdutoQtdEstoque.GetValueOrDefault(0) > 0
-                                        && p.ProdutoQtdEstoque.GetValueOrDefault(0) <= p.ProdutoEstoqueMinimo);
-    var estoqueZerado = produtos.Count(p => p.ProdutoQtdEstoque.GetValueOrDefault(0) == 0);
-    var valorEstoque = produtos.Sum(p => p.ProdutoPrecoCusto.GetValueOrDefault(0) * p.ProdutoQtdEstoque.GetValueOrDefault(0));
-    var isAdmin = Context.Session.GetString("Perfil") == "Admin";
-}
-
 <div class="tema-dark">
     <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
 
-        <!-- Header -->
         <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+
             <div class="d-flex align-items-center gap-3">
                 <div class="sf-icon-badge" style="background: linear-gradient(135deg,#3b82f6,#6366f1); box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
                     <i class="bi bi-box-seam-fill fs-4 text-white"></i>
                 </div>
+
                 <div>
                     <h1 class="m-0 fs-3 fw-bold">Estoque de Produtos</h1>
                 </div>
             </div>
-            @if (isAdmin)
+
+            @if (Context.Session.GetString("Perfil") == "Admin")
             {
                 <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
                    style="background: linear-gradient(135deg,#10b981,#059669);"
-                   asp-controller="Estoque" asp-action="Cadastrar"
-                   data-bs-toggle="tooltip" title="Cadastrar">
+                   asp-controller="Estoque"
+                   asp-action="Cadastrar"
+                   data-bs-toggle="tooltip"
+                   title="Cadastrar">
                     <i class="bi bi-file-earmark-plus-fill me-2"></i>Cadastrar novo Produto
                 </a>
             }
@@ -41,180 +35,175 @@
 
         @if (TempData["MensagemSucesso"] != null)
         {
-            <div class="alert border-0 text-light rounded-3 mb-3" style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;" role="alert">
-                <i class="bi bi-check-circle-fill me-2" style="color:#34d399;"></i>@TempData["MensagemSucesso"]
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;"
+                 role="alert">
+                <i class="bi bi-check-circle-fill me-2" style="color:#34d399;"></i>
+                @TempData["MensagemSucesso"]
             </div>
         }
-        else if (TempData["MensagemErro"] != null)
+        else if(TempData["MensagemErro"] != null)
         {
-            <div class="alert border-0 text-light rounded-3 mb-3" style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2" style="color:#f87171;"></i>@TempData["MensagemErro"]
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;"
+                 role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2" style="color:#f87171;"></i>
+                @TempData["MensagemErro"]
             </div>
         }
 
-        <!-- KPIs -->
-        <div class="row g-3 mb-3">
-            <div class="col-6 col-lg-3">
-                <div class="bg-shadow text-light p-3 rounded-4">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-primary">Total de Produtos</span>
-                        
-                    </div>
-                    <div class="fw-bold" style="font-size:1.6rem; line-height:1.1;">@totalProdutos</div>
-                    <span class="text-secondary" style="font-size:.72rem;">itens cadastrados</span>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="bg-shadow text-light p-3 rounded-4 ">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-warning">Estoque Baixo</span>
-                    </div>
-                    <div class="fw-bold" style="font-size:1.6rem; line-height:1.1;">@estoqueBaixo</div>
-                    <span class="text-secondary" style="font-size:.72rem;">abaixo do mínimo</span>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="bg-shadow text-light p-3 rounded-4">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-warning">Produtos Zerados</span>
-                    </div>
-                    <div class="fw-bold" style="font-size:1.6rem; line-height:1.1;">@estoqueZerado</div>
-                    <span class="text-secondary" style="font-size:.72rem;">sem estoque</span>
-                </div>
-            </div>
-            
-            <div class="col-6 col-lg-3">
-                <div class="bg-shadow text-light p-3 rounded-4 ">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-success" >Valor em Estoque</span>
-                    </div>
-                    <div class="fw-bold" style="font-size:1.6rem; line-height:1.1;">@("R" + valorEstoque.ToString("C"))</div>
-                    <span class="text-secondary" style="font-size:.72rem;">a preço de custo</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filtros + busca -->
-        <div class="bg-shadow text-light p-3 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
-        <div class="sf-segment" id="filtroEstoque">
-            <button type="button" class="active" data-filtro="todos">Todos</button>
-            <button type="button" data-filtro="baixo" class="sf-badge" style="background:#403B2D;color:#DAB435;border-color:#756334;">Estoque baixo</button>
-            <button type="button" data-filtro="zerado" class="sf-badge" style="background:#402D35;color:#DA4435;border-color:#753439;">Zerados</button>
-            <button type="button" data-filtro="promo" class="sf-badge" style="background:#382D40;color:#C4B5FD;border-color:#634C75;">Em promoção</button>
-        </div>
-
-            <div class="position-relative" style="min-width:260px; flex:0 1 320px;">
-                <i class="bi bi-search position-absolute text-secondary" style="left:14px; top:50%; transform:translateY(-50%);"></i>
-                <input type="text" id="buscaProduto" placeholder="Buscar por nome, código ou descrição..."
-                       class="form-control bg-tpreto text-light border-0 ps-5 py-2 rounded-3" style="box-shadow:none;">
-            </div>
-        </div>
-
-        <!-- Tabela -->
         <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
+
             <div class="table-responsive">
+
                 <table id="Produtos" class="table table-hover align-middle mb-0 text-light">
+
                     <thead>
                         <tr class="bg-tpreto text-secondary sf-thead">
-                            <th class="py-3 ps-4">Nome</th>
-                            <th class="py-3 text-center">Cod Barra</th>
-                            <th class="py-3">Descrição</th>
-                            <th class="py-3 text-end">P. Custo</th>
-                            <th class="py-3 text-end">P. Venda</th>
-                            <th class="py-3 text-center">Qtd / Mín</th>
-                            <th class="py-3 text-center">Promoção</th>
-                            <th class="py-3 text-center">Status</th>
-                            @if (isAdmin)
+                            <th class="py-3 ps-4" style="width: 15%;">Nome</th>
+                            <th class="py-3 text-center" style="width: 15%;">Cod Barra</th>
+                            <th class="py-3" style="width: 15%;">Descrição</th>
+                            <th class="py-3 text-end" style="width: 10%;">P. Custo</th>
+                            <th class="py-3 text-end" style="width: 10%;">P. Venda</th>
+                            <th class="py-3 text-center" style="width: 10%;">Qtd / Mín</th>
+                            <th class="py-3 text-center" style="width: 5%;">Promoção</th>
+                            <th class="py-3 text-center" style="width: 15%;">Status</th>
+
+                            @if (Context.Session.GetString("Perfil") == "Admin")
                             {
-                                <th class="py-3 text-center pe-4">Edição</th>
+                                <th class="py-3 text-center pe-4" style="width: 10%;">Edição</th>
                             }
                         </tr>
                     </thead>
+
                     <tbody>
-                        @foreach (var produto in produtos)
+                        @if (Model != null)
                         {
-                            var atual = produto.ProdutoQtdEstoque.GetValueOrDefault(0);
-                            var minimo = produto.ProdutoEstoqueMinimo;
-
-                            string classeBadge;
-                            string filtroEstoque;
-                            if (atual == 0)
+                            @foreach (var produto in Model)
                             {
-                                classeBadge = "sf-badge sf-badge-zerado";
-                                filtroEstoque = "zerado";
-                            }
-                            else if (atual <= minimo)
-                            {
-                                classeBadge = "sf-badge sf-badge-baixo";
-                                filtroEstoque = "baixo";
-                            }
-                            else
-                            {
-                                classeBadge = "sf-badge sf-badge-ok";
-                                filtroEstoque = "ok";
-                            }
+                                <tr>
 
-                            var temPromo = produto.ProdutoPromocao > 0;
-
-                            <tr data-filtro-estoque="@filtroEstoque" data-promo="@(temPromo ? "sim" : "nao")">
-                                <td class="ps-4 fw-semibold">@produto.ProdutoNome</td>
-                                <td class="text-center text-secondary sf-num">@produto.ProdutoCodBarra</td>
-                                <td class="text-secondary" style="max-width:220px;">
-                                    <span class="d-inline-block text-truncate" style="max-width:200px;">
-                                        @(produto.ProdutoDescricao != null && produto.ProdutoDescricao.Length > 20
-                                            ? produto.ProdutoDescricao.Substring(0, 20) + "..."
-                                            : produto.ProdutoDescricao)
-                                    </span>
-                                </td>
-                                <td class="text-end sf-num">@("R" + produto.ProdutoPrecoCusto.GetValueOrDefault(0).ToString("C"))</td>
-                                <td class="text-end fw-semibold sf-num">@("R" + produto.ProdutoPrecoVenda.GetValueOrDefault(0).ToString("C"))</td>
-                                <td class="text-center" data-order="@atual">
-                                    <span class="@classeBadge">@($"{atual}/{minimo}")</span>
-                                </td>
-                                <td class="text-center">
-                                    @if (temPromo)
-                                    {
-                                        <span class="fw-semibold" style="color:#34d399;">@produto.ProdutoPromocao.ToString("0.#")%</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-secondary">-</span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    @if (produto.ProdutoAtivo)
-                                    {
-                                        <span class="sf-badge sf-badge-ativo">Disponível</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="sf-badge sf-badge-inativo">Indisponível</span>
-                                    }
-                                </td>
-                                @if (isAdmin)
-                                {
-                                    <td class="text-center pe-4">
-                                        <div class="d-inline-flex gap-2">
-                                            <a class="btn btn-sm border-0 text-white sf-btn-edit"
-                                               asp-controller="Estoque" asp-action="Editar" asp-route-id="@produto.ProdutoID"
-                                               data-bs-toggle="tooltip" title="Edição completa">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <a class="btn btn-sm border-0 text-white btn-edicao-rapida sf-btn-promo"
-                                               data-bs-toggle="modal" data-bs-target="#edicaoRapidaModal"
-                                               data-id="@produto.ProdutoID"
-                                               data-preco="@produto.ProdutoPrecoVenda"
-                                               data-promocao="@produto.ProdutoPromocao"
-                                               title="Promoção">
-                                                <i class="bi bi-percent"></i>
-                                            </a>
-                                        </div>
+                                    <td class="ps-4 fw-semibold">
+                                        @produto.ProdutoNome
                                     </td>
-                                }
-                            </tr>
+
+                                    <td class="text-center text-secondary sf-num">
+                                        @produto.ProdutoCodBarra
+                                    </td>
+
+                                    <td class="text-secondary" style="max-width:220px;">
+                                        <span class="d-inline-block text-truncate" style="max-width:200px;">
+                                            @(produto.ProdutoDescricao != null && produto.ProdutoDescricao.Length > 20
+                                                ? produto.ProdutoDescricao.Substring(0, 20) + "..."
+                                                : produto.ProdutoDescricao)
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end sf-num">
+                                        @("R" + produto.ProdutoPrecoCusto.GetValueOrDefault(0).ToString("C"))
+                                    </td>
+
+                                    <td class="text-end fw-semibold sf-num">
+                                        @("R" + produto.ProdutoPrecoVenda.GetValueOrDefault(0).ToString("C"))
+                                    </td>
+
+                                    <td class="text-center" data-order="@produto.ProdutoQtdEstoque.GetValueOrDefault(0)">
+
+                                        @{
+                                            var atual = produto.ProdutoQtdEstoque.GetValueOrDefault(0);
+                                            var minimo = produto.ProdutoEstoqueMinimo;
+
+                                            string classe = "";
+
+                                            if (atual == 0)
+                                            {
+                                                classe = "sf-badge sf-badge-zerado";
+                                            }
+                                            else if (atual <= minimo)
+                                            {
+                                                classe = "sf-badge sf-badge-baixo";
+                                            }
+                                            else
+                                            {
+                                                classe = "sf-badge sf-badge-ok";
+                                            }
+                                        }
+
+                                        <span class="@classe">
+                                            @($"{atual}/{minimo}")
+                                        </span>
+
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @if (produto.ProdutoPromocao > 0)
+                                        {
+                                            <span class="fw-semibold" style="color:#34d399;">
+                                                @produto.ProdutoPromocao.ToString("0.#")%
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-secondary">-</span>
+                                        }
+
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @if (produto.ProdutoAtivo)
+                                        {
+                                            <span class="sf-badge sf-badge-ativo">
+                                                Disponível
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="sf-badge sf-badge-inativo">
+                                                Indisponível
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    @if (Context.Session.GetString("Perfil") == "Admin")
+                                    {
+                                        <td class="text-center pe-4">
+
+                                            <div class="d-inline-flex gap-2">
+
+                                                <a class="btn btn-sm border-0 text-white sf-btn-edit"
+                                                   asp-controller="Estoque"
+                                                   asp-action="Editar"
+                                                   asp-route-id="@produto.ProdutoID"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Edição completa">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+
+                                                <a class="btn btn-sm border-0 text-white btn-edicao-rapida sf-btn-promo"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#edicaoRapidaModal"
+                                                   data-id="@produto.ProdutoID"
+                                                   data-preco="@produto.ProdutoPrecoVenda"
+                                                   data-promocao="@produto.ProdutoPromocao"
+                                                   title="Promoção">
+                                                    <i class="bi bi-percent"></i>
+                                                </a>
+
+                                            </div>
+
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
                         }
                     </tbody>
+
                 </table>
+
             </div>
         </div>
     </div>
@@ -222,89 +211,110 @@
 
 <!-- Edição Rápida -->
 <div class="modal fade" id="edicaoRapidaModal" tabindex="-1">
+
     <div class="modal-dialog modal-dialog-centered">
+
         <div class="modal-content bg-shadow text-light rounded-4 border-0">
+
             <div class="modal-header border-0">
+
                 <h5 class="modal-title fw-bold">
-                    <i class="bi bi-percent me-2" style="color:#a78bfa;"></i>Promoção Rápida do Produto
+                    <i class="bi bi-percent me-2" style="color:#a78bfa;"></i>
+                    Promoção Rápida do Produto
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
             </div>
+
             <div class="modal-body">
-                <form id="formEdicaoRapida" method="post" asp-controller="Estoque" asp-action="EdicaoRapida">
-                    <input type="hidden" id="ProdutoID" name="ProdutoID" />
+
+                <form id="formEdicaoRapida"
+                      method="post"
+                      asp-controller="Estoque"
+                      asp-action="EdicaoRapida">
+
+                    <input type="hidden"
+                           id="ProdutoID"
+                           name="ProdutoID" />
 
                     <div class="mb-3">
-                        <label class="form-label text-secondary" style="font-size:.8rem;">Preço de Venda</label>
-                        <input type="text" class="form-control bg-light text-light border-0 py-2 rounded-3" id="PrecoVenda" name="ProdutoPrecoVenda" style="box-shadow:none;">
+
+                        <label class="form-label text-secondary"
+                               style="font-size:.8rem;">
+                            Preço de Venda
+                        </label>
+
+                        <input type="text"
+                               class="form-control bg-shadow text-light border-0 py-2 rounded-3"
+                               id="PrecoVenda"
+                               name="ProdutoPrecoVenda">
+
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-secondary" style="font-size:.8rem;">Promoção (%)</label>
-                        <input type="text" class="form-control bg-light text-light border-0 py-2 rounded-3" id="Promocao" name="ProdutoPromocao" style="box-shadow:none;">
+
+                        <label class="form-label text-secondary"
+                               style="font-size:.8rem;">
+                            Promoção (%)
+                        </label>
+
+                        <input type="text"
+                               class="form-control bg-shadow text-light border-0 py-2 rounded-3"
+                               id="Promocao"
+                               name="ProdutoPromocao">
+
                     </div>
+
                 </form>
+
             </div>
+
             <div class="modal-footer border-0">
-                <button type="button" class="btn border-0 text-light px-3 rounded-3" style="background:rgba(255,255,255,.08);" data-bs-dismiss="modal" title="Voltar">Voltar</button>
-                <button type="button" class="btn border-0 text-white px-3 rounded-3 fw-semibold" style="background:linear-gradient(135deg,#10b981,#059669);" id="btnConfirmarEdicao" title="Confirmar">Confirmar</button>
+
+                <button type="button"
+                        class="btn border-0 text-light px-3 rounded-3"
+                        style="background:rgba(255,255,255,.08);"
+                        data-bs-dismiss="modal"
+                        title="Voltar">
+                    Voltar
+                </button>
+
+                <button type="button"
+                        class="btn border-0 text-white px-3 rounded-3 fw-semibold"
+                        style="background:linear-gradient(135deg,#10b981,#059669);"
+                        id="btnConfirmarEdicao"
+                        title="Confirmar">
+                    Confirmar
+                </button>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
-
-
 
 @section Scripts {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ===========================
-    // FILTRO + BUSCA
-    // ===========================
-    var segment = document.getElementById('filtroEstoque');
-    var busca = document.getElementById('buscaProduto');
-    var linhas = Array.from(document.querySelectorAll('#Produtos tbody tr'));
-    var filtroAtivo = 'todos';
-
-    function aplicarFiltros() {
-        var termo = (busca.value || '').trim().toLowerCase();
-        linhas.forEach(function (tr) {
-            var texto = tr.innerText.toLowerCase();
-            var estoque = tr.getAttribute('data-filtro-estoque');
-            var promo = tr.getAttribute('data-promo');
-
-            var matchBusca = !termo || texto.indexOf(termo) !== -1;
-            var matchFiltro = true;
-            if (filtroAtivo === 'baixo') matchFiltro = estoque === 'baixo';
-            else if (filtroAtivo === 'zerado') matchFiltro = estoque === 'zerado';
-            else if (filtroAtivo === 'promo') matchFiltro = promo === 'sim';
-
-            tr.style.display = (matchBusca && matchFiltro) ? '' : 'none';
-        });
-    }
-
-    segment.querySelectorAll('button').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            segment.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
-            btn.classList.add('active');
-            filtroAtivo = btn.getAttribute('data-filtro');
-            aplicarFiltros();
-        });
-    });
-
-    busca.addEventListener('input', aplicarFiltros);
-
-    // ===========================
-    // MODAL EDIÇÃO RÁPIDA (original)
-    // ===========================
     var modal = document.getElementById('edicaoRapidaModal');
     var btnConfirmar = document.getElementById('btnConfirmarEdicao');
 
     const precoInput = document.getElementById("PrecoVenda");
     const promocaoInput = document.getElementById("Promocao");
 
+    // ===========================
+    // ABRIR MODAL
+    // ===========================
+
     modal.addEventListener('show.bs.modal', function (event) {
+
         var button = event.relatedTarget;
 
         var id = button.getAttribute('data-id');
@@ -321,11 +331,15 @@ document.addEventListener("DOMContentLoaded", function () {
         promocaoInput.placeholder = promocaoFormatada;
     });
 
+
     precoInput.addEventListener("input", function () {
+
         let value = this.value;
+
         value = value.replace(/[^0-9.]/g, '');
 
         let parts = value.split('.');
+
         if (parts.length > 2) {
             value = parts[0] + '.' + parts[1];
         }
@@ -335,22 +349,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (value.includes('.')) {
+
             let [intPart, decPart] = value.split('.');
+
             intPart = intPart.substring(0, 5);
             decPart = decPart.substring(0, 2);
+
             value = intPart + '.' + decPart;
+
         } else {
+
             value = value.substring(0, 5);
         }
 
         this.value = value;
     });
 
+
     promocaoInput.addEventListener("input", function () {
+
         let value = this.value;
+
         value = value.replace(/[^0-9.]/g, '');
 
         let parts = value.split('.');
+
         if (parts.length > 2) {
             value = parts[0] + '.' + parts[1];
         }
@@ -360,30 +383,41 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (value.includes('.')) {
+
             let [intPart, decPart] = value.split('.');
+
             intPart = intPart.substring(0, 3);
             decPart = decPart.substring(0, 1);
+
             value = intPart + '.' + decPart;
+
         } else {
+
             value = value.substring(0, 3);
         }
 
         let numero = parseFloat(value) || 0;
+
         if (numero > 100) numero = 100;
 
         this.value = numero.toString();
     });
 
+
     btnConfirmar.addEventListener('click', function () {
+
         if (!precoInput.value) {
             precoInput.value = precoInput.placeholder || "0.00";
         }
+
         if (!promocaoInput.value) {
             promocaoInput.value = promocaoInput.placeholder || "0";
         }
+
         document.getElementById('formEdicaoRapida').submit();
     });
 
 });
 </script>
 }
+

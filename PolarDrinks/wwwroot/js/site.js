@@ -249,7 +249,7 @@ $(document).ready(function () {
             { orderable: false, targets: [5] },
             { className: "text-center", targets: [0, 1, 3, 4, 5] }
         ],
-        order: [[0, 'desc']], // 
+        order: [], // 
         language: {
             "decimal": "",
             "emptyTable": "Nenhuma venda registrada",
@@ -323,7 +323,7 @@ $(document).ready(function () {
             { orderable: false, targets: [7] },
             { className: "text-center", targets: [0, 1, 2, 3, 4, 5, 6, 7] }
         ],
-        order: [[2, 'desc']],
+        order: [],
         language: {
             "decimal": "",
             "emptyTable": "Nenhum pedido registrado",
@@ -357,7 +357,7 @@ $(document).ready(function () {
         let dataFim = $('#dataFimPedidos').val();
 
         let linha = tablePedidosOnline.row(dataIndex).node();
-        let dataPedido = linha.children[2].getAttribute("data-order");
+        let dataPedido = linha.children[1].getAttribute("data-order");
 
         if (!dataInicio && !dataFim) return true;
 

@@ -81,36 +81,43 @@ namespace PolarDrinks.Services
             model.TicketMedio = todasVendas.Any() ? todasVendas.Average(v => v.VendaValorTotal) : 0;
 
             // PAGAMENTOS (CARDS - HOJE)
-            model.QtdPix = vendasHoje.Count(v => v.VendaTipoPagamento == "Pix");
-            model.QtdCartao = vendasHoje.Count(v => v.VendaTipoPagamento == "Cartão");
-            model.QtdDinheiro = vendasHoje.Count(v => v.VendaTipoPagamento == "Dinheiro");
+            //model.QtdPix = vendasHoje.Count(v => v.VendaTipoPagamento == "Pix");
+            //model.QtdCartao = vendasHoje.Count(v => v.VendaTipoPagamento == "Cartão");
+            //model.QtdDinheiro = vendasHoje.Count(v => v.VendaTipoPagamento == "Dinheiro");
 
-            model.TotalPix = vendasHoje.Where(v => v.VendaTipoPagamento == "Pix").Sum(v => v.VendaValorTotal);
-            model.TotalCartao = vendasHoje.Where(v => v.VendaTipoPagamento == "Cartão").Sum(v => v.VendaValorTotal);
-            model.TotalDinheiro = vendasHoje.Where(v => v.VendaTipoPagamento == "Dinheiro").Sum(v => v.VendaValorTotal);
+            //model.TotalPix = vendasHoje.Where(v => v.VendaTipoPagamento == "Pix").Sum(v => v.VendaValorTotal);
+            //model.TotalCartao = vendasHoje.Where(v => v.VendaTipoPagamento == "Cartão").Sum(v => v.VendaValorTotal);
+            //model.TotalDinheiro = vendasHoje.Where(v => v.VendaTipoPagamento == "Dinheiro").Sum(v => v.VendaValorTotal);
 
             // PAGAMENTOS (GRÁFICOS)
-            model.PixHoje = vendasHoje.Count(v => v.VendaTipoPagamento == "Pix");
-            model.CartaoHoje = vendasHoje.Count(v => v.VendaTipoPagamento == "Cartão");
-            model.DinheiroHoje = vendasHoje.Count(v => v.VendaTipoPagamento == "Dinheiro");
+            //model.PixHoje = vendasHoje.Count(v => v.VendaTipoPagamento == "Pix");
+            //model.CartaoHoje = vendasHoje.Count(v => v.VendaTipoPagamento == "Cartão");
+            //model.DinheiroHoje = vendasHoje.Count(v => v.VendaTipoPagamento == "Dinheiro");
 
-            model.PixSemana = vendas7Dias.Count(v => v.VendaTipoPagamento == "Pix");
-            model.CartaoSemana = vendas7Dias.Count(v => v.VendaTipoPagamento == "Cartão");
-            model.DinheiroSemana = vendas7Dias.Count(v => v.VendaTipoPagamento == "Dinheiro");
+            //model.PixSemana = vendas7Dias.Count(v => v.VendaTipoPagamento == "Pix");
+            //model.CartaoSemana = vendas7Dias.Count(v => v.VendaTipoPagamento == "Cartão");
+            //model.DinheiroSemana = vendas7Dias.Count(v => v.VendaTipoPagamento == "Dinheiro");
 
-            model.PixMes = vendas30Dias.Count(v => v.VendaTipoPagamento == "Pix");
-            model.CartaoMes = vendas30Dias.Count(v => v.VendaTipoPagamento == "Cartão");
-            model.DinheiroMes = vendas30Dias.Count(v => v.VendaTipoPagamento == "Dinheiro");
+            //model.PixMes = vendas30Dias.Count(v => v.VendaTipoPagamento == "Pix");
+            //model.CartaoMes = vendas30Dias.Count(v => v.VendaTipoPagamento == "Cartão");
+            //model.DinheiroMes = vendas30Dias.Count(v => v.VendaTipoPagamento == "Dinheiro");
 
-            model.PixTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Pix");
-            model.CartaoTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Cartão");
-            model.DinheiroTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Dinheiro");
+            //model.PixTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Pix");
+            //model.CartaoTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Cartão");
+            //model.DinheiroTotal = todasVendas.Count(v => v.VendaTipoPagamento == "Dinheiro");
 
 
             // ESTOQUE
             model.SemEstoque = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) == 0);
             model.EstoqueBaixo = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) <= p.ProdutoEstoqueMinimo);
+            // PRODUTOS EM ESTOQUE (RESUMO)
+            model.ProdutosCadastrados = produtos.Count(p => p.ProdutoAtivo);
+            model.ProdutosIndisponiveis = produtos.Count(p => !p.ProdutoAtivo);
+            model.ProdutosEmPromocao = produtos.Count(p => p.ProdutoAtivo && p.ProdutoPromocao > 0);
 
+            model.ValorEstoqueAproximado = produtos
+                .Where(p => p.ProdutoAtivo)
+                .Sum(p => (p.ProdutoQtdEstoque ?? 0) * (p.ProdutoPrecoCusto ?? 0));
 
 
             // ===== LOJA ONLINE =====
@@ -131,21 +138,22 @@ namespace PolarDrinks.Services
 
             model.LucroOnlineMes = pedidosMes.Sum(p =>
                 p.Itens.Sum(i => (i.ItemPedidoPreco - i.ItemPedidoCusto) * i.ItemPedidoQtd));
+
             // PAGAMENTOS - ONLINE (Hoje)
-            model.QtdPixOnline = pedidosHoje.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix);
-            model.QtdCartaoOnline = pedidosHoje.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao);
+            //model.QtdPixOnline = pedidosHoje.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix);
+            //model.QtdCartaoOnline = pedidosHoje.Count(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao);
 
-            model.TotalPixOnline = pedidosHoje.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix).Sum(p => p.PedidoValorTotal);
-            model.TotalCartaoOnline = pedidosHoje.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao).Sum(p => p.PedidoValorTotal);
+            //model.TotalPixOnline = pedidosHoje.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Pix).Sum(p => p.PedidoValorTotal);
+            //model.TotalCartaoOnline = pedidosHoje.Where(p => p.PedidoTipoPagamento == PedidoModel.TipoPagamento.Cartao).Sum(p => p.PedidoValorTotal);
 
-            // PAGAMENTOS - GERAL Hoje (Presencial + Online)
-            model.QtdPixGeral = model.QtdPix + model.QtdPixOnline;
-            model.QtdCartaoGeral = model.QtdCartao + model.QtdCartaoOnline;
-            model.QtdDinheiroGeral = model.QtdDinheiro; // Dinheiro só existe no Presencial
+            //// PAGAMENTOS - GERAL Hoje (Presencial + Online)
+            //model.QtdPixGeral = model.QtdPix + model.QtdPixOnline;
+            //model.QtdCartaoGeral = model.QtdCartao + model.QtdCartaoOnline;
+            //model.QtdDinheiroGeral = model.QtdDinheiro; // Dinheiro só existe no Presencial
 
-            model.TotalPixGeral = model.TotalPix + model.TotalPixOnline;
-            model.TotalCartaoGeral = model.TotalCartao + model.TotalCartaoOnline;
-            model.TotalDinheiroGeral = model.TotalDinheiro; // Dinheiro só existe no Presencial
+            //model.TotalPixGeral = model.TotalPix + model.TotalPixOnline;
+            //model.TotalCartaoGeral = model.TotalCartao + model.TotalCartaoOnline;
+            //model.TotalDinheiroGeral = model.TotalDinheiro; // Dinheiro só existe no Presencial
 
             // ===== COMBINADO (Presencial + Online) =====
             model.TotalCombinadoHoje = model.TotalHoje + model.TotalOnlineHoje;
