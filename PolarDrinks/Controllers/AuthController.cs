@@ -21,6 +21,12 @@ namespace PolarDrinks.Controllers
         [HttpPost]
         public IActionResult Login(string usuario, string senha)
         {
+            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(senha))
+            {
+                ViewBag.Erro = "Usuário ou senha inválidos";
+                return View();
+            }
+
             var user = _db.Usuarios
                 .FirstOrDefault(u => u.UsuarioLogin == usuario && u.UsuarioAtivo);
 
