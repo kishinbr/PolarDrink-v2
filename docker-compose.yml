@@ -1,0 +1,26 @@
+services:
+  polardrinks-app:
+    build:
+      context: ./PolarDrinks
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - polardrinks-db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=polardrinks-db;Database=PolaDrinks;User Id=sa;Password=SuaSenhaForte123!;TrustServerCertificate=True;
+    restart: unless-stopped
+
+  polardrinks-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SuaSenhaForte123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - polardrinks-db-data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  polardrinks-db-data:
