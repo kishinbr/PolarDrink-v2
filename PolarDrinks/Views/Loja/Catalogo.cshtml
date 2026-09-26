@@ -2,36 +2,47 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Polar Drinks - Catálogo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/loja.css" />
+
 </head>
 <body>
 
     @Html.Partial("_HeaderLoja")
+
+    <main class="catalogo-container">
+        <div class="catalogo-topo">
+            <h1 class="catalogo-titulo">Encontre o que precisa</h1>
+            <p class="catalogo-subtitulo">Produtos para deixar sua festa completa e gelada.</p>
+        </div>
+
+        <div class="catalogo-layout">
+            <aside class="categorias-box">
+                <div class="categorias-titulo">
+                    <i class="bi bi-grid"></i> Categorias
+                </div>
+                <div id="listaCategorias"></div>
+            </aside>
+
+            <section>
+                <div id="gridProdutos"></div>
+            </section>
+        </div>
+    </main>
 
     <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("areaBusca").style.display = "block";
             });
     </script>
-    <div style="display:flex; gap:20px; padding:20px;">
 
-        <aside style="width:200px;">
-            <h4>Categorias</h4>
-            <div id="listaCategorias">
-                <!-- preenchido via JavaScript -->
-            </div>
-        </aside>
-
-        <main style="flex:1;">
-            <div id="gridProdutos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:15px;">
-                <!-- preenchido via JavaScript -->
-            </div>
-        </main>
-
-    </div>
     <script src="~/js/loja/loja-api.js"></script>
     <script src="~/js/loja/loja-header.js"></script>
     <script src="~/js/loja/loja-catalogo.js"></script>

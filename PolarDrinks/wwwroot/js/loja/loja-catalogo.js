@@ -1,10 +1,11 @@
 ﻿let categoriaAtiva = null;
 let produtosCarregados = [];
+
 document.addEventListener("DOMContentLoaded", async function () {
     await carregarCategorias();
     await carregarProdutos();
 });
-// Função para carregar categorias e criar botões dinamicamente
+
 async function carregarCategorias() {
     const resultado = await chamarApi("/api/catalogo/categorias");
 
@@ -14,7 +15,7 @@ async function carregarCategorias() {
     container.innerHTML = "";
 
     const btnTodas = document.createElement("button");
-    btnTodas.innerText = "Todas";
+    btnTodas.innerHTML = '<i class="bi bi-grid"></i> Todas';
     btnTodas.addEventListener("click", function () {
         categoriaAtiva = null;
         carregarProdutos();
@@ -24,14 +25,16 @@ async function carregarCategorias() {
     resultado.dados.forEach(categoria => {
         const btn = document.createElement("button");
         btn.innerText = categoria.categoriaNome;
+
         btn.addEventListener("click", function () {
             categoriaAtiva = categoria.categoriaID;
             carregarProdutos();
         });
+
         container.appendChild(btn);
     });
 }
-// Função para carregar produtos com base na categoria ativa e no termo de busca
+
 async function carregarProdutos(termo = null) {
     let url = "/api/catalogo/produtos?";
 
@@ -46,19 +49,26 @@ async function carregarProdutos(termo = null) {
     const resultado = await chamarApi(url);
 
     if (!resultado.ok) return;
+
     produtosCarregados = resultado.dados;
+
     const grid = document.getElementById("gridProdutos");
     grid.innerHTML = "";
 
     if (resultado.dados.length === 0) {
-        grid.innerHTML = "<p>Nenhum produto encontrado.</p>";
+        grid.innerHTML = `
+            <div class="sem-produtos">
+                <i class="bi bi-box-seam" style="font-size:40px;"></i>
+                <h5 class="mt-3">Nenhum produto encontrado</h5>
+                <p>Tente buscar por outro produto ou categoria.</p>
+            </div>
+        `;
         return;
     }
 
     resultado.dados.forEach(produto => {
         const card = document.createElement("div");
-        card.style.border = "1px solid #ccc";
-        card.style.padding = "10px";
+        card.className = "produto-card";
 
         const imagemUrl = produto.produtoImagemUrl
             ? "/" + produto.produtoImagemUrl
@@ -68,23 +78,49 @@ async function carregarProdutos(termo = null) {
             ? produto.produtoPrecoVenda - (produto.produtoPrecoVenda * (produto.produtoPromocao / 100))
             : produto.produtoPrecoVenda;
 
+        const possuiPromocao = produto.produtoPromocao > 0;
+
         card.innerHTML = `
-            <img src="${imagemUrl}" alt="${produto.produtoNome}" style="width:100%; height:120px; object-fit:cover;" />
-            <p>${produto.produtoNome}</p>
-            <p><strong>R$ ${precoFinal.toFixed(2)}</strong></p>
-            <button class="btn-adicionar" data-produto-id="${produto.produtoID}">Adicionar ao carrinho</button>
+            <img src="${imagemUrl}" alt="${produto.produtoNome}" class="produto-imagem" />
+
+            <div class="produto-info">
+                <div class="produto-nome">${produto.produtoNome}</div>
+
+                ${possuiPromocao
+                ? `<div style="color:#7dd3fc;font-size:12px;margin-bottom:3px;">
+                            ${produto.produtoPromocao}% OFF
+                       </div>`
+                : ""}
+
+                <div class="produto-preco">
+                    R$ ${precoFinal.toFixed(2).replace(".", ",")}
+                </div>
+
+                <button class="btn-produto btn-adicionar" data-produto-id="${produto.produtoID}">
+                    <i class="bi bi-cart-plus"></i> Adicionar
+                </button>
+            </div>
         `;
 
         grid.appendChild(card);
     });
 
     document.querySelectorAll(".btn-adicionar").forEach(botao => {
-        botao.addEventListener("click", function () {
-            adicionarAoCarrinho(parseInt(botao.dataset.produtoId));
+        botao.addEventListener("click", async function () {
+            await adicionarAoCarrinho(parseInt(botao.dataset.produtoId));
+
+            const textoOriginal = botao.innerHTML;
+            botao.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado';
+            botao.disabled = true;
+
+            setTimeout(() => {
+                botao.innerHTML = textoOriginal;
+                botao.disabled = false;
+            }, 900);
         });
     });
 }
-// Função para adicionar produto ao carrinho
+
 async function adicionarAoCarrinho(produtoId) {
     if (estaLogado()) {
         await chamarApi("/api/carrinho/itens", "POST", {
@@ -99,7 +135,10 @@ async function adicionarAoCarrinho(produtoId) {
         if (itemExistente) {
             itemExistente.quantidade += 1;
         } else {
-            carrinhoLocal.push({ produtoID: produtoId, quantidade: 1 });
+            carrinhoLocal.push({
+                produtoID: produtoId,
+                quantidade: 1
+            });
         }
 
         localStorage.setItem("carrinho_local", JSON.stringify(carrinhoLocal));
@@ -107,8 +146,9 @@ async function adicionarAoCarrinho(produtoId) {
 
     await atualizarContadorCarrinho();
 }
+
 let timeoutBusca = null;
-// Função para buscar sugestões de produtos enquanto o usuário digita
+
 document.getElementById("campoBusca").addEventListener("input", function () {
     const texto = this.value.trim();
 
@@ -123,9 +163,11 @@ document.getElementById("campoBusca").addEventListener("input", function () {
         await buscarSugestoes(texto);
     }, 400);
 });
-// Função para buscar sugestões de produtos com base no texto digitado
+
 async function buscarSugestoes(texto) {
-    const resultado = await chamarApi("/api/catalogo/produtos?termo=" + encodeURIComponent(texto));
+    const resultado = await chamarApi(
+        "/api/catalogo/produtos?termo=" + encodeURIComponent(texto)
+    );
 
     if (!resultado.ok) return;
 
@@ -139,9 +181,11 @@ async function buscarSugestoes(texto) {
 
     resultado.dados.slice(0, 6).forEach(produto => {
         const item = document.createElement("div");
-        item.style.padding = "5px";
-        item.style.cursor = "pointer";
-        item.innerText = produto.produtoNome;
+
+        item.innerHTML = `
+            <i class="bi bi-search"></i>
+            ${produto.produtoNome}
+        `;
 
         item.addEventListener("click", function () {
             document.getElementById("campoBusca").value = produto.produtoNome;
@@ -154,13 +198,13 @@ async function buscarSugestoes(texto) {
 
     dropdown.style.display = "block";
 }
-// Fechar o dropdown de sugestões ao clicar fora dele
+
 document.addEventListener("click", function (e) {
     if (!e.target.closest("#campoBusca") && !e.target.closest("#dropdownSugestoes")) {
         document.getElementById("dropdownSugestoes").style.display = "none";
     }
 });
-// Executar a busca ao pressionar Enter
+
 document.getElementById("campoBusca").addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
         document.getElementById("dropdownSugestoes").style.display = "none";

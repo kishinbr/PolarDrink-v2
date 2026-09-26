@@ -2,58 +2,156 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
-    <title>Minha Conta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Polar Drinks - Minha Conta</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="~/css/loja.css" />
 </head>
 <body>
 
-    <h2>Minha Conta</h2>
+    <main class="conta-container">
 
-    <div id="mensagemErro" style="color:red; display:none;"></div>
+        <div class="conta-cabecalho">
+            <div class="icone-conta">
+                <i class="bi bi-person"></i>
+            </div>
 
-    <div id="blocoLogin">
-        <h3>Entrar</h3>
+            <h1>Minha Conta</h1>
+            <p>Acesse sua conta ou crie um novo cadastro.</p>
+        </div>
+        
 
-        <label>E-mail</label>
-        <input type="email" id="loginEmail" />
+        <div class="conta-card">
 
-        <label>Senha</label>
-        <input type="password" id="loginSenha" />
+            <div id="mensagemErro" style="display:none;"></div>
 
-        <button id="btnLogin">Entrar</button>
+            <div id="blocoLogin">
 
-        <p>Não tem conta? <a href="#" id="linkIrCadastro">Criar uma</a></p>
-    </div>
+                <h3 class="titulo-formulario">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Entrar
+                </h3>
 
-    <div id="blocoCadastro" style="display:none;">
-        <h3>Criar Conta</h3>
+                <div class="campo">
+                    <label for="loginEmail">E-mail</label>
 
-        <label>Nome</label>
-        <input type="text" id="cadNome" />
+                    <div class="campo-input">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="seu@email.com" />
+                    </div>
+                </div>
 
-        <label>E-mail</label>
-        <input type="email" id="cadEmail" />
+                <div class="campo">
+                    <label for="loginSenha">Senha</label>
 
-        <label>Senha</label>
-        <input type="password" id="cadSenha" />
+                    <div class="campo-input">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" id="loginSenha" placeholder="Digite sua senha" />
+                    </div>
+                </div>
 
-        <label>Confirmar Senha</label>
-        <input type="password" id="cadConfirmacaoSenha" />
+                <button id="btnLogin" class="btn-conta">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Entrar
+                </button>
 
-        <label>Telefone</label>
-        <input type="text" id="cadTelefone" />
+                <p class="troca-formulario">
+                    Não tem conta?
+                    <a href="#" id="linkIrCadastro">Criar uma</a>
+                </p>
 
-        <label>CPF</label>
-        <input type="text" id="cadCpf" />
+            </div>
 
-        <button id="btnCadastrar">Criar Conta</button>
+            <div id="blocoCadastro" style="display:none;">
 
-        <p>Já tem conta? <a href="#" id="linkIrLogin">Entrar</a></p>
-    </div>
+                <h3 class="titulo-formulario">
+                    <i class="bi bi-person-plus"></i>
+                    Criar Conta
+                </h3>
+
+                <div class="campo">
+                    <label for="cadNome">Nome</label>
+
+                    <div class="campo-input">
+                        <i class="bi bi-person"></i>
+                        <input type="text" id="cadNome" placeholder="Seu nome" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="cadEmail">E-mail</label>
+
+                    <div class="campo-input">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" id="cadEmail" placeholder="seu@email.com" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="cadSenha">Senha</label>
+
+                    <div class="campo-input">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" id="cadSenha" placeholder="Crie uma senha" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="cadConfirmacaoSenha">Confirmar Senha</label>
+
+                    <div class="campo-input">
+                        <i class="bi bi-shield-check"></i>
+                        <input type="password" id="cadConfirmacaoSenha" placeholder="Digite a senha novamente" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="cadTelefone">Telefone</label>
+
+                    <div class="campo-input">
+                        <i class="bi bi-telephone"></i>
+                        <input type="text" id="cadTelefone" placeholder="(00) 00000-0000" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="cadCpf">CPF</label>
+
+                    <div class="campo-input">
+                        <i class="bi bi-card-text"></i>
+                        <input type="text" id="cadCpf" placeholder="000.000.000-00" />
+                    </div>
+                </div>
+
+                <button id="btnCadastrar" class="btn-conta">
+                    <i class="bi bi-person-plus"></i>
+                    Criar Conta
+                </button>
+
+                <p class="troca-formulario">
+                    Já tem conta?
+                    <a href="#" id="linkIrLogin">Entrar</a>
+                </p>
+
+            </div>
+
+        </div>
+
+        <a href="/loja/catalogo" class="voltar-catalogo">
+            <i class="bi bi-arrow-left"></i>
+            Voltar para o catálogo
+        </a>
+
+    </main>
 
     <script src="~/js/loja/loja-api.js"></script>
     <script src="~/js/loja/loja-conta.js"></script>
+
 </body>
 </html>
