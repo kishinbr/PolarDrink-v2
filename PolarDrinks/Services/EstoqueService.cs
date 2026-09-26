@@ -2,9 +2,6 @@
 using PolarDrinks.Repositories;
 using PolarDrinks.Services.Common;
 using Microsoft.AspNetCore.Http;
-using PolarDrinks.Models;
-using PolarDrinks.Repositories;
-using PolarDrinks.Services.Common;
 
 namespace PolarDrinks.Services
 {

@@ -365,7 +365,7 @@ namespace PolarDrinks.Services.Loja
                         MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
                         MovimentacaoData = DateTime.Now,
                         ItemPedidoID = item.ItemPedidoID,
-                        MovimentacaoDescricao = "Expirado - nao retirado (48h)"
+                        MovimentacaoDescricao = "Expirado"
                     });
                 }
             }

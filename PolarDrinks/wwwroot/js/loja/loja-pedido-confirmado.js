@@ -26,7 +26,7 @@
         <h1>${pedido.pedidoCodigo}</h1>
         <p>Guarde esse código e apresente-o na loja, junto com seu nome, para retirar seu pedido.</p>
 
-        <p><strong>Você tem até 48 horas após a separação para retirar o produto.</strong></p>
+        <p><strong>Você tem até 24 horas após a separação para retirar o produto.</strong></p>
 
         <h3>Itens do pedido:</h3>
         <ul>${itensHtml}</ul>

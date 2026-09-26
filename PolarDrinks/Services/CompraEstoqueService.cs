@@ -116,8 +116,9 @@ namespace PolarDrinks.Services
         public CompraDetalhesViewModel? ObterParaExcluir(int id)
         {
             var compra = _compraRepository.ObterDetalhes(id);
-            if (compra == null)
+            if (compra == null || compra.CompraStatus == "Concluído")   
                 return null;
+
 
             return new CompraDetalhesViewModel
             {
@@ -179,6 +180,8 @@ namespace PolarDrinks.Services
             {
                 return ResultadoOperacao.Erro("Compra não encontrada.");
             }
+            if (compra.CompraStatus == "Concluído")  
+                return ResultadoOperacao.Erro("Não é possível excluir uma compra já concluída.");
 
             _compraRepository.Remover(compra);
             _compraRepository.SalvarAlteracoes();
