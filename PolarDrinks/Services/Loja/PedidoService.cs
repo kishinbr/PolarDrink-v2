@@ -113,6 +113,16 @@ namespace PolarDrinks.Services.Loja
                             mensagemEstoque = $"Estoque insuficiente para: {produto.ProdutoNome}";
                             break;
                         }
+                        var disponivelOnline = Math.Max(0, (produto.ProdutoQtdEstoque ?? 0) - (produto.ProdutoEstoqueMinimo ?? 0));
+
+                        if (disponivelOnline < itemCarrinho.Quantidade)
+                        {
+                            estoqueInsuficiente = true;
+                            mensagemEstoque = disponivelOnline == 0
+                                ? $"{produto.ProdutoNome} apenas na loja física."
+                                : $"Apenas {disponivelOnline} unidade(s) de {produto.ProdutoNome} disponíveis.";
+                            break;
+                        }
 
                         var precoBase = produto.ProdutoPrecoVenda ?? 0;
                         var desconto = produto.ProdutoPromocao;

@@ -41,11 +41,11 @@
                         <div class="card rounded-4 h-100 p-3 bg-shadow">
                             <div class="sf-kpibar mb-2" style="background:#3b82f6;"></div>
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="text-secondary" style="font-size:.78rem;">Total Hoje</span>
+                                <span style="color:#3b82f6;">Total Hoje</span>
                                 <span class="sf-chip" id="chipCanal" style="color:#3b82f6;">Presencial</span>
 
                             </div>
-                            <div class="fw-bold" style="font-size:1.3rem; color:#3b82f6;"
+                            <div class="fw-bold" style="font-size:1.5rem;"
                                  data-presencial="R$ @Model.TotalHoje.ToString("N2")"
                                  data-online="R$ @Model.TotalOnlineHoje.ToString("N2")"
                                  data-geral="R$ @Model.TotalCombinadoHoje.ToString("N2")">
@@ -57,8 +57,8 @@
                     <div class="col-6 col-xl-4">
                         <div class="card rounded-4 h-100 p-3 bg-shadow">
                             <div class="sf-kpibar mb-2" style="background:#a78bfa;"></div>
-                            <div class="text-secondary mb-1" style="font-size:.78rem;">Total Mês</div>
-                            <div class="fw-bold" style="font-size:1.3rem; color:#a78bfa;"
+                            <div class="mb-1" style="color:#a78bfa;">Total Mês</div>
+                            <div class="fw-bold" style="font-size:1.5rem; ;"
                                  data-presencial="R$ @Model.TotalMes.ToString("N2")"
                                  data-online="R$ @Model.TotalOnlineMes.ToString("N2")"
                                  data-geral="R$ @Model.TotalCombinadoMes.ToString("N2")">
@@ -70,8 +70,8 @@
                     <div class="col-6 col-xl-4">
                         <div class="card rounded-4 h-100 p-3 bg-shadow">
                             <div class="sf-kpibar mb-2" style="background:#22d3ee;"></div>
-                            <div class="text-secondary mb-1" style="font-size:.78rem;">Ticket Médio</div>
-                            <div class="fw-bold" style="font-size:1.3rem; color:#22d3ee;"
+                            <div class="mb-1" style="color:#22d3ee;">Ticket Médio</div>
+                            <div class="fw-bold" style="font-size:1.5rem;"
                                  data-presencial="R$ @Model.TicketMedio.ToString("N2")"
                                  data-online="R$ @Model.TicketMedioOnline.ToString("N2")"
                                  data-geral="R$ @Model.TicketMedioCombinado.ToString("N2")">
@@ -83,8 +83,8 @@
                     <div class="col-6 col-xl-4">
                         <div class="card rounded-4 h-100 p-3 bg-shadow">
                             <div class="sf-kpibar mb-2" style="background:#34d399;"></div>
-                            <div class="text-secondary mb-1" style="font-size:.78rem;">Lucro Hoje</div>
-                            <div class="fw-bold" style="font-size:1.3rem; color:#34d399;"
+                            <div class="mb-1" style="color:#34d399;">Lucro Hoje</div>
+                            <div class="fw-bold" style="font-size:1.5rem;"
                                  data-presencial="R$ @Model.LucroHoje.ToString("N2")"
                                  data-online="R$ @Model.LucroOnlineHoje.ToString("N2")"
                                  data-geral="R$ @Model.LucroCombinadoHoje.ToString("N2")">
@@ -96,8 +96,8 @@
                     <div class="col-6 col-xl-4">
                         <div class="card rounded-4 h-100 p-3 bg-shadow">
                             <div class="sf-kpibar mb-2" style="background:#f59e0b;"></div>
-                            <div class="text-secondary mb-1" style="font-size:.78rem;">Lucro Mês</div>
-                            <div class="fw-bold" style="font-size:1.3rem; color:#f59e0b;"
+                            <div class="mb-1" style="color:#f59e0b;">Lucro Mês</div>
+                            <div class="fw-bold" style="font-size:1.5rem; "
                                  data-presencial="R$ @Model.LucroMes.ToString("N2")"
                                  data-online="R$ @Model.LucroOnlineMes.ToString("N2")"
                                  data-geral="R$ @Model.LucroCombinadoMes.ToString("N2")">
@@ -110,10 +110,10 @@
                         <div class="card rounded-4 h-100 p-3 bg-shadow">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="sf-kpibar mb-2" style="background:#34d399;"></div>
-                                <i class="bi bi-graph-up-arrow" style="color:#34d399;"></i>
+                                
                             </div>
-                            <div class="text-secondary mb-1" style="font-size:.78rem;">Previsão Amanhã</div>
-                            <div class="fw-bold" style="font-size:1.3rem; color:#34d399;"
+                            <div class="mb-1" style="color:#34d399;">Previsão Amanhã</div>
+                            <div class="fw-bold" style="font-size:1.5rem; "
                                  data-presencial="R$ @Model.PrevisaoAmanha.ToString("N2")"
                                  data-online="R$ @Model.PrevisaoAmanhaOnline.ToString("N2")"
                                  data-geral="R$ @Model.PrevisaoAmanhaCombinada.ToString("N2")">
@@ -175,10 +175,10 @@
                     <div class="col-md-4">
                         <div class="card rounded-4 p-3 h-100 bg-shadow">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-globe2 ms-1" style="color:#00BDAE;"></i> Online</span>
+                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-globe2 ms-1" style="color:#00BDAE;"></i> Vendas Onlines</span>
                                 <span class="sf-chip" style="color:#00BDAE;">Retirada</span>
                             </div>
-                            <div class="row g-2">
+                            <div class="row g-2 text-center">
                                 <div class="col-6">
                                     <div class="bg-tpreto rounded-3 p-2 h-100">
                                         <i class="bi bi-box-arrow-in-down" style="color:#f87171; font-size:14px;"></i>
@@ -194,9 +194,9 @@
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="bg-tpreto rounded-3 p-2 h-100">
+                                    <div class="bg-tpreto rounded-3 p-2 h-100 ">
                                         <i class="bi bi-fire" style="color:#f59e0b; font-size:14px;"></i>
-                                        <div class="text-secondary mt-1" style="font-size:.65rem;">Horário de pico</div>
+                                        <div class="text-secondary mt-1 " style="font-size:.65rem;">Horário de pico</div>
                                         <div class="fw-semibold" style="color:#f59e0b;">@(Model.HorarioPicoPedidos.HasValue ? Model.HorarioPicoPedidos + "h" : "—")</div>
                                     </div>
                                 </div>
@@ -210,10 +210,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 text-center">
                         <div class="card rounded-4 p-3 h-100 bg-shadow">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-truck" style="color:#00BDAE;"></i>  Produto em Estoque</span>
+                                <span class="text-light d-flex align-items-center gap-2"><i class="bi bi-truck" style="color:#00BDAE;"></i>  Produtos em Estoque</span>
                             </div>
                         <div class="row g-2">
                             <div class="col-6">
@@ -261,7 +261,7 @@
                         <div class="col-12 col-sm-4">
                             <div class="card rounded-4  p-3 bg-shadow">
                                 <small class="d-flex align-items-center gap-1" style="color:#00BDAE;"><i class="bi bi-x-diamond" style="color:#00BDAE;"></i> Pix</small>
-                                <h5 id="valPix" class="mt-1 mb-0" style="color:#00BDAE; font-size:1rem;">
+                                <h5 id="valPix" class="mt-1 mb-0">
                                     @("R" + Model.PagamentosPorCanalEPeriodo["presencial"]["hoje"].TotalPix.ToString("C"))
                                 </h5>
                             </div>
@@ -269,7 +269,7 @@
                         <div class="col-12 col-sm-4">
                             <div class="card rounded-4 p-3 bg-shadow">
                                 <small style="color:mediumpurple;"><i class="bi bi-credit-card" style="color:mediumpurple;"></i> Cartão</small>
-                                <h5 id="valCartao" class="mt-1 mb-0" style="color:mediumpurple; font-size:1rem;">
+                                <h5 id="valCartao" class="mt-1 mb-0">
                                     @("R" + Model.PagamentosPorCanalEPeriodo["presencial"]["hoje"].TotalCartao.ToString("C"))
                                 </h5>
                             </div>
@@ -277,7 +277,7 @@
                         <div class="col-12 col-sm-4">
                             <div class="card rounded-4 h-100 p-3 bg-shadow">
                                 <small style="color:#198754;"><i class="bi bi-cash" style="color:#198754;"></i> Dinheiro</small>
-                                <h5 id="valDinheiro" class="mt-1 mb-0" style="color:#198754; font-size:1rem;">
+                                <h5 id="valDinheiro" class="mt-1 mb-0">
                                     @("R" + Model.PagamentosPorCanalEPeriodo["presencial"]["hoje"].TotalDinheiro.ToString("C"))
                                 </h5>
                             </div>
@@ -425,8 +425,8 @@
                         </div>
                     </div>
                     <div class="p-2 rounded-3 bg-tpreto">
-                        <div class="text-danger" style="font-size:.7rem;">Produto mais cancelado</div>
-                        <div class="text-light fw-semibold text-truncate" id="prodCancelado"
+                        <div class="text-danger">Produto mais cancelado</div>
+                        <div class="text-secondary fw-semibold text-truncate" id="prodCancelado"
                              data-presencial="@(Model.ProdutoMaisCancelado ?? "—")"
                              data-online="@(Model.ProdutoMaisCanceladoOnline ?? "—")"
                              data-geral="@(Model.ProdutoMaisCanceladoTotal ?? "—")">
@@ -489,7 +489,7 @@
         }
     }
 
-    // Dados dos gráficos vindos do Model (mantém sua estrutura atual)
+    // Dados dos gráficos vindos do Model 
     window.dashData = {
         pagamentosPorCanal: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PagamentosPorCanalEPeriodo)),
         vendasPorCanal: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.VendasPorCanalEPeriodo))

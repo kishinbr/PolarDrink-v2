@@ -1,12 +1,13 @@
 ﻿using PolarDrinks.Models.Loja;
+using PolarDrinks.Services.Common;
 
 namespace PolarDrinks.Services.Loja
 {
     public interface ICarrinhoService
     {
         CarrinhoDto ObterCarrinho(int clienteId);
-        void AdicionarItem(int clienteId, int produtoId, int quantidade);
-        void AtualizarQuantidade(int clienteId, int produtoId, int novaQuantidade);
+        ResultadoOperacao AdicionarItem(int clienteId, int produtoId, int quantidade);
+        ResultadoOperacao AtualizarQuantidade(int clienteId, int produtoId, int novaQuantidade);
         void RemoverItem(int clienteId, int produtoId);
         void LimparCarrinho(int clienteId);
         void MesclarCarrinho(int clienteId, List<ItemMesclagemDto> itensLocalStorage);

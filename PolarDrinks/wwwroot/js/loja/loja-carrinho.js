@@ -174,7 +174,13 @@ async function alterarQuantidade(produtoId, delta) {
         }
     );
 
-    if (!resultadoAlteracao.ok) return;
+    if (!resultadoAlteracao.ok) {
+        alert(
+            resultadoAlteracao.dados?.mensagem ||
+            "Não foi possível atualizar a quantidade."
+        );
+        return;
+    }
 
     await carregarCarrinho();
 }

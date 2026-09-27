@@ -28,13 +28,14 @@ namespace PolarDrinks.Controllers
         }
 
         [HttpPost]
-        public IActionResult Cadastrar(string categoriaNome)
+        public IActionResult Cadastrar(string? categoriaNome)
         {
             var resultado = _categoriaService.CadastrarCategoria(categoriaNome);
 
             if (!resultado.Sucesso)
             {
                 ModelState.AddModelError(resultado.CampoErro ?? "", resultado.Mensagem!);
+                TempData["MensagemErro"] = resultado.Mensagem;
                 return View();
             }
 

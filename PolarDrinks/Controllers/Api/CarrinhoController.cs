@@ -38,7 +38,13 @@ namespace PolarDrinks.Controllers.Api
         [HttpPost("itens")]
         public IActionResult AdicionarItem([FromBody] AdicionarItemRequest request)
         {
-            _carrinhoService.AdicionarItem(ObterClienteId(), request.ProdutoID, request.Quantidade);
+            var resultado = _carrinhoService.AdicionarItem(ObterClienteId(), request.ProdutoID, request.Quantidade);
+
+            if (!resultado.Sucesso)
+            {
+                return BadRequest(new { mensagem = resultado.Mensagem });
+            }
+
             var carrinho = _carrinhoService.ObterCarrinho(ObterClienteId());
             return Ok(carrinho);
         }
@@ -51,7 +57,13 @@ namespace PolarDrinks.Controllers.Api
         [HttpPut("itens/{produtoId}")]
         public IActionResult AtualizarQuantidade(int produtoId, [FromBody] AtualizarQuantidadeRequest request)
         {
-            _carrinhoService.AtualizarQuantidade(ObterClienteId(), produtoId, request.Quantidade);
+            var resultado = _carrinhoService.AtualizarQuantidade(ObterClienteId(), produtoId, request.Quantidade);
+
+            if (!resultado.Sucesso)
+            {
+                return BadRequest(new { mensagem = resultado.Mensagem });
+            }
+
             var carrinho = _carrinhoService.ObterCarrinho(ObterClienteId());
             return Ok(carrinho);
         }

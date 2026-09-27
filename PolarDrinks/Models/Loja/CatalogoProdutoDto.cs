@@ -9,6 +9,7 @@
         public decimal ProdutoPromocao { get; set; }
         public string? ProdutoImagemUrl { get; set; }
         public int ProdutoQtdEstoque { get; set; }
+        public int EstoqueDisponivelOnline { get; set; }
         public List<string> Categorias { get; set; } = new List<string>();
     }
 }

@@ -71,7 +71,7 @@ function renderizarListaPedidos(idContainer, pedidos, mensagemVazio) {
                     </span>
                 </div>
 
-                <span class="status-pedido">
+                <span class="status-pedido status-${pedido.pedidoStatus}">
                     ${traduzirStatus(pedido.pedidoStatus)}
                 </span>
             </div>
@@ -101,9 +101,9 @@ function traduzirStatus(status) {
         "AguardandoSeparacao": "Aguardando Separação",
         "Separado": "Pronto para Retirada",
         "Concluido": "Concluído",
-        "CanceladoCliente": "Cancelado por Você",
-        "CanceladoNaoRetirado": "Cancelado - Não Retirado",
-        "CanceladoAdmin": "Pedido Cancelado"
+        "CanceladoCliente": "Você Cancelou",
+        "CanceladoNaoRetirado": "Expirado",
+        "CanceladoAdmin": "Pedido Cancelado",
     };
 
     return traducoes[status] || status;

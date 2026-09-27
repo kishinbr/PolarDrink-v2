@@ -105,6 +105,7 @@ namespace PolarDrinks.Repositories
                 ProdutoPromocao = p.ProdutoPromocao,
                 ProdutoImagemUrl = p.ProdutoImagemUrl,
                 ProdutoQtdEstoque = p.ProdutoQtdEstoque ?? 0,
+                EstoqueDisponivelOnline = Math.Max(0, (p.ProdutoQtdEstoque ?? 0) - (p.ProdutoEstoqueMinimo ?? 0)),
                 Categorias = categoriasPorProduto.ContainsKey(p.ProdutoID) ? categoriasPorProduto[p.ProdutoID] : new List<string>()
             }).ToList();
         }

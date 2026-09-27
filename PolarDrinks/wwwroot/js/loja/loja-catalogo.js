@@ -80,25 +80,62 @@ async function carregarProdutos(termo = null) {
 
         const possuiPromocao = produto.produtoPromocao > 0;
 
+        let selo = "";
+        let botao = "";
+
+        if (produto.produtoQtdEstoque <= 0) {
+            selo = `<div style="color:#f87171;font-size:12px;font-weight:bold;">Esgotado</div>`;
+        } else if (produto.estoqueDisponivelOnline <= 0) {
+            selo = `<div style="color:#f87171;font-size:12px;font-weight:bold;">Disponível apenas na loja física</div>`;
+        } else if (produto.estoqueDisponivelOnline <= 3) {
+            selo = `<div style="color:#facc15;font-size:12px;font-weight:bold;">Últimas ${produto.estoqueDisponivelOnline} unidades</div>`;
+        }
+
+        if (produto.produtoQtdEstoque > 0 && produto.estoqueDisponivelOnline > 0) {
+            botao = `
+                <button class="btn-produto btn-adicionar" data-produto-id="${produto.produtoID}">
+                    <i class="bi bi-cart-plus"></i> Adicionar
+                </button>
+            `;
+        }
+
+        let precoHtml = "";
+
+        if (possuiPromocao) {
+            precoHtml = `
+                <div class="produto-preco" style="display:flex;align-items:baseline;gap:7px;white-space:nowrap;">
+                    <span style="font-size:12px;color:#7f8b96;text-decoration:line-through;">
+                        R$ ${produto.produtoPrecoVenda.toFixed(2).replace(".", ",")}
+                    </span>
+                    <span>
+                        R$ ${precoFinal.toFixed(2).replace(".", ",")}
+                    </span>
+                    <span style="font-size:12px;color:#7dd3fc;font-weight:bold;">
+                        ${produto.produtoPromocao}% OFF
+                    </span>
+                </div>
+            `;
+        } else {
+            precoHtml = `
+                <div class="produto-preco">
+                    R$ ${precoFinal.toFixed(2).replace(".", ",")}
+                </div>
+            `;
+        }
+
         card.innerHTML = `
             <img src="${imagemUrl}" alt="${produto.produtoNome}" class="produto-imagem" />
 
             <div class="produto-info">
                 <div class="produto-nome">${produto.produtoNome}</div>
 
-                ${possuiPromocao
-                ? `<div style="color:#7dd3fc;font-size:12px;margin-bottom:3px;">
-                            ${produto.produtoPromocao}% OFF
-                       </div>`
-                : ""}
-
-                <div class="produto-preco">
-                    R$ ${precoFinal.toFixed(2).replace(".", ",")}
+                <div style="height:18px;margin-bottom:3px;display:flex;align-items:center;">
+                    ${selo}
                 </div>
 
-                <button class="btn-produto btn-adicionar" data-produto-id="${produto.produtoID}">
-                    <i class="bi bi-cart-plus"></i> Adicionar
-                </button>
+                ${precoHtml}
+
+                ${botao}
             </div>
         `;
 
@@ -123,10 +160,14 @@ async function carregarProdutos(termo = null) {
 
 async function adicionarAoCarrinho(produtoId) {
     if (estaLogado()) {
-        await chamarApi("/api/carrinho/itens", "POST", {
+        const resultado = await chamarApi("/api/carrinho/itens", "POST", {
             produtoID: produtoId,
             quantidade: 1
         });
+        if (!resultado.ok) {
+            alert(resultado.dados?.mensagem || "Não foi possível adicionar o produto ao carrinho.");
+            return;
+        }
     } else {
         const carrinhoLocal = JSON.parse(localStorage.getItem("carrinho_local") || "[]");
 
@@ -183,9 +224,9 @@ async function buscarSugestoes(texto) {
         const item = document.createElement("div");
 
         item.innerHTML = `
-            <i class="bi bi-search"></i>
-            ${produto.produtoNome}
-        `;
+    < i class="bi bi-search" ></i >
+        ${ produto.produtoNome }
+`;
 
         item.addEventListener("click", function () {
             document.getElementById("campoBusca").value = produto.produtoNome;
@@ -211,3 +252,4 @@ document.getElementById("campoBusca").addEventListener("keydown", function (e) {
         carregarProdutos(this.value.trim());
     }
 });
+

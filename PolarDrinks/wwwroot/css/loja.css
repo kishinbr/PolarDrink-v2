@@ -926,6 +926,7 @@ a {
     margin: 25px 0;
 }
 
+
 /* =========================
    PEDIDO CONFIRMADO
 ========================= */
@@ -1200,13 +1201,44 @@ a {
 }
 
 .status-pedido {
+    display: inline-block;
     padding: 5px 9px;
     border-radius: 20px;
-    background: rgba(56, 189, 248, .1);
-    border: 1px solid rgba(56, 189, 248, .15);
-    color: var(--azul-claro);
     font-size: 11px;
+    font-weight: 600;
     white-space: nowrap;
+}
+
+.status-AguardandoSeparacao {
+    color: #facc15;
+    background: rgba(250,204,21,.10);
+    border: 1px solid rgba(250,204,21,.15);
+}
+
+.status-Concluido {
+    color: #38bdf8;
+    background: rgba(56,189,248,.10);
+    border: 1px solid rgba(56,189,248,.15);
+}
+
+.status-Separado {
+    color: #4ade80;
+    background: rgba(74,222,128,.10);
+    border: 1px solid rgba(74,222,128,.15);
+}
+
+.status-CanceladoCliente,
+.status-CanceladoNaoRetirado,
+.status-CanceladoAdmin {
+    color: #f87171;
+    background: rgba(248,113,113,.10);
+    border: 1px solid rgba(248,113,113,.15);
+}
+
+.status-Expirado {
+    color: #fb923c;
+    background: rgba(251,146,60,.10);
+    border: 1px solid rgba(251,146,60,.15);
 }
 
 .pedido-card-info {

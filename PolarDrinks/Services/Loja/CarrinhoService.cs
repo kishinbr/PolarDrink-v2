@@ -1,15 +1,19 @@
 ﻿using PolarDrinks.Models.Loja;
+using PolarDrinks.Repositories;        
 using PolarDrinks.Repositories.Loja;
+using PolarDrinks.Services.Common;
 
 namespace PolarDrinks.Services.Loja
 {
     public class CarrinhoService : ICarrinhoService
     {
         private readonly ICarrinhoRepository _carrinhoRepository;
+        private readonly IProdutoRepository _produtoRepository;
 
-        public CarrinhoService(ICarrinhoRepository carrinhoRepository)
+        public CarrinhoService(ICarrinhoRepository carrinhoRepository, IProdutoRepository produtoRepository)
         {
             _carrinhoRepository = carrinhoRepository;
+            _produtoRepository = produtoRepository;
         }
 
         public CarrinhoDto ObterCarrinho(int clienteId)
@@ -44,13 +48,29 @@ namespace PolarDrinks.Services.Loja
 
             return carrinho;
         }
-        public void AdicionarItem(int clienteId, int produtoId, int quantidade)
+        public ResultadoOperacao AdicionarItem(int clienteId, int produtoId, int quantidade)
         {
+            var produto = _produtoRepository.ObterPorId(produtoId);
+            if (produto == null || !produto.ProdutoAtivo)
+            {
+                return ResultadoOperacao.Erro("Produto não encontrado ou indisponível.");
+            }
+
             var itemExistente = _carrinhoRepository.ObterItem(clienteId, produtoId);
+            var quantidadeTotal = (itemExistente?.Quantidade ?? 0) + quantidade;
+
+            var disponivelOnline = Math.Max(0, (produto.ProdutoQtdEstoque ?? 0) - (produto.ProdutoEstoqueMinimo ?? 0));
+
+            if (quantidadeTotal > disponivelOnline)
+            {
+                return disponivelOnline == 0
+                    ? ResultadoOperacao.Erro($"{produto.ProdutoNome} apenas na loja física.")
+                    : ResultadoOperacao.Erro($"Apenas {disponivelOnline} unidade(s) de {produto.ProdutoNome} disponíveis.");
+            }
 
             if (itemExistente != null)
             {
-                itemExistente.Quantidade += quantidade;
+                itemExistente.Quantidade = quantidadeTotal;
             }
             else
             {
@@ -64,23 +84,39 @@ namespace PolarDrinks.Services.Loja
             }
 
             _carrinhoRepository.SalvarAlteracoes();
+            return ResultadoOperacao.Ok();
         }
 
-        public void AtualizarQuantidade(int clienteId, int produtoId, int novaQuantidade)
+        public ResultadoOperacao AtualizarQuantidade(int clienteId, int produtoId, int novaQuantidade)
         {
             var item = _carrinhoRepository.ObterItem(clienteId, produtoId);
-            if (item == null) return;
+            if (item == null) return ResultadoOperacao.Erro("Item não encontrado no carrinho.");
 
             if (novaQuantidade <= 0)
             {
                 _carrinhoRepository.Remover(item);
-            }
-            else
-            {
-                item.Quantidade = novaQuantidade;
+                _carrinhoRepository.SalvarAlteracoes();
+                return ResultadoOperacao.Ok();
             }
 
+            var produto = _produtoRepository.ObterPorId(produtoId);
+            if (produto == null || !produto.ProdutoAtivo)
+            {
+                return ResultadoOperacao.Erro("Produto não encontrado ou indisponível.");
+            }
+
+            var disponivelOnline = Math.Max(0, (produto.ProdutoQtdEstoque ?? 0) - (produto.ProdutoEstoqueMinimo ?? 0));
+
+            if (novaQuantidade > disponivelOnline)
+            {
+                return disponivelOnline == 0
+                    ? ResultadoOperacao.Erro($"{produto.ProdutoNome} apenas na loja física.")
+                    : ResultadoOperacao.Erro($"Apenas {disponivelOnline} unidade(s) de {produto.ProdutoNome} disponíveis.");
+            }
+
+            item.Quantidade = novaQuantidade;
             _carrinhoRepository.SalvarAlteracoes();
+            return ResultadoOperacao.Ok();
         }
 
         public void RemoverItem(int clienteId, int produtoId)
