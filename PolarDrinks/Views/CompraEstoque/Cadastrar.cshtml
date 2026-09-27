@@ -65,6 +65,7 @@
                                 <td>
                                     <div class="position-relative">
                                         <input type="text" class="form-control busca-produto bg-shadow text-light" placeholder="Digite o nome do produto" autocomplete="off" value="@Model.Itens[i].ProdutoNome">
+                                        <div class="invalid-feedback">Selecione um produto da lista de sugestões.</div>
                                         <input type="hidden" name="Itens[@i].ProdutoID" class="produto-id-hidden" value="@Model.Itens[i].ProdutoID">
                                         <div class="lista-sugestoes list-group position-absolute w-100" style="z-index:9999;display:none;"></div>
                                     </div>
@@ -269,6 +270,7 @@
                 <td>
                     <div class="position-relative">
                         <input type="text" class="form-control busca-produto bg-shadow text-light" placeholder="Digite o nome do produto" autocomplete="off">
+                        <div class="invalid-feedback">Selecione um produto</div>
                         <input type="hidden" name="Itens[${index}].ProdutoID" class="produto-id-hidden">
                         <div class="lista-sugestoes list-group position-absolute w-100" style="z-index:9999;display:none;"></div>
                     </div>

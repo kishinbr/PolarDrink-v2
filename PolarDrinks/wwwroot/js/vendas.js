@@ -154,13 +154,15 @@
         if (!msgAdicionar) {
             msgAdicionar = document.createElement("div");
             msgAdicionar.id = "mensagemErroAdicionar";
-            msgAdicionar.classList.add("alert", "bg-danger", "text-light", "mt-2");
+            msgAdicionar.classList.add("bg-shadow", "text-light", "p-3", "rounded-4", "mt-2");
+            msgAdicionar.style.setProperty("background", "rgba(239,68,68,.15)", "important");
+            msgAdicionar.style.setProperty("border-left", "3px solid #ef4444", "important");
             msgAdicionar.style.display = "none";
             document.getElementById("formVenda").prepend(msgAdicionar);
         }
 
         function mostrarErro(texto) {
-            msgAdicionar.innerText = texto;
+            msgAdicionar.innerHTML = '<i class="bi bi-exclamation-circle-fill me-2" style="color:#f87171;"></i>' + texto;
             msgAdicionar.style.opacity = 1;
             msgAdicionar.style.display = "block";
             msgAdicionar.style.transition = "opacity 0.5s";

@@ -85,7 +85,10 @@ namespace PolarDrinks.Controllers
             if (!ModelState.IsValid)
             {
                 var produtoOriginal = _estoqueService.ObterProduto(produto.ProdutoID);
-                return View(produtoOriginal);
+                produto.ProdutoImagemUrl = produtoOriginal?.ProdutoImagemUrl;
+                ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
+                ViewBag.CategoriasSelecionadas = categoriaIds ?? new List<int>();
+                return View(produto);
             }
 
             var resultado = _estoqueService.EditarProduto(produto, categoriaIds ?? new List<int>(), imagem);
