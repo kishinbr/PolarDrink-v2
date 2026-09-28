@@ -40,7 +40,7 @@ $(document).ready(function () {
     
 
     setTimeout(function () {
-        $(".alert").fadeOut("slow", function () {
+        $(".alert, .msg-auto").fadeOut("slow", function () {
             $(this).alert('close');
         });
     }, 3000);
@@ -77,7 +77,7 @@ $(document).ready(function () {
     });
 
     setTimeout(function () {
-        $(".alert").fadeOut("slow", function () {
+        $(".alert, .msg-auto").fadeOut("slow", function () {
             $(this).alert('close');
         });
     }, 3000);
@@ -123,7 +123,7 @@ $(document).ready(function () {
     });
 
     setTimeout(function () {
-        $(".alert").fadeOut("slow", function () {
+        $(".alert, .msg-auto").fadeOut("slow", function () {
             $(this).alert('close');
         });
     }, 3000);
@@ -301,7 +301,7 @@ $(document).ready(function () {
     });
 
     setTimeout(function () {
-        $(".alert").fadeOut("slow", function () {
+        $(".alert, .msg-auto").fadeOut("slow", function () {
             $(this).alert('close');
         });
     }, 3000);

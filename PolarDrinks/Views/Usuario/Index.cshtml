@@ -25,14 +25,14 @@
 
         @if (TempData["MensagemSucesso"] != null)
         {
-            <div class="bg-shadow text-light p-3 rounded-4 mb-3" style="background: rgba(16,185,129,.15) !important; border-left: 3px solid #10b981 !important;">
+            <div class="bg-shadow text-light p-3 rounded-4 mb-3 msg-auto" style="background: rgba(16,185,129,.15) !important; border-left: 3px solid #10b981 !important;">
                 <i class="bi bi-check-circle-fill me-2" style="color:#34d399;"></i>
                 @TempData["MensagemSucesso"]
             </div>
         }
         else if (TempData["MensagemErro"] != null)
         {
-            <div class="bg-shadow text-light p-3 rounded-4 mb-3" style="background: rgba(239,68,68,.15) !important; border-left: 3px solid #ef4444 !important;">
+            <div class="bg-shadow text-light p-3 rounded-4 mb-3 msg-auto" style="background: rgba(239,68,68,.15) !important; border-left: 3px solid #ef4444 !important;">
                 <i class="bi bi-exclamation-circle-fill me-2" style="color:#f87171;"></i>
                 @TempData["MensagemErro"]
             </div>
