@@ -1,6 +1,7 @@
 ﻿using PolarDrinks.Models;
 using PolarDrinks.Repositories;
 using PolarDrinks.Services.Common;
+using PolarDrinks.Models.Requests;
 
 namespace PolarDrinks.Services
 {
@@ -54,24 +55,24 @@ namespace PolarDrinks.Services
             };
         }
 
-        public ResultadoOperacao FinalizarVenda(VendaModel venda, int? usuarioId)
+        public ResultadoOperacao FinalizarVenda(FinalizarVendaRequest request, int? usuarioId)
         {
-            if (venda == null || venda.Itens.Count == 0)
+            if (request == null || request.Itens == null || request.Itens.Count == 0)
             {
                 return ResultadoOperacao.Erro("Adicione pelo menos um item à venda.");
             }
 
-            if (string.IsNullOrWhiteSpace(venda.VendaTipoPagamento))
+            if (string.IsNullOrWhiteSpace(request.VendaTipoPagamento))
             {
                 return ResultadoOperacao.Erro("Selecione um tipo de pagamento.");
             }
 
-            if (!VendaModel.TipoPagamento.EhValido(venda.VendaTipoPagamento))
+            if (!VendaModel.TipoPagamento.EhValido(request.VendaTipoPagamento))
             {
                 return ResultadoOperacao.Erro("Tipo de pagamento inválido.");
             }
 
-            if (venda.Itens.Any(i => i.ItemVendaQtd <= 0))
+            if (request.Itens.Any(i => i.ItemVendaQtd <= 0))
             {
                 return ResultadoOperacao.Erro("A quantidade de cada item deve ser maior que zero.");
             }
@@ -80,10 +81,10 @@ namespace PolarDrinks.Services
 
             try
             {
-                var ids = venda.Itens.Select(i => i.ProdutoID).Distinct().ToList();
+                var ids = request.Itens.Select(i => i.ProdutoID).Distinct().ToList();
                 var produtos = _produtoRepository.ObterPorIds(ids);
 
-                var quantidadePorProduto = venda.Itens
+                var quantidadePorProduto = request.Itens
                     .GroupBy(i => i.ProdutoID)
                     .ToDictionary(g => g.Key, g => g.Sum(i => (long)i.ItemVendaQtd));
 
@@ -110,11 +111,19 @@ namespace PolarDrinks.Services
                     }
                 }
 
+                var venda = new VendaModel
+                {
+                    VendaTipoPagamento = request.VendaTipoPagamento!, 
+                    VendaData = DateTime.Now,
+                    VendaCancelada = false,
+                    UsuarioID = usuarioId
+                };
+
                 decimal totalVenda = 0;
 
-                foreach (var item in venda.Itens)
+                foreach (var itemRequest in request.Itens)
                 {
-                    var produto = produtos.First(p => p.ProdutoID == item.ProdutoID);
+                    var produto = produtos.First(p => p.ProdutoID == itemRequest.ProdutoID);
 
                     decimal precoBase = produto.ProdutoPrecoVenda ?? 0;
                     decimal desconto = produto.ProdutoPromocao;
@@ -122,12 +131,18 @@ namespace PolarDrinks.Services
                         ? precoBase - (precoBase * (desconto / 100))
                         : precoBase;
 
-                    item.ItemVendaPreco = precoFinal;
-                    item.ItemVendaCusto = produto.ProdutoPrecoCusto ?? 0;
-                    totalVenda += item.ItemVendaQtd * precoFinal;
+                    venda.Itens.Add(new ItemVendaModel
+                    {
+                        ProdutoID = produto.ProdutoID,
+                        ItemVendaQtd = itemRequest.ItemVendaQtd,
+                        ItemVendaPreco = precoFinal,
+                        ItemVendaCusto = produto.ProdutoPrecoCusto ?? 0
+                    });
+
+                    totalVenda += itemRequest.ItemVendaQtd * precoFinal;
                 }
+
                 venda.VendaValorTotal = totalVenda;
-                venda.UsuarioID = usuarioId;
 
                 _vendaRepository.Adicionar(venda);
                 _unitOfWork.SaveChanges();

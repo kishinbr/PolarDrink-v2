@@ -1,5 +1,6 @@
 ﻿using PolarDrinks.Models;
 using PolarDrinks.Services.Common;
+using PolarDrinks.Models.Requests;
 
 namespace PolarDrinks.Services
 {
@@ -11,7 +12,7 @@ namespace PolarDrinks.Services
         VendaDetalhesViewModel? ObterDetalhesVenda(int id);
         VendaModel? ObterVendaParaCancelamento(int id);
 
-        ResultadoOperacao FinalizarVenda(VendaModel venda, int? usuarioId);
+        ResultadoOperacao FinalizarVenda(FinalizarVendaRequest request, int? usuarioId);
         ResultadoOperacao CancelarVenda(int id, string? descricao, int? usuarioId);
     }
 }

@@ -2,6 +2,7 @@
 using PolarDrinks.Filters;
 using PolarDrinks.Models;
 using PolarDrinks.Services;
+using PolarDrinks.Models.Requests;
 
 namespace PolarDrinks.Controllers
 {
@@ -43,17 +44,17 @@ namespace PolarDrinks.Controllers
         }
 
         [HttpPost]
-        public IActionResult FinalizarVenda(VendaModel venda)
+        public IActionResult FinalizarVenda(FinalizarVendaRequest request)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
 
-            var resultado = _vendaService.FinalizarVenda(venda, usuarioId);
+            var resultado = _vendaService.FinalizarVenda(request, usuarioId);
 
             if (!resultado.Sucesso)
             {
                 TempData["MensagemErro"] = resultado.Mensagem;
                 ViewBag.Produtos = _vendaService.ListarProdutosAtivos();
-                return View("Cadastrar", venda);
+                return View("Cadastrar");
             }
 
             TempData["MensagemSucesso"] = resultado.Mensagem;
