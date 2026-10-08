@@ -22,6 +22,18 @@ namespace PolarDrinks.Models
         public UsuarioModel? Usuario { get; set; }
 
         public List<ItemVendaModel> Itens { get; set; } = new List<ItemVendaModel>();
+
+
+        public static class TipoPagamento
+        {
+            public const string Dinheiro = "Dinheiro";
+            public const string Pix = "Pix";
+            public const string Cartao = "Cartão";
+
+            public static readonly string[] Validos = { Dinheiro, Pix, Cartao };
+
+            public static bool EhValido(string? tipo) => tipo != null && Validos.Contains(tipo);
+        }
     }
     
 }

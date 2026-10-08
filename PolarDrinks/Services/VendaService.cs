@@ -61,9 +61,14 @@ namespace PolarDrinks.Services
                 return ResultadoOperacao.Erro("Adicione pelo menos um item à venda.");
             }
 
-            if (string.IsNullOrEmpty(venda.VendaTipoPagamento))
+            if (string.IsNullOrWhiteSpace(venda.VendaTipoPagamento))
             {
                 return ResultadoOperacao.Erro("Selecione um tipo de pagamento.");
+            }
+
+            if (!VendaModel.TipoPagamento.EhValido(venda.VendaTipoPagamento))
+            {
+                return ResultadoOperacao.Erro("Tipo de pagamento inválido.");
             }
 
             if (venda.Itens.Any(i => i.ItemVendaQtd <= 0))

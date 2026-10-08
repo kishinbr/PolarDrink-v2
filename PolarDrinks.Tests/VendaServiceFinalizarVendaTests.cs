@@ -95,7 +95,41 @@ public class VendaServiceFinalizarVendaTests
     }
 
     // ---------- Métodos auxiliares ----------
+    // ---------- PROBLEMA 4: tipo de pagamento ----------
 
+    [Theory]
+    [InlineData("Dinheiro")]
+    [InlineData("Pix")]
+    [InlineData("Cartão")]
+    public void FinalizarVenda_TipoPagamentoValido_DeveAceitar(string tipoPagamento)
+    {
+        var produto = CriarProduto(id: 1, estoque: 10);
+        ConfigurarProdutos(produto);
+        var venda = CriarVenda((1, 1));
+        venda.VendaTipoPagamento = tipoPagamento;
+
+        var resultado = _service.FinalizarVenda(venda, usuarioId: 7);
+
+        Assert.True(resultado.Sucesso);
+    }
+
+    [Theory]
+    [InlineData("Cheque")]
+    [InlineData("pix")]
+    [InlineData("   ")]
+    public void FinalizarVenda_TipoPagamentoInvalido_DeveRejeitarSemEfeitos(string tipoPagamento)
+    {
+        var produto = CriarProduto(id: 1, estoque: 5);
+        ConfigurarProdutos(produto);
+        var venda = CriarVenda((1, 1));
+        venda.VendaTipoPagamento = tipoPagamento;
+
+        var resultado = _service.FinalizarVenda(venda, usuarioId: 7);
+
+        Assert.False(resultado.Sucesso);
+        AssertNenhumEfeitoPersistido(produto, estoqueEsperado: 5);
+        _unitOfWork.DidNotReceive().BeginTransaction();
+    }
     private static ProdutoModel CriarProduto(
         int id, int estoque, bool ativo = true, decimal preco = 100m, decimal promocao = 0m)
     {
