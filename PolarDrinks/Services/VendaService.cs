@@ -65,30 +65,51 @@ namespace PolarDrinks.Services
             {
                 return ResultadoOperacao.Erro("Selecione um tipo de pagamento.");
             }
+
+            if (venda.Itens.Any(i => i.ItemVendaQtd <= 0))
+            {
+                return ResultadoOperacao.Erro("A quantidade de cada item deve ser maior que zero.");
+            }
+
             _unitOfWork.BeginTransaction();
 
             try
             {
-                var ids = venda.Itens.Select(i => i.ProdutoID).ToList();
+                var ids = venda.Itens.Select(i => i.ProdutoID).Distinct().ToList();
                 var produtos = _produtoRepository.ObterPorIds(ids);
+
+                var quantidadePorProduto = venda.Itens
+                    .GroupBy(i => i.ProdutoID)
+                    .ToDictionary(g => g.Key, g => g.Sum(i => (long)i.ItemVendaQtd));
+
+                foreach (var (produtoId, quantidadeTotal) in quantidadePorProduto)
+                {
+                    var produto = produtos.FirstOrDefault(p => p.ProdutoID == produtoId);
+
+                    if (produto == null)
+                    {
+                        _unitOfWork.Rollback();
+                        return ResultadoOperacao.Erro($"Produto não encontrado: ID {produtoId}");
+                    }
+
+                    if (!produto.ProdutoAtivo)
+                    {
+                        _unitOfWork.Rollback();
+                        return ResultadoOperacao.Erro($"Produto inativo: {produto.ProdutoNome}");
+                    }
+
+                    if ((produto.ProdutoQtdEstoque ?? 0) < quantidadeTotal)
+                    {
+                        _unitOfWork.Rollback();
+                        return ResultadoOperacao.Erro($"Estoque insuficiente para: {produto.ProdutoNome}");
+                    }
+                }
 
                 decimal totalVenda = 0;
 
                 foreach (var item in venda.Itens)
                 {
-                    var produto = produtos.FirstOrDefault(p => p.ProdutoID == item.ProdutoID);
-
-                    if (produto == null)
-                    {
-                        _unitOfWork.Rollback();
-                        return ResultadoOperacao.Erro($"Produto não encontrado: ID {item.ProdutoID}");
-                    }
-
-                    if ((produto.ProdutoQtdEstoque ?? 0) < item.ItemVendaQtd)
-                    {
-                        _unitOfWork.Rollback();
-                        return ResultadoOperacao.Erro($"Estoque insuficiente para: {produto.ProdutoNome}");
-                    }
+                    var produto = produtos.First(p => p.ProdutoID == item.ProdutoID);
 
                     decimal precoBase = produto.ProdutoPrecoVenda ?? 0;
                     decimal desconto = produto.ProdutoPromocao;
