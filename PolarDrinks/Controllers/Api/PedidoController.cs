@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PolarDrinks.Models.Responses;
 using PolarDrinks.Services.Loja;
 using System.Security.Claims;
 
@@ -38,14 +39,14 @@ namespace PolarDrinks.Controllers.Api
                 return BadRequest(new { mensagem = resultado.Mensagem });
             }
 
-            return Ok(resultado.Dado);
+            return Ok(PedidoResponse.De(resultado.Dado!));
         }
 
         [HttpGet]
         public IActionResult ListarPedidos()
         {
             var pedidos = _pedidoService.ListarPedidosDoCliente(ObterClienteId());
-            return Ok(pedidos);
+            return Ok(pedidos.Select(PedidoResponse.De).ToList());
         }
 
         [HttpGet("{id}")]
@@ -58,7 +59,7 @@ namespace PolarDrinks.Controllers.Api
                 return NotFound();
             }
 
-            return Ok(pedido);
+            return Ok(PedidoResponse.De(pedido));
         }
 
         [HttpPost("{id}/cancelar")]

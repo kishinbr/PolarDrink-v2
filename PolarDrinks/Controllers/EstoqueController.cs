@@ -98,6 +98,11 @@ namespace PolarDrinks.Controllers
                 if (resultado.CampoErro != null)
                 {
                     ModelState.AddModelError(resultado.CampoErro, resultado.Mensagem!);
+
+                    var produtoOriginal = _estoqueService.ObterProduto(produto.ProdutoID);
+                    produto.ProdutoImagemUrl = produtoOriginal?.ProdutoImagemUrl;
+                    ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
+                    ViewBag.CategoriasSelecionadas = categoriaIds ?? new List<int>();
                     return View(produto);
                 }
 

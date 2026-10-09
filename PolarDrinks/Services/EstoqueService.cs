@@ -90,8 +90,7 @@ namespace PolarDrinks.Services
             produtoDb.ProdutoAtivo = produto.ProdutoAtivo;
             produtoDb.ProdutoEstoqueMinimo = produto.ProdutoEstoqueMinimo;
             produtoDb.ProdutoPrecoCusto = produto.ProdutoPrecoCusto;
-            produtoDb.ProdutoPromocao = produto.ProdutoPromocao;
-            produtoDb.ProdutoQtdEstoque = produto.ProdutoQtdEstoque;
+            
 
             if (imagem != null && imagem.Length > 0)
             {
@@ -132,6 +131,20 @@ namespace PolarDrinks.Services
         }
         public ResultadoOperacao AjustarEstoque(int produtoId, int novaQuantidade, string descricao, int? usuarioId)
         {
+            if (novaQuantidade < 0)
+            {
+                return ResultadoOperacao.Erro("A nova quantidade não pode ser negativa.");
+            }
+
+            if (string.IsNullOrWhiteSpace(descricao))
+            {
+                return ResultadoOperacao.Erro("Informe a descrição da alteração.");
+            }
+            descricao = descricao.Trim();
+            if (descricao.Length > 50)
+            {
+                return ResultadoOperacao.Erro("A descrição deve ter no máximo 50 caracteres.");
+            }
             var produto = _produtoRepository.ObterPorId(produtoId);
             if (produto == null)
             {
