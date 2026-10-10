@@ -13,19 +13,22 @@ namespace PolarDrinks.Services.Loja
         private readonly IProdutoRepository _produtoRepository;
         private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMovimentacaoEstoqueService _movimentacaoEstoqueService;
 
         public PedidoService(
             IPedidoRepository pedidoRepository,
             ICarrinhoRepository carrinhoRepository,
             IProdutoRepository produtoRepository,
             IMovimentacaoEstoqueRepository movimentacaoRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IMovimentacaoEstoqueService movimentacaoEstoqueService)
         {
             _pedidoRepository = pedidoRepository;
             _carrinhoRepository = carrinhoRepository;
             _produtoRepository = produtoRepository;
             _movimentacaoRepository = movimentacaoRepository;
             _unitOfWork = unitOfWork;
+            _movimentacaoEstoqueService = movimentacaoEstoqueService;
         }
 
         public List<PedidoModel> ListarPedidosDoCliente(int clienteId)
@@ -136,7 +139,6 @@ namespace PolarDrinks.Services.Loja
 
                         totalPedido += precoFinal * itemCarrinho.Quantidade;
 
-                        produto.ProdutoQtdEstoque -= itemCarrinho.Quantidade;
                     }
 
                     if (estoqueInsuficiente)
@@ -152,14 +154,18 @@ namespace PolarDrinks.Services.Loja
 
                     foreach (var item in pedido.Itens)
                     {
-                        _movimentacaoRepository.Adicionar(new Models.MovimentacaoEstoqueModel
+                        var saida = _movimentacaoEstoqueService.RegistrarSaida(
+                            item.ProdutoID,
+                            item.ItemPedidoQtd,
+                            Models.MovimentacaoEstoqueModel.Tipos.SaidaOnline,
+                            usuarioId: null,
+                            itemPedidoId: item.ItemPedidoID);
+
+                        if (!saida.Sucesso)
                         {
-                            ProdutoID = item.ProdutoID,
-                            MovimentacaoQtd = item.ItemPedidoQtd,
-                            MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.SaidaOnline,
-                            MovimentacaoData = DateTime.Now,
-                            ItemPedidoID = item.ItemPedidoID
-                        });
+                            _unitOfWork.Rollback();
+                            return ResultadoOperacao<PedidoModel>.Erro(saida.Mensagem!);
+                        }
                     }
 
                     _carrinhoRepository.RemoverTodos(clienteId);
