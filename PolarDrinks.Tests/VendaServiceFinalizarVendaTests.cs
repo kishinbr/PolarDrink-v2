@@ -3,6 +3,7 @@ using PolarDrinks.Models;
 using PolarDrinks.Models.Requests;
 using PolarDrinks.Repositories;
 using PolarDrinks.Services;
+using PolarDrinks.Services.Common;
 
 namespace PolarDrinks.Tests;
 
@@ -12,6 +13,7 @@ public class VendaServiceFinalizarVendaTests
     private readonly IProdutoRepository _produtoRepository = Substitute.For<IProdutoRepository>();
     private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository = Substitute.For<IMovimentacaoEstoqueRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IMovimentacaoEstoqueService _estoque = Substitute.For<IMovimentacaoEstoqueService>();
     private readonly VendaService _service;
 
     // A venda que o serviço montou e entregou ao repository (null se nada foi gravado)
@@ -23,17 +25,21 @@ public class VendaServiceFinalizarVendaTests
             .When(r => r.Adicionar(Arg.Any<VendaModel>()))
             .Do(chamada => _vendaGravada = chamada.Arg<VendaModel>());
 
+        // Por padrão, o componente de estoque aceita a saída
+        _estoque.RegistrarSaida(0, 0, "", null).ReturnsForAnyArgs(ResultadoOperacao.Ok("ok"));
+
         _service = new VendaService(
             _vendaRepository,
             _produtoRepository,
             _movimentacaoRepository,
-            _unitOfWork);
+            _unitOfWork,
+            _estoque);
     }
 
     // ---------- CONTROLE: venda válida ----------
 
     [Fact]
-    public void FinalizarVenda_VendaValida_DeveCalcularPrecoReduzirEstoqueERegistrarMovimentacao()
+    public void FinalizarVenda_VendaValida_DeveCalcularPrecoESolicitarSaidaDeEstoque()
     {
         var produto = CriarProduto(id: 1, estoque: 10, preco: 100m, promocao: 15m);
         ConfigurarProdutos(produto);
@@ -46,13 +52,28 @@ public class VendaServiceFinalizarVendaTests
         Assert.Equal(85m, _vendaGravada!.Itens[0].ItemVendaPreco);
         Assert.Equal(40m, _vendaGravada.Itens[0].ItemVendaCusto);
         Assert.Equal(170m, _vendaGravada.VendaValorTotal);
-        Assert.Equal(8, produto.ProdutoQtdEstoque);
 
-        _movimentacaoRepository.Received(1).Adicionar(Arg.Is<MovimentacaoEstoqueModel>(m =>
-            m.ProdutoID == 1 &&
-            m.MovimentacaoQtd == 2 &&
-            m.MovimentacaoTipo == MovimentacaoEstoqueModel.Tipos.Saida));
+        // O saldo e a movimentação agora são responsabilidade do componente de estoque
+        _estoque.Received(1).RegistrarSaida(1, 2, MovimentacaoEstoqueModel.Tipos.Saida, 7, 0, null);
         _unitOfWork.Received(1).Commit();
+    }
+
+    // ---------- FALHA NO MEIO: o estoque recusa a saída depois de a venda ser preparada ----------
+
+    [Fact]
+    public void FinalizarVenda_QuandoEstoqueRecusaASaida_DeveDesfazerTudo()
+    {
+        var produto = CriarProduto(id: 1, estoque: 10);
+        ConfigurarProdutos(produto);
+        _estoque.RegistrarSaida(0, 0, "", null)
+            .ReturnsForAnyArgs(ResultadoOperacao.Erro("Estoque insuficiente"));
+        var request = CriarRequest((1, 2));
+
+        var resultado = _service.FinalizarVenda(request, usuarioId: 7);
+
+        Assert.False(resultado.Sucesso);
+        _unitOfWork.Received(1).Rollback();
+        _unitOfWork.DidNotReceive().Commit();
     }
 
     // ---------- CONTRATO: o servidor define os campos internos ----------
@@ -218,7 +239,7 @@ public class VendaServiceFinalizarVendaTests
         Assert.Equal(estoqueEsperado, produto.ProdutoQtdEstoque);
         Assert.Null(_vendaGravada);
         _vendaRepository.DidNotReceive().Adicionar(Arg.Any<VendaModel>());
-        _movimentacaoRepository.DidNotReceive().Adicionar(Arg.Any<MovimentacaoEstoqueModel>());
+        _estoque.DidNotReceiveWithAnyArgs().RegistrarSaida(0, 0, "", null);
         _unitOfWork.DidNotReceive().Commit();
     }
 }

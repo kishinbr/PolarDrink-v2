@@ -11,17 +11,20 @@ namespace PolarDrinks.Services
         private readonly IProdutoRepository _produtoRepository;
         private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMovimentacaoEstoqueService _movimentacaoEstoqueService;
 
         public VendaService(
             IVendaRepository vendaRepository,
             IProdutoRepository produtoRepository,
             IMovimentacaoEstoqueRepository movimentacaoRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IMovimentacaoEstoqueService movimentacaoEstoqueService)
         {
             _vendaRepository = vendaRepository;
             _produtoRepository = produtoRepository;
             _movimentacaoRepository = movimentacaoRepository;
             _unitOfWork = unitOfWork;
+            _movimentacaoEstoqueService = movimentacaoEstoqueService;
         }
 
         public List<VendaModel> ListarVendas(DateTime? dataInicio, DateTime? dataFim)
@@ -145,20 +148,18 @@ namespace PolarDrinks.Services
 
                 foreach (var item in venda.Itens)
                 {
-                    var produto = produtos.First(p => p.ProdutoID == item.ProdutoID);
-                    produto.ProdutoQtdEstoque -= item.ItemVendaQtd;
+                    var saida = _movimentacaoEstoqueService.RegistrarSaida(
+                        item.ProdutoID,
+                        item.ItemVendaQtd,
+                        MovimentacaoEstoqueModel.Tipos.Saida,
+                        usuarioId,
+                        itemVendaId: item.ItemVendaID);
 
-                    var movimentacao = new MovimentacaoEstoqueModel
+                    if (!saida.Sucesso)
                     {
-                        ProdutoID = produto.ProdutoID,
-                        MovimentacaoQtd = item.ItemVendaQtd,
-                        MovimentacaoTipo = MovimentacaoEstoqueModel.Tipos.Saida,
-                        MovimentacaoData = DateTime.Now,
-                        ItemVendaID = item.ItemVendaID,
-                        UsuarioID = usuarioId
-                    };
-
-                    _movimentacaoRepository.Adicionar(movimentacao);
+                        _unitOfWork.Rollback();
+                        return ResultadoOperacao.Erro(saida.Mensagem!);
+                    }
                 }
 
                 _unitOfWork.SaveChanges();
