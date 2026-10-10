@@ -9,20 +9,18 @@ namespace PolarDrinks.Services
     {
         private readonly IVendaRepository _vendaRepository;
         private readonly IProdutoRepository _produtoRepository;
-        private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMovimentacaoEstoqueService _movimentacaoEstoqueService;
 
         public VendaService(
             IVendaRepository vendaRepository,
             IProdutoRepository produtoRepository,
-            IMovimentacaoEstoqueRepository movimentacaoRepository,
             IUnitOfWork unitOfWork,
             IMovimentacaoEstoqueService movimentacaoEstoqueService)
         {
             _vendaRepository = vendaRepository;
             _produtoRepository = produtoRepository;
-            _movimentacaoRepository = movimentacaoRepository;
             _unitOfWork = unitOfWork;
             _movimentacaoEstoqueService = movimentacaoEstoqueService;
         }
@@ -192,27 +190,21 @@ namespace PolarDrinks.Services
                 return ResultadoOperacao.Erro("Venda já está cancelada.");
             }
 
-            var ids = venda.Itens.Select(i => i.ProdutoID).ToList();
-            var produtos = _produtoRepository.ObterPorIds(ids);
-
             foreach (var item in venda.Itens)
             {
-                var produto = produtos.First(p => p.ProdutoID == item.ProdutoID);
+                var devolucao = _movimentacaoEstoqueService.RegistrarDevolucao(
+                    item.ProdutoID,
+                    item.ItemVendaQtd,
+                    MovimentacaoEstoqueModel.Tipos.Cancelamento,
+                    usuarioId,
+                    descricao: descricao,
+                    itemVendaId: item.ItemVendaID);
 
-                produto.ProdutoQtdEstoque += item.ItemVendaQtd;
-
-                var movimentacao = new MovimentacaoEstoqueModel
+                if (!devolucao.Sucesso)
                 {
-                    ProdutoID = produto.ProdutoID,
-                    MovimentacaoQtd = item.ItemVendaQtd,
-                    MovimentacaoTipo = MovimentacaoEstoqueModel.Tipos.Cancelamento,
-                    MovimentacaoData = DateTime.Now,
-                    ItemVendaID = item.ItemVendaID,
-                    MovimentacaoDescricao = descricao,
-                    UsuarioID = usuarioId,
-                };
-
-                _movimentacaoRepository.Adicionar(movimentacao);
+                    _unitOfWork.Rollback();
+                    return ResultadoOperacao.Erro(devolucao.Mensagem!);
+                }
             }
 
             venda.VendaCancelada = true;

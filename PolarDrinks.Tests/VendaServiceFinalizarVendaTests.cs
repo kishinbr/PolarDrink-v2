@@ -11,7 +11,6 @@ public class VendaServiceFinalizarVendaTests
 {
     private readonly IVendaRepository _vendaRepository = Substitute.For<IVendaRepository>();
     private readonly IProdutoRepository _produtoRepository = Substitute.For<IProdutoRepository>();
-    private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository = Substitute.For<IMovimentacaoEstoqueRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IMovimentacaoEstoqueService _estoque = Substitute.For<IMovimentacaoEstoqueService>();
     private readonly VendaService _service;
@@ -31,7 +30,6 @@ public class VendaServiceFinalizarVendaTests
         _service = new VendaService(
             _vendaRepository,
             _produtoRepository,
-            _movimentacaoRepository,
             _unitOfWork,
             _estoque);
     }

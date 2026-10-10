@@ -11,7 +11,6 @@ namespace PolarDrinks.Services.Loja
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarrinhoRepository _carrinhoRepository;
         private readonly IProdutoRepository _produtoRepository;
-        private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMovimentacaoEstoqueService _movimentacaoEstoqueService;
 
@@ -19,14 +18,12 @@ namespace PolarDrinks.Services.Loja
             IPedidoRepository pedidoRepository,
             ICarrinhoRepository carrinhoRepository,
             IProdutoRepository produtoRepository,
-            IMovimentacaoEstoqueRepository movimentacaoRepository,
             IUnitOfWork unitOfWork,
             IMovimentacaoEstoqueService movimentacaoEstoqueService)
         {
             _pedidoRepository = pedidoRepository;
             _carrinhoRepository = carrinhoRepository;
             _produtoRepository = produtoRepository;
-            _movimentacaoRepository = movimentacaoRepository;
             _unitOfWork = unitOfWork;
             _movimentacaoEstoqueService = movimentacaoEstoqueService;
         }
@@ -49,7 +46,6 @@ namespace PolarDrinks.Services.Loja
         {
             return _pedidoRepository.ObterPorIdEcliente(pedidoId, clienteId);
         }
-
         private string GerarCodigoUnico()
         {
             var random = new Random();
@@ -63,7 +59,6 @@ namespace PolarDrinks.Services.Loja
 
             return codigo;
         }
-
         public ResultadoOperacao<PedidoModel> Checkout(int clienteId, string tipoPagamento)
         {
             if (tipoPagamento != PedidoModel.TipoPagamento.Cartao && tipoPagamento != PedidoModel.TipoPagamento.Pix)
@@ -212,20 +207,19 @@ namespace PolarDrinks.Services.Loja
 
             foreach (var item in pedido.Itens)
             {
-                if (item.Produto != null)
-                {
-                    item.Produto.ProdutoQtdEstoque += item.ItemPedidoQtd;
-                }
+                var devolucao = _movimentacaoEstoqueService.RegistrarDevolucao(
+                    item.ProdutoID,
+                    item.ItemPedidoQtd,
+                    Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
+                    usuarioId: null,
+                    descricao: "Cancelado pelo cliente",
+                    itemPedidoId: item.ItemPedidoID);
 
-                _movimentacaoRepository.Adicionar(new Models.MovimentacaoEstoqueModel
+                if (!devolucao.Sucesso)
                 {
-                    ProdutoID = item.ProdutoID,
-                    MovimentacaoQtd = item.ItemPedidoQtd,
-                    MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
-                    MovimentacaoData = DateTime.Now,
-                    ItemPedidoID = item.ItemPedidoID,
-                    MovimentacaoDescricao = "Cancelado pelo cliente"
-                });
+                    _unitOfWork.Rollback();
+                    return ResultadoOperacao.Erro(devolucao.Mensagem!);
+                }
             }
 
             pedido.PedidoStatus = PedidoModel.Status.CanceladoCliente;
@@ -255,21 +249,19 @@ namespace PolarDrinks.Services.Loja
 
             foreach (var item in pedido.Itens)
             {
-                if (item.Produto != null)
-                {
-                    item.Produto.ProdutoQtdEstoque += item.ItemPedidoQtd;
-                }
+                var devolucao = _movimentacaoEstoqueService.RegistrarDevolucao(
+                    item.ProdutoID,
+                    item.ItemPedidoQtd,
+                    Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
+                    usuarioId,
+                    descricao: descricao,
+                    itemPedidoId: item.ItemPedidoID);
 
-                _movimentacaoRepository.Adicionar(new Models.MovimentacaoEstoqueModel
+                if (!devolucao.Sucesso)
                 {
-                    ProdutoID = item.ProdutoID,
-                    MovimentacaoQtd = item.ItemPedidoQtd,
-                    MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
-                    MovimentacaoData = DateTime.Now,
-                    ItemPedidoID = item.ItemPedidoID,
-                    MovimentacaoDescricao = descricao,
-                    UsuarioID = usuarioId
-                });
+                    _unitOfWork.Rollback();
+                    return ResultadoOperacao.Erro(devolucao.Mensagem!);
+                }
             }
 
             pedido.PedidoStatus = PedidoModel.Status.CanceladoAdmin;
@@ -300,7 +292,6 @@ namespace PolarDrinks.Services.Loja
 
             return ResultadoOperacao.Ok("Pedido marcado como separado!");
         }
-
         public ResultadoOperacao VoltarParaSeparacao(int pedidoId)
         {
             var pedido = _pedidoRepository.ObterPorId(pedidoId);
@@ -323,7 +314,6 @@ namespace PolarDrinks.Services.Loja
 
             return ResultadoOperacao.Ok("Pedido voltou para aguardando separação.");
         }
-
         public ResultadoOperacao ConfirmarEntrega(int pedidoId, string codigoInformado, int usuarioId)
         {
             var pedido = _pedidoRepository.ObterPorId(pedidoId);
@@ -351,45 +341,65 @@ namespace PolarDrinks.Services.Loja
 
             return ResultadoOperacao.Ok("Entrega confirmada com sucesso!");
         }
-
         public int ExpirarPedidosNaoRetirados()
         {
-            var pedidosSeparados = _pedidoRepository.ObterPorStatus(PedidoModel.Status.Separado);
             var limite = DateTime.Now.AddHours(-24);
 
-            var expirados = pedidosSeparados
+            var idsExpirados = _pedidoRepository.ObterPorStatus(PedidoModel.Status.Separado)
                 .Where(p => p.PedidoDataSeparado.HasValue && p.PedidoDataSeparado.Value <= limite)
+                .Select(p => p.PedidoID)
                 .ToList();
 
-            foreach (var pedido in expirados)
+            var quantidadeExpirada = 0;
+
+            foreach (var pedidoId in idsExpirados)
             {
+                var pedido = _pedidoRepository.ObterPorId(pedidoId);
+
+                if (pedido == null || pedido.PedidoStatus != PedidoModel.Status.Separado)
+                {
+                    continue;
+                }
+
                 pedido.PedidoStatus = PedidoModel.Status.CanceladoNaoRetirado;
+
+                var devolucaoCompleta = true;
 
                 foreach (var item in pedido.Itens)
                 {
-                    if (item.Produto != null)
-                    {
-                        item.Produto.ProdutoQtdEstoque += item.ItemPedidoQtd;
-                    }
+                    var devolucao = _movimentacaoEstoqueService.RegistrarDevolucao(
+                        item.ProdutoID,
+                        item.ItemPedidoQtd,
+                        Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
+                        usuarioId: null,
+                        descricao: "Expirado",
+                        itemPedidoId: item.ItemPedidoID);
 
-                    _movimentacaoRepository.Adicionar(new Models.MovimentacaoEstoqueModel
+                    if (!devolucao.Sucesso)
                     {
-                        ProdutoID = item.ProdutoID,
-                        MovimentacaoQtd = item.ItemPedidoQtd,
-                        MovimentacaoTipo = Models.MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
-                        MovimentacaoData = DateTime.Now,
-                        ItemPedidoID = item.ItemPedidoID,
-                        MovimentacaoDescricao = "Expirado"
-                    });
+                        devolucaoCompleta = false;
+                        break;
+                    }
+                }
+
+                if (!devolucaoCompleta)
+                {
+                    _unitOfWork.Rollback();
+                    continue;
+                }
+
+                try
+                {
+                    _unitOfWork.SaveChanges();
+                    quantidadeExpirada++;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    _unitOfWork.Rollback();
                 }
             }
 
-            if (expirados.Count > 0)
-            {
-                _unitOfWork.SaveChanges();
-            }
-
-            return expirados.Count;
+            return quantidadeExpirada;
         }
     }
 }
