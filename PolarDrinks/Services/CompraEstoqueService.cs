@@ -11,17 +11,19 @@ namespace PolarDrinks.Services
         private readonly IProdutoRepository _produtoRepository;
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
-
+        private readonly IUnitOfWork _unitOfWork;
         public CompraEstoqueService(
             ICompraEstoqueRepository compraRepository,
             IProdutoRepository produtoRepository,
             IFornecedorRepository fornecedorRepository,
-            IMovimentacaoEstoqueRepository movimentacaoRepository)
+            IMovimentacaoEstoqueRepository movimentacaoRepository,
+            IUnitOfWork unitOfWork)
         {
             _compraRepository = compraRepository;
             _produtoRepository = produtoRepository;
             _fornecedorRepository = fornecedorRepository;
             _movimentacaoRepository = movimentacaoRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public (List<CompraEstoqueModel> Pendentes, List<CompraEstoqueModel> Concluidas) ListarComprasPorStatus()
@@ -167,7 +169,7 @@ namespace PolarDrinks.Services
 
             compra.CompraStatus = "Concluído";
             compra.CompraDataEntrega = DateTime.Now;
-            _compraRepository.SalvarAlteracoes();
+            _unitOfWork.SaveChanges();
 
             return ResultadoOperacao.Ok("Entrega confirmada e estoque atualizado!");
         }

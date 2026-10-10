@@ -10,15 +10,18 @@ namespace PolarDrinks.Services
         private readonly IProdutoRepository _produtoRepository;
         private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
         private readonly IArmazenamentoService _armazenamentoService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public EstoqueService(
             IProdutoRepository produtoRepository,
             IMovimentacaoEstoqueRepository movimentacaoRepository,
-            IArmazenamentoService armazenamentoService)
+            IArmazenamentoService armazenamentoService,
+            IUnitOfWork unitOfWork)
         {
             _produtoRepository = produtoRepository;
             _movimentacaoRepository = movimentacaoRepository;
             _armazenamentoService = armazenamentoService;
+            _unitOfWork = unitOfWork;
         }
 
         public List<ProdutoModel> ListarProdutos()
@@ -55,18 +58,37 @@ namespace PolarDrinks.Services
                     campoErro: nameof(ProdutoModel.ProdutoCodBarra));
             }
 
-            _produtoRepository.Adicionar(produto);
-            _produtoRepository.SalvarAlteracoes(); // salva primeiro para gerar o ProdutoID
+            string? imagemSalva = null;
 
-            if (imagem != null && imagem.Length > 0)
+            _unitOfWork.BeginTransaction();
+
+            try
             {
-                produto.ProdutoImagemUrl = _armazenamentoService.SalvarImagemProduto(imagem, produto.ProdutoID);
+                _produtoRepository.Adicionar(produto);
+                _unitOfWork.SaveChanges(); 
+
+                if (imagem != null && imagem.Length > 0)
+                {
+                    imagemSalva = _armazenamentoService.SalvarImagemProduto(imagem, produto.ProdutoID);
+                    produto.ProdutoImagemUrl = imagemSalva;
+                }
+
+                _produtoRepository.DefinirCategoriasDoProduto(produto.ProdutoID, categoriaIds);
+                _unitOfWork.SaveChanges();
+
+                _unitOfWork.Commit();
+
+                return ResultadoOperacao.Ok("Produto cadastrado com sucesso!");
             }
+            catch (Exception)
+            {
+                _unitOfWork.Rollback();
 
-            _produtoRepository.DefinirCategoriasDoProduto(produto.ProdutoID, categoriaIds);
-            _produtoRepository.SalvarAlteracoes();
+                // A transação desfaz o banco, mas não o arquivo: remove a imagem já salva (se houver).
+                _armazenamentoService.RemoverImagemProduto(imagemSalva);
 
-            return ResultadoOperacao.Ok("Produto cadastrado com sucesso!");
+                return ResultadoOperacao.Erro("Não foi possível cadastrar o produto. Nenhuma alteração foi salva.");
+            }
         }
         public ResultadoOperacao EditarProduto(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
         {
@@ -100,7 +122,7 @@ namespace PolarDrinks.Services
             // se nenhuma imagem nova foi enviada, produtoDb.ProdutoImagemUrl simplesmente não é tocado, mantendo a atual
 
             _produtoRepository.DefinirCategoriasDoProduto(produtoDb.ProdutoID, categoriaIds);
-            _produtoRepository.SalvarAlteracoes();
+            _unitOfWork.SaveChanges();
 
             return ResultadoOperacao.Ok("Produto atualizado com sucesso!");
         }
@@ -171,7 +193,7 @@ namespace PolarDrinks.Services
 
             produto.ProdutoQtdEstoque = novaQuantidade;
 
-            _produtoRepository.SalvarAlteracoes();
+            _unitOfWork.SaveChanges();
 
             return ResultadoOperacao.Ok("Estoque ajustado com sucesso!");
         }

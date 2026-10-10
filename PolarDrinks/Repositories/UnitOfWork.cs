@@ -35,6 +35,7 @@ namespace PolarDrinks.Repositories
             _transaction?.Rollback();
             _transaction?.Dispose();
             _transaction = null;
+            _db.ChangeTracker.Clear();
         }
     }
 }

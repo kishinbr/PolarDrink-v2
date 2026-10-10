@@ -49,7 +49,9 @@ namespace PolarDrinks.Controllers
                     ModelState.AddModelError(resultado.CampoErro, resultado.Mensagem!);
                 }
 
-                TempData["MensagemErro"] = "Erro ao cadastrar produto.";
+                TempData["MensagemErro"] = resultado.CampoErro == null
+                        ? resultado.Mensagem
+                        : "Erro ao cadastrar produto.";
                 ViewBag.TodasCategorias = _categoriaService.ListarAtivas();
                 return View(produto);
             }
