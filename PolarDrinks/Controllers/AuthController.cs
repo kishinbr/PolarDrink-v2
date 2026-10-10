@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PolarDrinks.Data;
-using PolarDrinks.Filters;
+using PolarDrinks.Services;
 
 namespace PolarDrinks.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUsuarioService _usuarioService;
 
-        public AuthController(ApplicationDbContext db)
+        public AuthController(IUsuarioService usuarioService)
         {
-            _db = db;
+            _usuarioService = usuarioService;
         }
 
         public IActionResult Login()
@@ -21,27 +20,23 @@ namespace PolarDrinks.Controllers
         [HttpPost]
         public IActionResult Login(string usuario, string senha)
         {
-            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(senha))
+            var resultado = _usuarioService.Autenticar(usuario, senha);
+
+            if (!resultado.Sucesso)
             {
-                ViewBag.Erro = "Usuário ou senha inválidos";
+                ViewBag.Erro = resultado.Mensagem;
                 return View();
             }
 
-            var user = _db.Usuarios
-                .FirstOrDefault(u => u.UsuarioLogin == usuario && u.UsuarioAtivo);
+            var user = resultado.Dado!;
 
-            if (user != null && BCrypt.Net.BCrypt.Verify(senha, user.UsuarioSenhaHash))
-            {
-                HttpContext.Session.SetString("Logado", "true");
-                HttpContext.Session.SetInt32("UsuarioID", user.UsuarioID);
-                HttpContext.Session.SetString("Usuario", user.UsuarioLogin);
-                HttpContext.Session.SetString("Perfil", user.UsuarioPerfil);
-                HttpContext.Session.SetString("Nome", user.UsuarioNome);
-                return RedirectToAction("Index", "Home");
-            }
+            HttpContext.Session.SetString("Logado", "true");
+            HttpContext.Session.SetInt32("UsuarioID", user.UsuarioID);
+            HttpContext.Session.SetString("Usuario", user.UsuarioLogin);
+            HttpContext.Session.SetString("Perfil", user.UsuarioPerfil);
+            HttpContext.Session.SetString("Nome", user.UsuarioNome);
 
-            ViewBag.Erro = "Usuário ou senha inválidos";
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]

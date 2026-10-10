@@ -125,11 +125,7 @@ namespace PolarDrinks.Services
                 {
                     var produto = produtos.First(p => p.ProdutoID == itemRequest.ProdutoID);
 
-                    decimal precoBase = produto.ProdutoPrecoVenda ?? 0;
-                    decimal desconto = produto.ProdutoPromocao;
-                    decimal precoFinal = desconto > 0
-                        ? precoBase - (precoBase * (desconto / 100))
-                        : precoBase;
+                    decimal precoFinal = produto.CalcularPrecoFinal();
 
                     venda.Itens.Add(new ItemVendaModel
                     {

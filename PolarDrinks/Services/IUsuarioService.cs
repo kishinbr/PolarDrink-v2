@@ -7,6 +7,7 @@ namespace PolarDrinks.Services
     {
         List<UsuarioModel> ListarUsuarios();
         UsuarioModel? ObterUsuario(int id);
+        ResultadoOperacao<UsuarioModel> Autenticar(string? login, string? senha);
 
         ResultadoOperacao CadastrarUsuario(
             string usuarioNome, string usuarioLogin, string senha, string confirmacaoSenha,

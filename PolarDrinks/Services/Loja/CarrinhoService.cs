@@ -30,9 +30,7 @@ namespace PolarDrinks.Services.Loja
                     continue;
                 }
 
-                var precoBase = item.Produto.ProdutoPrecoVenda ?? 0;
-                var desconto = item.Produto.ProdutoPromocao;
-                var precoFinal = desconto > 0 ? precoBase - (precoBase * (desconto / 100)) : precoBase;
+                var precoFinal = item.Produto.CalcularPrecoFinal();
 
                 carrinho.Itens.Add(new CarrinhoItemDto
                 {

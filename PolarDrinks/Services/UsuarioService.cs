@@ -22,6 +22,27 @@ namespace PolarDrinks.Services
         {
             return _usuarioRepository.ObterPorId(id);
         }
+
+        public ResultadoOperacao<UsuarioModel> Autenticar(string? login, string? senha)
+        {
+            const string mensagemPadrao = "Usuário ou senha inválidos";
+
+            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(senha))
+            {
+                return ResultadoOperacao<UsuarioModel>.Erro(mensagemPadrao);
+            }
+
+            var usuario = _usuarioRepository.ObterPorLogin(login);
+
+            if (usuario == null
+                || !usuario.UsuarioAtivo
+                || !BCrypt.Net.BCrypt.Verify(senha, usuario.UsuarioSenhaHash))
+            {
+                return ResultadoOperacao<UsuarioModel>.Erro(mensagemPadrao);
+            }
+
+            return ResultadoOperacao<UsuarioModel>.Ok(usuario);
+        }
         public ResultadoOperacao CadastrarUsuario(
                 string usuarioNome, string usuarioLogin, string senha, string confirmacaoSenha,
                 string usuarioPerfil, string senhaAtual, string? loginUsuarioLogado)

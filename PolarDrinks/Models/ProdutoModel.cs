@@ -45,9 +45,19 @@ namespace PolarDrinks.Models
         [Timestamp]
         public byte[]? RowVersion { get; set; }
 
-
-        // Propriedade calculada para indicar estoque baixo
         [NotMapped]
         public bool EstoqueBaixo => ProdutoQtdEstoque.HasValue && ProdutoQtdEstoque.Value <= ProdutoEstoqueMinimo;
+        public decimal CalcularPrecoFinal()
+        {
+            var precoBase = Math.Max(0m, ProdutoPrecoVenda ?? 0m);
+
+            var promocaoValida = ProdutoPromocao > 0 && ProdutoPromocao <= 100;
+
+            var precoFinal = promocaoValida
+                ? precoBase - (precoBase * (ProdutoPromocao / 100m))
+                : precoBase;
+
+            return Math.Round(precoFinal, 2, MidpointRounding.AwayFromZero);
+        }
     }
 }

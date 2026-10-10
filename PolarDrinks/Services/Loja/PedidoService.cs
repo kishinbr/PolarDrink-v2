@@ -124,9 +124,7 @@ namespace PolarDrinks.Services.Loja
                             break;
                         }
 
-                        var precoBase = produto.ProdutoPrecoVenda ?? 0;
-                        var desconto = produto.ProdutoPromocao;
-                        var precoFinal = desconto > 0 ? precoBase - (precoBase * (desconto / 100)) : precoBase;
+                        var precoFinal = produto.CalcularPrecoFinal();
 
                         pedido.Itens.Add(new ItemPedidoModel
                         {
