@@ -32,5 +32,13 @@ namespace PolarDrinks.Repositories
                 .OrderByDescending(m => m.MovimentacaoData)
                 .ToList();
         }
+
+        public bool ExisteMovimentacao(string tipo, int? itemVendaId, int? itemPedidoId)
+        {
+            return _db.MovimentacoesEstoque.Any(m =>
+                m.MovimentacaoTipo == tipo &&
+                ((itemVendaId != null && m.ItemVendaID == itemVendaId) ||
+                 (itemPedidoId != null && m.ItemPedidoID == itemPedidoId)));
+        }
     }
 }

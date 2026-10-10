@@ -84,7 +84,120 @@ public class MovimentacaoEstoqueServiceTests
         Assert.False(resultado.Sucesso);
         _movimentacaoRepository.DidNotReceive().Adicionar(Arg.Any<MovimentacaoEstoqueModel>());
     }
+    // ---------- DEVOLUÇÃO ----------
 
+    [Fact]
+    public void RegistrarDevolucao_CancelamentoDeVenda_DeveSomarEstoqueEPrepararMovimentacao()
+    {
+        var produto = CriarProduto(estoque: 5);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarDevolucao(
+            1, 2, MovimentacaoEstoqueModel.Tipos.Cancelamento,
+            usuarioId: 7, descricao: "Cliente desistiu", itemVendaId: 55);
+
+        Assert.True(resultado.Sucesso);
+        Assert.Equal(7, produto.ProdutoQtdEstoque);
+        _movimentacaoRepository.Received(1).Adicionar(Arg.Is<MovimentacaoEstoqueModel>(m =>
+            m.ProdutoID == 1 &&
+            m.MovimentacaoQtd == 2 &&
+            m.MovimentacaoTipo == MovimentacaoEstoqueModel.Tipos.Cancelamento &&
+            m.ItemVendaID == 55 &&
+            m.ItemPedidoID == null &&
+            m.MovimentacaoDescricao == "Cliente desistiu" &&
+            m.UsuarioID == 7));
+    }
+
+    [Fact]
+    public void RegistrarDevolucao_PedidoOnline_DeveSomarEstoqueEPrepararMovimentacao()
+    {
+        var produto = CriarProduto(estoque: 5);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarDevolucao(
+            1, 3, MovimentacaoEstoqueModel.Tipos.CancelamentoOnline,
+            usuarioId: null, descricao: "Expirado", itemPedidoId: 90);
+
+        Assert.True(resultado.Sucesso);
+        Assert.Equal(8, produto.ProdutoQtdEstoque);
+        _movimentacaoRepository.Received(1).Adicionar(Arg.Is<MovimentacaoEstoqueModel>(m =>
+            m.MovimentacaoTipo == MovimentacaoEstoqueModel.Tipos.CancelamentoOnline &&
+            m.ItemPedidoID == 90 &&
+            m.ItemVendaID == null &&
+            m.MovimentacaoDescricao == "Expirado"));
+    }
+
+    [Fact]
+    public void RegistrarDevolucao_ItemJaDevolvido_DeveRejeitarSemEfeitos()
+    {
+        var produto = CriarProduto(estoque: 5);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+        _movimentacaoRepository
+            .ExisteMovimentacao(MovimentacaoEstoqueModel.Tipos.Cancelamento, 55, null)
+            .Returns(true);
+
+        var resultado = _service.RegistrarDevolucao(
+            1, 2, MovimentacaoEstoqueModel.Tipos.Cancelamento, usuarioId: 7, itemVendaId: 55);
+
+        Assert.False(resultado.Sucesso);
+        AssertSemEfeitos(produto, estoqueEsperado: 5);
+    }
+
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData(1, 1)]
+    public void RegistrarDevolucao_SemOrigemOuComDuasOrigens_DeveRejeitarSemEfeitos(int? itemVendaId, int? itemPedidoId)
+    {
+        var produto = CriarProduto(estoque: 5);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarDevolucao(
+            1, 2, MovimentacaoEstoqueModel.Tipos.Cancelamento, usuarioId: 7,
+            itemVendaId: itemVendaId, itemPedidoId: itemPedidoId);
+
+        Assert.False(resultado.Sucesso);
+        AssertSemEfeitos(produto, estoqueEsperado: 5);
+    }
+
+    [Fact]
+    public void RegistrarDevolucao_TipoQueNaoEDevolucao_DeveRejeitarSemEfeitos()
+    {
+        var produto = CriarProduto(estoque: 5);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarDevolucao(
+            1, 2, MovimentacaoEstoqueModel.Tipos.Saida, usuarioId: 7, itemVendaId: 55);
+
+        Assert.False(resultado.Sucesso);
+        AssertSemEfeitos(produto, estoqueEsperado: 5);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-2)]
+    public void RegistrarDevolucao_QuantidadeZeroOuNegativa_DeveRejeitarSemEfeitos(int quantidade)
+    {
+        var produto = CriarProduto(estoque: 5);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarDevolucao(
+            1, quantidade, MovimentacaoEstoqueModel.Tipos.Cancelamento, usuarioId: 7, itemVendaId: 55);
+
+        Assert.False(resultado.Sucesso);
+        AssertSemEfeitos(produto, estoqueEsperado: 5);
+    }
+
+    [Fact]
+    public void RegistrarDevolucao_ProdutoInexistente_DeveRejeitar()
+    {
+        _produtoRepository.ObterPorId(99).Returns((ProdutoModel?)null);
+
+        var resultado = _service.RegistrarDevolucao(
+            99, 1, MovimentacaoEstoqueModel.Tipos.Cancelamento, usuarioId: 7, itemVendaId: 55);
+
+        Assert.False(resultado.Sucesso);
+        _movimentacaoRepository.DidNotReceive().Adicionar(Arg.Any<MovimentacaoEstoqueModel>());
+    }
     private static ProdutoModel CriarProduto(int estoque)
     {
         return new ProdutoModel
