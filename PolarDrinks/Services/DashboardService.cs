@@ -470,34 +470,7 @@ namespace PolarDrinks.Services
                 .Select(g => g.Sum(v => v.VendaValorTotal))
                 .ToList();
 
-            int n = vendasPorDia.Count;
-
-            if (n > 1)
-            {
-                double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-
-                for (int i = 0; i < n; i++)
-                {
-                    double x = i + 1;
-                    double y = (double)vendasPorDia[i];
-
-                    sumX += x;
-                    sumY += y;
-                    sumXY += x * y;
-                    sumX2 += x * x;
-                }
-
-                double a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-                double b = (sumY - a * sumX) / n;
-
-                double previsao = a * (n + 1) + b;
-
-                model.PrevisaoAmanha = (decimal)Math.Max(previsao, 0);
-            }
-            else
-            {
-                model.PrevisaoAmanha = 0;
-            }
+            model.PrevisaoAmanha = PrevisaoLinear.PreverProximo(vendasPorDia);
 
             var vendasPorProduto = todasVendas
                 .SelectMany(v => v.Itens)
@@ -524,27 +497,12 @@ namespace PolarDrinks.Services
                     .Select(g => g.Sum(x => x.Quantidade))
                     .ToList();
 
-                int quantidadeDias = dadosPorDia.Count;
+                var inclinacao = PrevisaoLinear.Inclinacao(dadosPorDia);
 
-                if (quantidadeDias < 2)
+                if (inclinacao == null)
                     continue;
 
-                double sX = 0, sY = 0, sXY = 0, sX2 = 0;
-
-                for (int i = 0; i < quantidadeDias; i++)
-                {
-                    double x = i + 1;
-                    double y = (double)dadosPorDia[i];
-
-                    sX += x;
-                    sY += y;
-                    sXY += x * y;
-                    sX2 += x * x;
-                }
-
-                double slope = (quantidadeDias * sXY - sX * sY) / (quantidadeDias * sX2 - sX * sX);
-
-                tendencias.Add((p.ProdutoNome, slope));
+                tendencias.Add((p.ProdutoNome, inclinacao.Value));
             }
 
             model.Top3ProdutosAlta = tendencias
@@ -562,34 +520,7 @@ namespace PolarDrinks.Services
                 .Select(g => g.Sum(p => p.PedidoValorTotal))
                 .ToList();
 
-            int nOnline = pedidosPorDia.Count;
-
-            if (nOnline > 1)
-            {
-                double sumXo = 0, sumYo = 0, sumXYo = 0, sumX2o = 0;
-
-                for (int i = 0; i < nOnline; i++)
-                {
-                    double x = i + 1;
-                    double y = (double)pedidosPorDia[i];
-
-                    sumXo += x;
-                    sumYo += y;
-                    sumXYo += x * y;
-                    sumX2o += x * x;
-                }
-
-                double aOnline = (nOnline * sumXYo - sumXo * sumYo) / (nOnline * sumX2o - sumXo * sumXo);
-                double bOnline = (sumYo - aOnline * sumXo) / nOnline;
-
-                double previsaoOnline = aOnline * (nOnline + 1) + bOnline;
-
-                model.PrevisaoAmanhaOnline = (decimal)Math.Max(previsaoOnline, 0);
-            }
-            else
-            {
-                model.PrevisaoAmanhaOnline = 0;
-            }
+            model.PrevisaoAmanhaOnline = PrevisaoLinear.PreverProximo(pedidosPorDia);
 
             model.PrevisaoAmanhaCombinada = model.PrevisaoAmanha + model.PrevisaoAmanhaOnline;
         }
