@@ -7,6 +7,8 @@ namespace PolarDrinks.Repositories
     {
         List<ProdutoModel> ObterTodos();
         List<ProdutoModel> ObterAtivos();
+        int ContarSemEstoque();
+        int ContarAbaixoDoMinimo();
         ProdutoModel? ObterPorId(int id);
         List<ProdutoModel> ObterPorIds(List<int> ids);
         bool ExisteCodigoBarra(string codigoBarra, int? idParaIgnorar = null);

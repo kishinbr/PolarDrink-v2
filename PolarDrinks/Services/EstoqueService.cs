@@ -38,6 +38,12 @@ namespace PolarDrinks.Services
         {
             return _produtoRepository.ObterPorId(id);
         }
+
+        public (int SemEstoque, int AbaixoDoMinimo) ContarAlertasDeEstoque()
+        {
+            return (_produtoRepository.ContarSemEstoque(), _produtoRepository.ContarAbaixoDoMinimo());
+        }
+
         public List<int> ObterCategoriasDoProduto(int produtoId)
         {
             return _produtoRepository.ObterCategoriasDoProduto(produtoId);

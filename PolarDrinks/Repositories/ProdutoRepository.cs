@@ -24,6 +24,15 @@ namespace PolarDrinks.Repositories
             return _db.Produtos.Where(p => p.ProdutoAtivo).ToList();
         }
 
+        public int ContarSemEstoque()
+        {
+            return _db.Produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) == 0);
+        }
+
+        public int ContarAbaixoDoMinimo()
+        {
+            return _db.Produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) <= p.ProdutoEstoqueMinimo);
+        }
         public ProdutoModel? ObterPorId(int id)
         {
             return _db.Produtos.FirstOrDefault(p => p.ProdutoID == id);

@@ -10,15 +10,18 @@ namespace PolarDrinks.Services
         private readonly IVendaRepository _vendaRepository;
         private readonly IProdutoRepository _produtoRepository;
         private readonly IPedidoRepository _pedidoRepository;
+        private readonly IEstoqueService _estoqueService;
 
         public DashboardService(
             IVendaRepository vendaRepository,
             IProdutoRepository produtoRepository,
-            IPedidoRepository pedidoRepository)
+            IPedidoRepository pedidoRepository,
+            IEstoqueService estoqueService)
         {
             _vendaRepository = vendaRepository;
             _produtoRepository = produtoRepository;
             _pedidoRepository = pedidoRepository;
+            _estoqueService = estoqueService;
         }
         private PagamentoResumoDto MontarResumoPagamento(List<VendaModel> vendas, List<PedidoModel> pedidos, string canal)
         {
@@ -26,13 +29,13 @@ namespace PolarDrinks.Services
 
             if (canal == "presencial" || canal == "geral")
             {
-                resumo.QtdPix += vendas.Count(v => v.VendaTipoPagamento == "Pix");
-                resumo.QtdCartao += vendas.Count(v => v.VendaTipoPagamento == "Cartão");
-                resumo.QtdDinheiro += vendas.Count(v => v.VendaTipoPagamento == "Dinheiro");
+                resumo.QtdPix += vendas.Count(v => v.VendaTipoPagamento == VendaModel.TipoPagamento.Pix);
+                resumo.QtdCartao += vendas.Count(v => v.VendaTipoPagamento == VendaModel.TipoPagamento.Cartao);
+                resumo.QtdDinheiro += vendas.Count(v => v.VendaTipoPagamento == VendaModel.TipoPagamento.Dinheiro);
 
-                resumo.TotalPix += vendas.Where(v => v.VendaTipoPagamento == "Pix").Sum(v => v.VendaValorTotal);
-                resumo.TotalCartao += vendas.Where(v => v.VendaTipoPagamento == "Cartão").Sum(v => v.VendaValorTotal);
-                resumo.TotalDinheiro += vendas.Where(v => v.VendaTipoPagamento == "Dinheiro").Sum(v => v.VendaValorTotal);
+                resumo.TotalPix += vendas.Where(v => v.VendaTipoPagamento == VendaModel.TipoPagamento.Pix).Sum(v => v.VendaValorTotal);
+                resumo.TotalCartao += vendas.Where(v => v.VendaTipoPagamento == VendaModel.TipoPagamento.Cartao).Sum(v => v.VendaValorTotal);
+                resumo.TotalDinheiro += vendas.Where(v => v.VendaTipoPagamento == VendaModel.TipoPagamento.Dinheiro).Sum(v => v.VendaValorTotal);
             }
 
             if (canal == "online" || canal == "geral")
@@ -163,8 +166,9 @@ namespace PolarDrinks.Services
             var produtos = d.Produtos;
 
             // ESTOQUE
-            model.SemEstoque = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) == 0);
-            model.EstoqueBaixo = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) <= p.ProdutoEstoqueMinimo);
+            var alertas = _estoqueService.ContarAlertasDeEstoque();
+            model.SemEstoque = alertas.SemEstoque;
+            model.EstoqueBaixo = alertas.AbaixoDoMinimo;
             // PRODUTOS EM ESTOQUE (RESUMO)
             model.ProdutosCadastrados = produtos.Count(p => p.ProdutoAtivo);
             model.ProdutosIndisponiveis = produtos.Count(p => !p.ProdutoAtivo);
