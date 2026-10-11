@@ -49,6 +49,47 @@ namespace PolarDrinks.Services
 
         public DashboardViewModel GerarDashboard()
         {
+            var dados = CarregarDados();
+            var model = new DashboardViewModel();
+
+            PreencherFinanceiroPresencial(model, dados);
+            PreencherEstoque(model, dados);
+            PreencherLojaOnline(model, dados);
+            PreencherCombinado(model, dados);
+            PreencherPagamentos(model, dados);
+            PreencherGiroDeEstoque(model, dados);
+            PreencherComparativoPresencialOnline(model, dados);
+            PreencherOperacaoLojaOnline(model, dados);
+            PreencherRankingsDeProdutos(model, dados);
+            PreencherPrevisoes(model, dados);
+            PreencherGraficos(model, dados);
+            PreencherCancelamentos(model, dados);
+
+            return model;
+        }
+
+        // Dados carregados uma única vez e compartilhados entre as seções do dashboard.
+        private sealed class DadosDashboard
+        {
+            public DateTime Hoje { get; init; }
+            public DateTime InicioMes { get; init; }
+            public DateTime InicioAno { get; init; }
+            public DateTime Inicio30Dias { get; init; }
+            public List<VendaModel> TodasVendas { get; init; } = new();
+            public List<VendaModel> VendasHoje { get; init; } = new();
+            public List<VendaModel> VendasMes { get; init; } = new();
+            public List<VendaModel> VendasAno { get; init; } = new();
+            public List<VendaModel> Vendas7Dias { get; init; } = new();
+            public List<VendaModel> Vendas30Dias { get; init; } = new();
+            public List<ProdutoModel> Produtos { get; init; } = new();
+            public List<PedidoModel> TodosPedidos { get; init; } = new();
+            public List<PedidoModel> PedidosValidos { get; init; } = new();
+            public List<PedidoModel> PedidosHoje { get; init; } = new();
+            public List<PedidoModel> PedidosMes { get; init; } = new();
+        }
+
+        private DadosDashboard CarregarDados()
+        {
             var hoje = DateTime.Today;
             var inicioMes = new DateTime(hoje.Year, hoje.Month, 1);
             var inicioAno = new DateTime(hoje.Year, 1, 1);
@@ -65,7 +106,42 @@ namespace PolarDrinks.Services
 
             var produtos = _produtoRepository.ObterTodos();
 
-            var model = new DashboardViewModel();
+            // ===== LOJA ONLINE =====
+            var todosPedidos = _pedidoRepository.ObterTodosComDetalhes();
+
+            var statusQueContam = new[] { PedidoModel.Status.Concluido, PedidoModel.Status.CanceladoNaoRetirado };
+
+            var pedidosValidos = todosPedidos.Where(p => statusQueContam.Contains(p.PedidoStatus)).ToList();
+
+            var pedidosHoje = pedidosValidos.Where(p => p.PedidoData.Date == hoje).ToList();
+            var pedidosMes = pedidosValidos.Where(p => p.PedidoData >= inicioMes).ToList();
+
+            return new DadosDashboard
+            {
+                Hoje = hoje,
+                InicioMes = inicioMes,
+                InicioAno = inicioAno,
+                Inicio30Dias = inicio30Dias,
+                TodasVendas = todasVendas,
+                VendasHoje = vendasHoje,
+                VendasMes = vendasMes,
+                VendasAno = vendasAno,
+                Vendas7Dias = vendas7Dias,
+                Vendas30Dias = vendas30Dias,
+                Produtos = produtos,
+                TodosPedidos = todosPedidos,
+                PedidosValidos = pedidosValidos,
+                PedidosHoje = pedidosHoje,
+                PedidosMes = pedidosMes
+            };
+        }
+
+        // Faturamento, lucro e ticket médio das vendas do balcão.
+        private void PreencherFinanceiroPresencial(DashboardViewModel model, DadosDashboard d)
+        {
+            var todasVendas = d.TodasVendas;
+            var vendasHoje = d.VendasHoje;
+            var vendasMes = d.VendasMes;
 
             // FINANCEIRO
             model.TotalHoje = vendasHoje.Sum(v => v.VendaValorTotal);
@@ -79,6 +155,12 @@ namespace PolarDrinks.Services
 
             // TICKET MÉDIO
             model.TicketMedio = todasVendas.Any() ? todasVendas.Average(v => v.VendaValorTotal) : 0;
+        }
+
+        // Indicadores de estoque e resumo de produtos.
+        private void PreencherEstoque(DashboardViewModel model, DadosDashboard d)
+        {
+            var produtos = d.Produtos;
 
             // ESTOQUE
             model.SemEstoque = produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) == 0);
@@ -91,17 +173,13 @@ namespace PolarDrinks.Services
             model.ValorEstoqueAproximado = produtos
                 .Where(p => p.ProdutoAtivo)
                 .Sum(p => (p.ProdutoQtdEstoque ?? 0) * (p.ProdutoPrecoCusto ?? 0));
+        }
 
-
-            // ===== LOJA ONLINE =====
-            var todosPedidos = _pedidoRepository.ObterTodosComDetalhes();
-
-            var statusQueContam = new[] { PedidoModel.Status.Concluido, PedidoModel.Status.CanceladoNaoRetirado };
-
-            var pedidosValidos = todosPedidos.Where(p => statusQueContam.Contains(p.PedidoStatus)).ToList();
-
-            var pedidosHoje = pedidosValidos.Where(p => p.PedidoData.Date == hoje).ToList();
-            var pedidosMes = pedidosValidos.Where(p => p.PedidoData >= inicioMes).ToList();
+        // Faturamento e lucro dos pedidos da loja online.
+        private void PreencherLojaOnline(DashboardViewModel model, DadosDashboard d)
+        {
+            var pedidosHoje = d.PedidosHoje;
+            var pedidosMes = d.PedidosMes;
 
             model.TotalOnlineHoje = pedidosHoje.Sum(p => p.PedidoValorTotal);
             model.TotalOnlineMes = pedidosMes.Sum(p => p.PedidoValorTotal);
@@ -111,7 +189,13 @@ namespace PolarDrinks.Services
 
             model.LucroOnlineMes = pedidosMes.Sum(p =>
                 p.Itens.Sum(i => (i.ItemPedidoPreco - i.ItemPedidoCusto) * i.ItemPedidoQtd));
+        }
 
+        // Totais combinados (balcão + online) e tickets médios.
+        private void PreencherCombinado(DashboardViewModel model, DadosDashboard d)
+        {
+            var todasVendas = d.TodasVendas;
+            var pedidosValidos = d.PedidosValidos;
 
             // ===== COMBINADO (Presencial + Online) =====
             model.TotalCombinadoHoje = model.TotalHoje + model.TotalOnlineHoje;
@@ -126,6 +210,18 @@ namespace PolarDrinks.Services
                 ? somaTotalTransacoes / quantidadeTransacoesTotal
                 : 0;
             model.TicketMedioOnline = pedidosValidos.Any() ? pedidosValidos.Average(p => p.PedidoValorTotal) : 0;
+        }
+
+        // Pagamentos por canal e período.
+        private void PreencherPagamentos(DashboardViewModel model, DadosDashboard d)
+        {
+            var hoje = d.Hoje;
+            var inicio30Dias = d.Inicio30Dias;
+            var todasVendas = d.TodasVendas;
+            var vendasHoje = d.VendasHoje;
+            var vendas7Dias = d.Vendas7Dias;
+            var vendas30Dias = d.Vendas30Dias;
+            var todosPedidos = d.TodosPedidos;
 
             // ===== NOVA ESTRUTURA: PAGAMENTOS POR CANAL E PERÍODO =====
             var pedidosHojeParaPagamento = todosPedidos.Where(p => p.PedidoData.Date == hoje).ToList();
@@ -161,6 +257,15 @@ namespace PolarDrinks.Services
                         MontarResumoPagamento(periodosVendas[periodo], periodosPedidos[periodo], canal);
                 }
             }
+        }
+
+        // Giro de estoque (últimos 30 dias, balcão + online).
+        private void PreencherGiroDeEstoque(DashboardViewModel model, DadosDashboard d)
+        {
+            var inicio30Dias = d.Inicio30Dias;
+            var vendas30Dias = d.Vendas30Dias;
+            var produtos = d.Produtos;
+            var pedidosValidos = d.PedidosValidos;
 
             // GIRO DE ESTOQUE (baseado nos últimos 30 dias, Presencial + Online)
             var vendidoPorProdutoPresencial = vendas30Dias
@@ -200,6 +305,11 @@ namespace PolarDrinks.Services
                 .OrderByDescending(g => g.GiroDias ?? double.MaxValue)
                 .Take(5)
                 .ToList();
+        }
+
+        // Participação do balcão e da loja online no mês.
+        private void PreencherComparativoPresencialOnline(DashboardViewModel model, DadosDashboard d)
+        {
             // ===== COMPARATIVO PRESENCIAL vs ONLINE (baseado no mês) =====
             var totalGeralMes = model.TotalMes + model.TotalOnlineMes;
 
@@ -213,6 +323,14 @@ namespace PolarDrinks.Services
                 model.PercentualPresencialMes = 0;
                 model.PercentualOnlineMes = 0;
             }
+        }
+
+        // Indicadores operacionais da loja online.
+        private void PreencherOperacaoLojaOnline(DashboardViewModel model, DadosDashboard d)
+        {
+            var inicioMes = d.InicioMes;
+            var todosPedidos = d.TodosPedidos;
+
             // ===== OPERAÇÃO DA LOJA ONLINE =====
             var pedidosMesTodos = todosPedidos.Where(p => p.PedidoData >= inicioMes).ToList();
 
@@ -248,6 +366,13 @@ namespace PolarDrinks.Services
             model.FaturamentoPorExpiracaoMes = pedidosMesTodos
                 .Where(p => p.PedidoStatus == PedidoModel.Status.CanceladoNaoRetirado)
                 .Sum(p => p.PedidoValorTotal);
+        }
+
+        // Produtos mais vendidos e mais lucrativos (balcão, online e total).
+        private void PreencherRankingsDeProdutos(DashboardViewModel model, DadosDashboard d)
+        {
+            var todasVendas = d.TodasVendas;
+            var pedidosValidos = d.PedidosValidos;
 
             // PRODUTOS
             model.ProdutoMaisVendido = todasVendas
@@ -328,6 +453,15 @@ namespace PolarDrinks.Services
                 .OrderByDescending(x => x.Total)
                 .Select(x => x.Nome)
                 .FirstOrDefault();
+        }
+
+        // Previsão de vendas (regressão linear) e tendência por produto.
+        private void PreencherPrevisoes(DashboardViewModel model, DadosDashboard d)
+        {
+            var hoje = d.Hoje;
+            var todasVendas = d.TodasVendas;
+            var vendas7Dias = d.Vendas7Dias;
+            var pedidosValidos = d.PedidosValidos;
 
             // PREVISÃO
             var vendasPorDia = vendas7Dias
@@ -458,6 +592,20 @@ namespace PolarDrinks.Services
             }
 
             model.PrevisaoAmanhaCombinada = model.PrevisaoAmanha + model.PrevisaoAmanhaOnline;
+        }
+
+        // Séries dos gráficos de vendas por canal e período.
+        private void PreencherGraficos(DashboardViewModel model, DadosDashboard d)
+        {
+            var hoje = d.Hoje;
+            var inicioAno = d.InicioAno;
+            var inicio30Dias = d.Inicio30Dias;
+            var vendasHoje = d.VendasHoje;
+            var vendasAno = d.VendasAno;
+            var vendas7Dias = d.Vendas7Dias;
+            var vendas30Dias = d.Vendas30Dias;
+            var pedidosValidos = d.PedidosValidos;
+            var pedidosHoje = d.PedidosHoje;
 
             // GRÁFICOS
             var vendasHojePorHora = vendasHoje
@@ -565,6 +713,14 @@ namespace PolarDrinks.Services
                 ["mes"] = Somar(model.VendasMesGrafico, vendasOnlineMesGrafico),
                 ["ano"] = Somar(model.VendasAno, vendasOnlineAno)
             };
+        }
+
+        // Indicadores de cancelamento (balcão, online e total).
+        private void PreencherCancelamentos(DashboardViewModel model, DadosDashboard d)
+        {
+            var hoje = d.Hoje;
+            var inicioMes = d.InicioMes;
+            var todosPedidos = d.TodosPedidos;
 
             // CANCELAMENTOS
             var vendasCanceladas = _vendaRepository.ObterVendasCanceladasComDetalhes();
@@ -630,9 +786,6 @@ namespace PolarDrinks.Services
                 .OrderByDescending(x => x.Total)
                 .Select(x => x.Nome)
                 .FirstOrDefault();
-
-
-            return model;
         }
     }
 }
