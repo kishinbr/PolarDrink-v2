@@ -10,5 +10,7 @@ namespace PolarDrinks.Services
         ResultadoOperacao RegistrarDevolucao(
             int produtoId, int quantidade, string tipo, int? usuarioId,
             string? descricao = null, int? itemVendaId = null, int? itemPedidoId = null);
+        ResultadoOperacao RegistrarEntrada(
+            int produtoId, int quantidade, int? usuarioId, int itemCompraId);
     }
 }

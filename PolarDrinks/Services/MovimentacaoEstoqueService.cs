@@ -102,5 +102,34 @@ namespace PolarDrinks.Services
 
             return ResultadoOperacao.Ok("Devolução ao estoque registrada.");
         }
+
+        public ResultadoOperacao RegistrarEntrada(
+            int produtoId, int quantidade, int? usuarioId, int itemCompraId)
+        {
+            if (quantidade <= 0)
+            {
+                return ResultadoOperacao.Erro("A quantidade deve ser maior que zero.");
+            }
+
+            var produto = _produtoRepository.ObterPorId(produtoId);
+            if (produto == null)
+            {
+                return ResultadoOperacao.Erro($"Produto não encontrado: ID {produtoId}");
+            }
+
+            produto.ProdutoQtdEstoque = (produto.ProdutoQtdEstoque ?? 0) + quantidade;
+
+            _movimentacaoRepository.Adicionar(new MovimentacaoEstoqueModel
+            {
+                ProdutoID = produto.ProdutoID,
+                MovimentacaoQtd = quantidade,
+                MovimentacaoTipo = MovimentacaoEstoqueModel.Tipos.Entrada,
+                MovimentacaoData = DateTime.Now,
+                ItemCompraID = itemCompraId,
+                UsuarioID = usuarioId
+            });
+
+            return ResultadoOperacao.Ok("Entrada de estoque registrada.");
+        }
     }
 }

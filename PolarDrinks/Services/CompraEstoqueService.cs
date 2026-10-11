@@ -10,20 +10,20 @@ namespace PolarDrinks.Services
         private readonly ICompraEstoqueRepository _compraRepository;
         private readonly IProdutoRepository _produtoRepository;
         private readonly IFornecedorRepository _fornecedorRepository;
-        private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
+        private readonly IMovimentacaoEstoqueService _movimentacaoEstoqueService;
         private readonly IUnitOfWork _unitOfWork;
         public CompraEstoqueService(
             ICompraEstoqueRepository compraRepository,
             IProdutoRepository produtoRepository,
             IFornecedorRepository fornecedorRepository,
-            IMovimentacaoEstoqueRepository movimentacaoRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IMovimentacaoEstoqueService movimentacaoEstoqueService)
         {
             _compraRepository = compraRepository;
             _produtoRepository = produtoRepository;
             _fornecedorRepository = fornecedorRepository;
-            _movimentacaoRepository = movimentacaoRepository;
             _unitOfWork = unitOfWork;
+            _movimentacaoEstoqueService = movimentacaoEstoqueService;
         }
 
         public (List<CompraEstoqueModel> Pendentes, List<CompraEstoqueModel> Concluidas) ListarComprasPorStatus()
@@ -143,32 +143,24 @@ namespace PolarDrinks.Services
                 return ResultadoOperacao.Ok();
             }
 
-            var ids = compra.Itens.Select(i => i.ProdutoID).ToList();
-            var produtos = _produtoRepository.ObterPorIds(ids);
-
             foreach (var item in compra.Itens)
             {
-                var produto = produtos.FirstOrDefault(p => p.ProdutoID == item.ProdutoID);
+                var entrada = _movimentacaoEstoqueService.RegistrarEntrada(
+                    item.ProdutoID,
+                    item.ItemCompraQtd,
+                    usuarioId,
+                    item.ItemCompraID);
 
-                if (produto == null) continue;
-
-                produto.ProdutoQtdEstoque += item.ItemCompraQtd;
-
-                var movimentacao = new MovimentacaoEstoqueModel
+                if (!entrada.Sucesso)
                 {
-                    MovimentacaoTipo = MovimentacaoEstoqueModel.Tipos.Entrada,
-                    MovimentacaoQtd = item.ItemCompraQtd,
-                    ProdutoID = produto.ProdutoID,
-                    ItemCompraID = item.ItemCompraID,
-                    MovimentacaoData = DateTime.Now,
-                    UsuarioID = usuarioId
-                };
-
-                _movimentacaoRepository.Adicionar(movimentacao);
+                    _unitOfWork.Rollback();
+                    return ResultadoOperacao.Erro(entrada.Mensagem!);
+                }
             }
 
             compra.CompraStatus = "Concluído";
             compra.CompraDataEntrega = DateTime.Now;
+
             _unitOfWork.SaveChanges();
 
             return ResultadoOperacao.Ok("Entrega confirmada e estoque atualizado!");

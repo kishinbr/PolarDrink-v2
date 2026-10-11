@@ -198,6 +198,50 @@ public class MovimentacaoEstoqueServiceTests
         Assert.False(resultado.Sucesso);
         _movimentacaoRepository.DidNotReceive().Adicionar(Arg.Any<MovimentacaoEstoqueModel>());
     }
+    // ---------- ENTRADA ----------
+
+    [Fact]
+    public void RegistrarEntrada_DeveSomarEstoqueEPrepararMovimentacao()
+    {
+        var produto = CriarProduto(estoque: 4);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarEntrada(1, 6, usuarioId: 7, itemCompraId: 31);
+
+        Assert.True(resultado.Sucesso);
+        Assert.Equal(10, produto.ProdutoQtdEstoque);
+        _movimentacaoRepository.Received(1).Adicionar(Arg.Is<MovimentacaoEstoqueModel>(m =>
+            m.ProdutoID == 1 &&
+            m.MovimentacaoQtd == 6 &&
+            m.MovimentacaoTipo == MovimentacaoEstoqueModel.Tipos.Entrada &&
+            m.ItemCompraID == 31 &&
+            m.UsuarioID == 7));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-4)]
+    public void RegistrarEntrada_QuantidadeZeroOuNegativa_DeveRejeitarSemEfeitos(int quantidade)
+    {
+        var produto = CriarProduto(estoque: 4);
+        _produtoRepository.ObterPorId(1).Returns(produto);
+
+        var resultado = _service.RegistrarEntrada(1, quantidade, usuarioId: 7, itemCompraId: 31);
+
+        Assert.False(resultado.Sucesso);
+        AssertSemEfeitos(produto, estoqueEsperado: 4);
+    }
+
+    [Fact]
+    public void RegistrarEntrada_ProdutoInexistente_DeveRejeitar()
+    {
+        _produtoRepository.ObterPorId(99).Returns((ProdutoModel?)null);
+
+        var resultado = _service.RegistrarEntrada(99, 1, usuarioId: 7, itemCompraId: 31);
+
+        Assert.False(resultado.Sucesso);
+        _movimentacaoRepository.DidNotReceive().Adicionar(Arg.Any<MovimentacaoEstoqueModel>());
+    }
     private static ProdutoModel CriarProduto(int estoque)
     {
         return new ProdutoModel
