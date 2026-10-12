@@ -78,5 +78,28 @@ namespace PolarDrinks.Repositories
                 .Where(v => v.VendaCancelada)
                 .ToList();
         }
+
+        public (int Quantidade, decimal Faturamento, decimal Lucro) ObterResumoFinanceiro(DateTime? inicio, DateTime? fim)
+        {
+            var vendas = _db.Vendas.Where(v => !v.VendaCancelada);
+
+            if (inicio != null)
+            {
+                vendas = vendas.Where(v => v.VendaData >= inicio.Value);
+            }
+
+            if (fim != null)
+            {
+                vendas = vendas.Where(v => v.VendaData < fim.Value);
+            }
+
+            var quantidade = vendas.Count();
+            var faturamento = vendas.Sum(v => v.VendaValorTotal);
+            var lucro = vendas
+                .SelectMany(v => v.Itens)
+                .Sum(i => (i.ItemVendaPreco - i.ItemVendaCusto) * i.ItemVendaQtd);
+
+            return (quantidade, faturamento, lucro);
+        }
     }
 }

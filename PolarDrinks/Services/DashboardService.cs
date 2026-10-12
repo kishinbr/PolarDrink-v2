@@ -80,7 +80,6 @@ namespace PolarDrinks.Services
             public DateTime Inicio30Dias { get; init; }
             public List<VendaModel> TodasVendas { get; init; } = new();
             public List<VendaModel> VendasHoje { get; init; } = new();
-            public List<VendaModel> VendasMes { get; init; } = new();
             public List<VendaModel> VendasAno { get; init; } = new();
             public List<VendaModel> Vendas7Dias { get; init; } = new();
             public List<VendaModel> Vendas30Dias { get; init; } = new();
@@ -88,7 +87,14 @@ namespace PolarDrinks.Services
             public List<PedidoModel> TodosPedidos { get; init; } = new();
             public List<PedidoModel> PedidosValidos { get; init; } = new();
             public List<PedidoModel> PedidosHoje { get; init; } = new();
-            public List<PedidoModel> PedidosMes { get; init; } = new();
+
+            // Resumos financeiros calculados no banco (COUNT e SUM), sem carregar as entidades
+            public (int Quantidade, decimal Faturamento, decimal Lucro) ResumoVendasHoje { get; init; }
+            public (int Quantidade, decimal Faturamento, decimal Lucro) ResumoVendasMes { get; init; }
+            public (int Quantidade, decimal Faturamento, decimal Lucro) ResumoVendasTotal { get; init; }
+            public (int Quantidade, decimal Faturamento, decimal Lucro) ResumoPedidosHoje { get; init; }
+            public (int Quantidade, decimal Faturamento, decimal Lucro) ResumoPedidosMes { get; init; }
+            public (int Quantidade, decimal Faturamento, decimal Lucro) ResumoPedidosTotal { get; init; }
         }
 
         private DadosDashboard CarregarDados()
@@ -101,7 +107,6 @@ namespace PolarDrinks.Services
             var vendasAtivas = _vendaRepository.ObterVendasAtivasComDetalhes();
 
             var vendasHoje = vendasAtivas.Where(v => v.VendaData.Date == hoje).ToList();
-            var vendasMes = vendasAtivas.Where(v => v.VendaData >= inicioMes).ToList();
             var vendasAno = vendasAtivas.Where(v => v.VendaData >= inicioAno).ToList();
             var vendas7Dias = vendasAtivas.Where(v => v.VendaData.Date >= hoje.AddDays(-6)).ToList();
             var vendas30Dias = vendasAtivas.Where(v => v.VendaData >= inicio30Dias).ToList();
@@ -117,7 +122,15 @@ namespace PolarDrinks.Services
             var pedidosValidos = todosPedidos.Where(p => statusQueContam.Contains(p.PedidoStatus)).ToList();
 
             var pedidosHoje = pedidosValidos.Where(p => p.PedidoData.Date == hoje).ToList();
-            var pedidosMes = pedidosValidos.Where(p => p.PedidoData >= inicioMes).ToList();
+
+            // ===== RESUMOS FINANCEIROS (agregados no banco: COUNT e SUM) =====
+            var resumoVendasHoje = _vendaRepository.ObterResumoFinanceiro(hoje, hoje.AddDays(1));
+            var resumoVendasMes = _vendaRepository.ObterResumoFinanceiro(inicioMes, null);
+            var resumoVendasTotal = _vendaRepository.ObterResumoFinanceiro(null, null);
+
+            var resumoPedidosHoje = _pedidoRepository.ObterResumoFinanceiro(statusQueContam, hoje, hoje.AddDays(1));
+            var resumoPedidosMes = _pedidoRepository.ObterResumoFinanceiro(statusQueContam, inicioMes, null);
+            var resumoPedidosTotal = _pedidoRepository.ObterResumoFinanceiro(statusQueContam, null, null);
 
             return new DadosDashboard
             {
@@ -127,7 +140,6 @@ namespace PolarDrinks.Services
                 Inicio30Dias = inicio30Dias,
                 TodasVendas = todasVendas,
                 VendasHoje = vendasHoje,
-                VendasMes = vendasMes,
                 VendasAno = vendasAno,
                 Vendas7Dias = vendas7Dias,
                 Vendas30Dias = vendas30Dias,
@@ -135,29 +147,29 @@ namespace PolarDrinks.Services
                 TodosPedidos = todosPedidos,
                 PedidosValidos = pedidosValidos,
                 PedidosHoje = pedidosHoje,
-                PedidosMes = pedidosMes
+                ResumoVendasHoje = resumoVendasHoje,
+                ResumoVendasMes = resumoVendasMes,
+                ResumoVendasTotal = resumoVendasTotal,
+                ResumoPedidosHoje = resumoPedidosHoje,
+                ResumoPedidosMes = resumoPedidosMes,
+                ResumoPedidosTotal = resumoPedidosTotal
             };
         }
 
         // Faturamento, lucro e ticket médio das vendas do balcão.
         private void PreencherFinanceiroPresencial(DashboardViewModel model, DadosDashboard d)
         {
-            var todasVendas = d.TodasVendas;
-            var vendasHoje = d.VendasHoje;
-            var vendasMes = d.VendasMes;
+            // FINANCEIRO (valores calculados no banco)
+            model.TotalHoje = d.ResumoVendasHoje.Faturamento;
+            model.TotalMes = d.ResumoVendasMes.Faturamento;
 
-            // FINANCEIRO
-            model.TotalHoje = vendasHoje.Sum(v => v.VendaValorTotal);
-            model.TotalMes = vendasMes.Sum(v => v.VendaValorTotal);
+            model.LucroHoje = d.ResumoVendasHoje.Lucro;
+            model.LucroMes = d.ResumoVendasMes.Lucro;
 
-            model.LucroHoje = vendasHoje.Sum(v =>
-                v.Itens.Sum(i => (i.ItemVendaPreco - i.ItemVendaCusto) * i.ItemVendaQtd));
-
-            model.LucroMes = vendasMes.Sum(v =>
-                v.Itens.Sum(i => (i.ItemVendaPreco - i.ItemVendaCusto) * i.ItemVendaQtd));
-
-            // TICKET MÉDIO
-            model.TicketMedio = todasVendas.Any() ? todasVendas.Average(v => v.VendaValorTotal) : 0;
+            // TICKET MÉDIO (todas as vendas ativas)
+            model.TicketMedio = d.ResumoVendasTotal.Quantidade > 0
+                ? d.ResumoVendasTotal.Faturamento / d.ResumoVendasTotal.Quantidade
+                : 0;
         }
 
         // Indicadores de estoque e resumo de produtos.
@@ -165,7 +177,7 @@ namespace PolarDrinks.Services
         {
             var produtos = d.Produtos;
 
-            // ESTOQUE
+            // ESTOQUE (as contagens e a regra vêm do módulo de estoque; os grupos se sobrepõem)
             var alertas = _estoqueService.ContarAlertasDeEstoque();
             model.SemEstoque = alertas.SemEstoque;
             model.EstoqueBaixo = alertas.AbaixoDoMinimo;
@@ -182,38 +194,33 @@ namespace PolarDrinks.Services
         // Faturamento e lucro dos pedidos da loja online.
         private void PreencherLojaOnline(DashboardViewModel model, DadosDashboard d)
         {
-            var pedidosHoje = d.PedidosHoje;
-            var pedidosMes = d.PedidosMes;
+            // Pedidos que contam como faturamento: ver statusQueContam em CarregarDados
+            model.TotalOnlineHoje = d.ResumoPedidosHoje.Faturamento;
+            model.TotalOnlineMes = d.ResumoPedidosMes.Faturamento;
 
-            model.TotalOnlineHoje = pedidosHoje.Sum(p => p.PedidoValorTotal);
-            model.TotalOnlineMes = pedidosMes.Sum(p => p.PedidoValorTotal);
-
-            model.LucroOnlineHoje = pedidosHoje.Sum(p =>
-                p.Itens.Sum(i => (i.ItemPedidoPreco - i.ItemPedidoCusto) * i.ItemPedidoQtd));
-
-            model.LucroOnlineMes = pedidosMes.Sum(p =>
-                p.Itens.Sum(i => (i.ItemPedidoPreco - i.ItemPedidoCusto) * i.ItemPedidoQtd));
+            model.LucroOnlineHoje = d.ResumoPedidosHoje.Lucro;
+            model.LucroOnlineMes = d.ResumoPedidosMes.Lucro;
         }
 
         // Totais combinados (balcão + online) e tickets médios.
         private void PreencherCombinado(DashboardViewModel model, DadosDashboard d)
         {
-            var todasVendas = d.TodasVendas;
-            var pedidosValidos = d.PedidosValidos;
-
             // ===== COMBINADO (Presencial + Online) =====
             model.TotalCombinadoHoje = model.TotalHoje + model.TotalOnlineHoje;
             model.TotalCombinadoMes = model.TotalMes + model.TotalOnlineMes;
             model.LucroCombinadoHoje = model.LucroHoje + model.LucroOnlineHoje;
             model.LucroCombinadoMes = model.LucroMes + model.LucroOnlineMes;
 
-            var quantidadeTransacoesTotal = todasVendas.Count + pedidosValidos.Count;
-            var somaTotalTransacoes = todasVendas.Sum(v => v.VendaValorTotal) + pedidosValidos.Sum(p => p.PedidoValorTotal);
+            var quantidadeTransacoesTotal = d.ResumoVendasTotal.Quantidade + d.ResumoPedidosTotal.Quantidade;
+            var somaTotalTransacoes = d.ResumoVendasTotal.Faturamento + d.ResumoPedidosTotal.Faturamento;
 
             model.TicketMedioCombinado = quantidadeTransacoesTotal > 0
                 ? somaTotalTransacoes / quantidadeTransacoesTotal
                 : 0;
-            model.TicketMedioOnline = pedidosValidos.Any() ? pedidosValidos.Average(p => p.PedidoValorTotal) : 0;
+
+            model.TicketMedioOnline = d.ResumoPedidosTotal.Quantidade > 0
+                ? d.ResumoPedidosTotal.Faturamento / d.ResumoPedidosTotal.Quantidade
+                : 0;
         }
 
         // Pagamentos por canal e período.

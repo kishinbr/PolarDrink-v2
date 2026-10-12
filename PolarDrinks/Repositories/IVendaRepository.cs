@@ -11,5 +11,7 @@ namespace PolarDrinks.Repositories
 
         List<VendaModel> ObterVendasAtivasComDetalhes();
         List<VendaModel> ObterVendasCanceladasComDetalhes();
+
+        (int Quantidade, decimal Faturamento, decimal Lucro) ObterResumoFinanceiro(DateTime? inicio, DateTime? fim);
     }
 }

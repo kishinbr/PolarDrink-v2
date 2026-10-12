@@ -72,5 +72,31 @@ namespace PolarDrinks.Repositories.Loja
                     .ThenInclude(i => i.Produto)
                 .ToList();
         }
+
+        public (int Quantidade, decimal Faturamento, decimal Lucro) ObterResumoFinanceiro(
+            IEnumerable<string> statusValidos, DateTime? inicio, DateTime? fim)
+        {
+            var status = statusValidos.ToList();
+
+            var pedidos = _db.Pedidos.Where(p => status.Contains(p.PedidoStatus));
+
+            if (inicio != null)
+            {
+                pedidos = pedidos.Where(p => p.PedidoData >= inicio.Value);
+            }
+
+            if (fim != null)
+            {
+                pedidos = pedidos.Where(p => p.PedidoData < fim.Value);
+            }
+
+            var quantidade = pedidos.Count();
+            var faturamento = pedidos.Sum(p => p.PedidoValorTotal);
+            var lucro = pedidos
+                .SelectMany(p => p.Itens)
+                .Sum(i => (i.ItemPedidoPreco - i.ItemPedidoCusto) * i.ItemPedidoQtd);
+
+            return (quantidade, faturamento, lucro);
+        }
     }
 }
