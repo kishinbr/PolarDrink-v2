@@ -28,17 +28,24 @@ namespace PolarDrinks.Controllers
                     Text = f.FornecedorNome
                 }).ToList();
 
-            vm.Produtos = _compraService.ListarTodosProdutos()
+            var produtos = _compraService.ListarTodosProdutos();
+
+            vm.Produtos = produtos
                 .Select(p => new SelectListItem
                 {
                     Value = p.ProdutoID.ToString(),
                     Text = p.ProdutoNome
                 }).ToList();
 
+            foreach (var item in vm.Itens.Where(i => i.ProdutoID.HasValue))
+            {
+                item.ProdutoNome = produtos.FirstOrDefault(p => p.ProdutoID == item.ProdutoID)?.ProdutoNome;
+            }
+
             vm.ProdutosEstoque = _compraService.ListarProdutosAtivosOrdenados();
         }
 
-     
+
         public IActionResult Index()
         {
             var (pendentes, concluidas) = _compraService.ListarComprasPorStatus();
@@ -69,18 +76,18 @@ namespace PolarDrinks.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _compraService.PreencherNomesProdutos(vm.Itens);
                 RecarregarListas(vm);
                 return View(vm);
             }
 
             var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
 
-            var resultado = _compraService.CadastrarCompra(vm.FornecedorID, vm.Itens, usuarioId);
+            var itens = vm.Itens.Select(i => (i.ProdutoID, i.Quantidade, i.Preco));
+
+            var resultado = _compraService.CadastrarCompra(vm.FornecedorID, itens, usuarioId);
 
             if (!resultado.Sucesso)
             {
-                _compraService.PreencherNomesProdutos(vm.Itens);
                 ModelState.AddModelError(resultado.CampoErro ?? "", resultado.Mensagem!);
                 RecarregarListas(vm);
                 return View(vm);
@@ -93,14 +100,22 @@ namespace PolarDrinks.Controllers
 
         public IActionResult Detalhes(int id, bool confirmar = false)
         {
-            var vm = _compraService.ObterDetalhes(id, confirmar);
+            var detalhes = _compraService.ObterDetalhes(id);
 
-            if (vm == null)
+            if (detalhes == null)
                 return NotFound();
 
-            ViewBag.UsuarioConfirmacao = vm.UsuarioConfirmacao;
+            var (compra, usuarioConfirmacao) = detalhes.Value;
 
-            return View(vm);
+            ViewBag.UsuarioConfirmacao = usuarioConfirmacao;
+
+            return View(new CompraDetalhesViewModel
+            {
+                Compra = compra,
+                Itens = compra.Itens.ToList(),
+                PodeConfirmar = confirmar,
+                UsuarioConfirmacao = usuarioConfirmacao
+            });
         }
 
         public IActionResult ConfirmarEntrega(int id)
@@ -120,12 +135,17 @@ namespace PolarDrinks.Controllers
 
         public IActionResult Excluir(int id)
         {
-            var vm = _compraService.ObterParaExcluir(id);
+            var compra = _compraService.ObterParaExcluir(id);
 
-            if (vm == null)
+            if (compra == null)
                 return NotFound();
 
-            return View(vm);
+            return View(new CompraDetalhesViewModel
+            {
+                Compra = compra,
+                Itens = compra.Itens.ToList(),
+                PodeConfirmar = false
+            });
         }
 
         [HttpPost]

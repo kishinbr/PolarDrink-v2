@@ -50,18 +50,40 @@ namespace PolarDrinks.Services
                 .ToList();
         }
 
-        public void PreencherNomesProdutos(List<ItemCompraCreateVM> itens)
+        public ResultadoOperacao CadastrarCompra(
+    int? fornecedorId, IEnumerable<(int? ProdutoId, int Quantidade, decimal Preco)> itens, int? usuarioId)
         {
-            var ids = itens.Where(i => i.ProdutoID.HasValue).Select(i => i.ProdutoID!.Value).ToList();
-            var produtos = _produtoRepository.ObterPorIds(ids);
+            var compra = new CompraEstoqueModel
+            {
+                FornecedorID = fornecedorId!.Value,
+                CompraData = DateTime.Now,
+                CompraStatus = "Aguardando",
+                UsuarioID = usuarioId,
+                Itens = new List<ItemCompraModel>()
+            };
 
             foreach (var item in itens)
             {
-                if (item.ProdutoID.HasValue)
+                if (item.ProdutoId.HasValue && item.Quantidade > 0 && item.Preco > 0)
                 {
-                    item.ProdutoNome = produtos.FirstOrDefault(p => p.ProdutoID == item.ProdutoID)?.ProdutoNome;
+                    compra.Itens.Add(new ItemCompraModel
+                    {
+                        ProdutoID = item.ProdutoId.Value,
+                        ItemCompraQtd = item.Quantidade,
+                        ItemCompraPreco = item.Preco
+                    });
                 }
             }
+
+            if (compra.Itens.Count == 0)
+            {
+                return ResultadoOperacao.Erro("Adicione pelo menos um produto", campoErro: "");
+            }
+
+            _compraRepository.Adicionar(compra);
+            _compraRepository.SalvarAlteracoes();
+
+            return ResultadoOperacao.Ok("Compra cadastrada com sucesso!");
         }
         public ResultadoOperacao CadastrarCompra(int? fornecedorId, List<ItemCompraCreateVM> itens, int? usuarioId)
         {
@@ -98,7 +120,7 @@ namespace PolarDrinks.Services
             return ResultadoOperacao.Ok("Compra cadastrada com sucesso!");
         }
 
-        public CompraDetalhesViewModel? ObterDetalhes(int id, bool podeConfirmar)
+        public (CompraEstoqueModel Compra, string? UsuarioConfirmacao)? ObterDetalhes(int id)
         {
             var compra = _compraRepository.ObterDetalhes(id);
             if (compra == null)
@@ -106,28 +128,16 @@ namespace PolarDrinks.Services
 
             var usuarioConfirmacao = _compraRepository.ObterUsuarioConfirmacaoEntrada(id);
 
-            return new CompraDetalhesViewModel
-            {
-                Compra = compra,
-                Itens = compra.Itens.ToList(),
-                PodeConfirmar = podeConfirmar,
-                UsuarioConfirmacao = usuarioConfirmacao
-            };
+            return (compra, usuarioConfirmacao);
         }
 
-        public CompraDetalhesViewModel? ObterParaExcluir(int id)
+        public CompraEstoqueModel? ObterParaExcluir(int id)
         {
             var compra = _compraRepository.ObterDetalhes(id);
-            if (compra == null || compra.CompraStatus == "Concluído")   
+            if (compra == null || compra.CompraStatus == "Concluído")
                 return null;
 
-
-            return new CompraDetalhesViewModel
-            {
-                Compra = compra,
-                Itens = compra.Itens.ToList(),
-                PodeConfirmar = false
-            };
+            return compra;
         }
         public ResultadoOperacao ConfirmarEntrega(int id, int? usuarioId)
         {

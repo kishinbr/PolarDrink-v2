@@ -1,6 +1,5 @@
 ﻿using PolarDrinks.Models;
 using PolarDrinks.Services.Common;
-using PolarDrinks.ViewModels;
 
 namespace PolarDrinks.Services
 {
@@ -12,12 +11,11 @@ namespace PolarDrinks.Services
         List<ProdutoModel> ListarTodosProdutos();
         List<ProdutoModel> ListarProdutosAtivosOrdenados();
 
-        void PreencherNomesProdutos(List<ItemCompraCreateVM> itens);
+        ResultadoOperacao CadastrarCompra(
+            int? fornecedorId, IEnumerable<(int? ProdutoId, int Quantidade, decimal Preco)> itens, int? usuarioId);
 
-        ResultadoOperacao CadastrarCompra(int? fornecedorId, List<ItemCompraCreateVM> itens, int? usuarioId);
-
-        CompraDetalhesViewModel? ObterDetalhes(int id, bool podeConfirmar);
-        CompraDetalhesViewModel? ObterParaExcluir(int id);
+        (CompraEstoqueModel Compra, string? UsuarioConfirmacao)? ObterDetalhes(int id);
+        CompraEstoqueModel? ObterParaExcluir(int id);
 
         ResultadoOperacao ConfirmarEntrega(int id, int? usuarioId);
         ResultadoOperacao ConfirmarExclusao(int id);
