@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
 
 namespace PolarDrinks.Services
 {
@@ -12,7 +12,7 @@ namespace PolarDrinks.Services
             _ambiente = ambiente;
         }
 
-        public string SalvarImagemProduto(IFormFile arquivo, int produtoId)
+                public string SalvarImagemProduto(Stream conteudo, string nomeArquivo, int produtoId)
         {
             var pastaFisica = Path.Combine(_ambiente.WebRootPath, PastaProdutos);
 
@@ -21,13 +21,13 @@ namespace PolarDrinks.Services
                 Directory.CreateDirectory(pastaFisica);
             }
 
-            var extensao = Path.GetExtension(arquivo.FileName);
-            var nomeArquivo = $"{produtoId}{extensao}";
+            var extensao = Path.GetExtension(nomeArquivo);
+            
             var caminhoFisico = Path.Combine(pastaFisica, nomeArquivo);
 
             using (var stream = new FileStream(caminhoFisico, FileMode.Create))
             {
-                arquivo.CopyTo(stream);
+                conteudo.CopyTo(stream);
             }
 
             return $"{PastaProdutos}/{nomeArquivo}";

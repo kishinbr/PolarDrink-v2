@@ -40,7 +40,7 @@ namespace PolarDrinks.Controllers
                 return View(produto);
             }
 
-            var resultado = _estoqueService.CadastrarProduto(produto, categoriaIds ?? new List<int>(), imagem);
+            var resultado = _estoqueService.CadastrarProduto(produto, categoriaIds ?? new List<int>(), ConverterImagem(imagem));
 
             if (!resultado.Sucesso)
             {
@@ -93,7 +93,7 @@ namespace PolarDrinks.Controllers
                 return View(produto);
             }
 
-            var resultado = _estoqueService.EditarProduto(produto, categoriaIds ?? new List<int>(), imagem);
+            var resultado = _estoqueService.EditarProduto(produto, categoriaIds ?? new List<int>(), ConverterImagem(imagem));
 
             if (!resultado.Sucesso)
             {
@@ -165,6 +165,15 @@ namespace PolarDrinks.Controllers
             ViewBag.ProdutoSelecionado = produto;
 
             return View(movimentacoes);
+        }
+        private static (Stream Conteudo, string NomeArquivo)? ConverterImagem(IFormFile? imagem)
+        {
+            if (imagem == null || imagem.Length == 0)
+            {
+                return null;
+            }
+
+            return (imagem.OpenReadStream(), imagem.FileName);
         }
     }
 }

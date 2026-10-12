@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace PolarDrinks.Services
+﻿namespace PolarDrinks.Services
 {
     public interface IArmazenamentoService
     {
-        string SalvarImagemProduto(IFormFile arquivo, int produtoId);
+        string SalvarImagemProduto(Stream conteudo, string nomeArquivo, int produtoId);
         void RemoverImagemProduto(string? caminhoRelativo);
     }
 }

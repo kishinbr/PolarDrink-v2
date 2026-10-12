@@ -55,7 +55,7 @@ namespace PolarDrinks.Services
         }
 
 
-        public ResultadoOperacao CadastrarProduto(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
+        public ResultadoOperacao CadastrarProduto(ProdutoModel produto, List<int> categoriaIds, (Stream Conteudo, string NomeArquivo)? imagem)
         {
             if (_produtoRepository.ExisteCodigoBarra(produto.ProdutoCodBarra!))
             {
@@ -71,11 +71,12 @@ namespace PolarDrinks.Services
             try
             {
                 _produtoRepository.Adicionar(produto);
-                _unitOfWork.SaveChanges(); 
+                _unitOfWork.SaveChanges();
 
-                if (imagem != null && imagem.Length > 0)
+                if (imagem != null)
                 {
-                    imagemSalva = _armazenamentoService.SalvarImagemProduto(imagem, produto.ProdutoID);
+                    imagemSalva = _armazenamentoService.SalvarImagemProduto(
+                        imagem.Value.Conteudo, imagem.Value.NomeArquivo, produto.ProdutoID);
                     produto.ProdutoImagemUrl = imagemSalva;
                 }
 
@@ -96,7 +97,7 @@ namespace PolarDrinks.Services
                 return ResultadoOperacao.Erro("Não foi possível cadastrar o produto. Nenhuma alteração foi salva.");
             }
         }
-        public ResultadoOperacao EditarProduto(ProdutoModel produto, List<int> categoriaIds, IFormFile? imagem)
+        public ResultadoOperacao EditarProduto(ProdutoModel produto, List<int> categoriaIds, (Stream Conteudo, string NomeArquivo)? imagem)
         {
             if (_produtoRepository.ExisteCodigoBarra(produto.ProdutoCodBarra!, produto.ProdutoID))
             {
@@ -118,12 +119,13 @@ namespace PolarDrinks.Services
             produtoDb.ProdutoAtivo = produto.ProdutoAtivo;
             produtoDb.ProdutoEstoqueMinimo = produto.ProdutoEstoqueMinimo;
             produtoDb.ProdutoPrecoCusto = produto.ProdutoPrecoCusto;
-            
 
-            if (imagem != null && imagem.Length > 0)
+
+            if (imagem != null)
             {
                 _armazenamentoService.RemoverImagemProduto(produtoDb.ProdutoImagemUrl);
-                produtoDb.ProdutoImagemUrl = _armazenamentoService.SalvarImagemProduto(imagem, produtoDb.ProdutoID);
+                produtoDb.ProdutoImagemUrl = _armazenamentoService.SalvarImagemProduto(
+                    imagem.Value.Conteudo, imagem.Value.NomeArquivo, produtoDb.ProdutoID);
             }
             // se nenhuma imagem nova foi enviada, produtoDb.ProdutoImagemUrl simplesmente não é tocado, mantendo a atual
 
