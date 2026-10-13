@@ -9,3 +9,5 @@ namespace PolarDrinks.Models
         public string? UsuarioCancelamento { get; set; }
     }
 }
+
+//pode excluir esse arquivo, não está sendo usado

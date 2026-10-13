@@ -9,7 +9,7 @@ namespace PolarDrinks.Services
         List<VendaModel> ListarVendas(DateTime? dataInicio, DateTime? dataFim);
         List<ProdutoModel> ListarProdutosAtivos();
 
-        VendaDetalhesViewModel? ObterDetalhesVenda(int id);
+        (VendaModel Venda, string? MotivoCancelamento, string? UsuarioCancelamento)? ObterDetalhesVenda(int id);
         VendaModel? ObterVendaParaCancelamento(int id);
 
         ResultadoOperacao FinalizarVenda(FinalizarVendaRequest request, int? usuarioId);

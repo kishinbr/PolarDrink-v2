@@ -40,7 +40,7 @@ namespace PolarDrinks.Services
             return _vendaRepository.ObterPorId(id);
         }
 
-        public VendaDetalhesViewModel? ObterDetalhesVenda(int id)
+        public (VendaModel Venda, string? MotivoCancelamento, string? UsuarioCancelamento)? ObterDetalhesVenda(int id)
         {
             var venda = _vendaRepository.ObterPorId(id);
             if (venda == null)
@@ -48,12 +48,7 @@ namespace PolarDrinks.Services
 
             var motivo = _vendaRepository.ObterMotivoCancelamento(id);
 
-            return new VendaDetalhesViewModel
-            {
-                Venda = venda,
-                MotivoCancelamento = motivo?.Descricao,
-                UsuarioCancelamento = motivo?.UsuarioNome
-            };
+            return (venda, motivo?.Descricao, motivo?.UsuarioNome);
         }
 
         public ResultadoOperacao FinalizarVenda(FinalizarVendaRequest request, int? usuarioId)

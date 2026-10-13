@@ -31,10 +31,12 @@ namespace PolarDrinks.Controllers
             if (detalhes == null)
                 return NotFound();
 
-            ViewBag.MotivoCancelamento = detalhes.MotivoCancelamento;
-            ViewBag.UsuarioCancelamento = detalhes.UsuarioCancelamento;
+            var (venda, motivoCancelamento, usuarioCancelamento) = detalhes.Value;
 
-            return View(detalhes.Venda);
+            ViewBag.MotivoCancelamento = motivoCancelamento;
+            ViewBag.UsuarioCancelamento = usuarioCancelamento;
+
+            return View(venda);
         }
 
         public IActionResult Cadastrar()
