@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PolarDrinks.Models;
-using PolarDrinks.Models.Loja;
+using PolarDrinks.Modules.Compras.Models;
+using PolarDrinks.Modules.Estoque.Models;
+using PolarDrinks.Modules.Loja.Models;
+using PolarDrinks.Modules.Usuarios.Models;
+using PolarDrinks.Modules.Vendas.Models;
 
 namespace PolarDrinks.Data
 {

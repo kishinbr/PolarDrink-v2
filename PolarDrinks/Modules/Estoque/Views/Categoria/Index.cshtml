@@ -1,0 +1,209 @@
+﻿@model List<CategoriaModel>
+
+@{
+    ViewData["Title"] = "Categorias";
+    var isAdmin = Context.Session.GetString("Perfil") == "Admin";
+}
+
+<div class="tema-dark">
+    <div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1400px;">
+
+        <!-- Header -->
+        <div class="bg-shadow text-light p-4 rounded-4 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="sf-icon-badge"
+                     style="background: linear-gradient(135deg,#3b82f6,#6366f1); box-shadow: 0 8px 20px -8px rgba(59,130,246,.8);">
+                    <i class="bi bi-tags-fill fs-4 text-white"></i>
+                </div>
+
+                <div>
+                    <h1 class="m-0 fs-3 fw-bold">Categorias</h1>
+                </div>
+            </div>
+
+            @if (isAdmin)
+            {
+                <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
+                   style="background: linear-gradient(135deg,#10b981,#059669);"
+                   asp-controller="Categoria"
+                   asp-action="Cadastrar"
+                   data-bs-toggle="tooltip"
+                   title="Cadastrar">
+
+                    <i class="bi bi-file-earmark-plus-fill me-2"></i>
+                    Cadastrar nova Categoria
+                </a>
+            }
+
+        </div>
+
+
+        <!-- Mensagens -->
+        @if (TempData["MensagemSucesso"] != null)
+        {
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(16,185,129,.15); border-left: 3px solid #10b981 !important;"
+                 role="alert">
+
+                <i class="bi bi-check-circle-fill me-2"
+                   style="color:#34d399;"></i>
+
+                @TempData["MensagemSucesso"]
+            </div>
+        }
+        else if (TempData["MensagemErro"] != null)
+        {
+            <div class="alert border-0 text-light rounded-3 mb-3"
+                 style="background: rgba(239,68,68,.15); border-left: 3px solid #ef4444 !important;"
+                 role="alert">
+
+                <i class="bi bi-exclamation-triangle-fill me-2"
+                   style="color:#f87171;"></i>
+
+                @TempData["MensagemErro"]
+            </div>
+        }
+
+
+        <!-- Tabela -->
+        <div class="bg-shadow text-light p-3 rounded-4 overflow-hidden">
+
+            <div class="table-responsive">
+
+                <table id="Categorias"
+                       class="table table-hover align-middle mb-0 text-light">
+
+                    <thead>
+                        <tr class="bg-tpreto text-secondary sf-thead">
+
+                            <th class="py-3 ps-4">
+                                Nome
+                            </th>
+
+                            <th class="py-3 text-center">
+                                Status
+                            </th>
+
+                            @if (isAdmin)
+                            {
+                                <th class="py-3 text-center pe-4">
+                                    Edição
+                                </th>
+                            }
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null)
+                        {
+                            @foreach (var categoria in Model)
+                            {
+                                <tr>
+
+                                    <td class="ps-4 fw-semibold">
+                                        @categoria.CategoriaNome
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        @if (categoria.CategoriaAtiva)
+                                        {
+                                            <span class="sf-badge sf-badge-ativo">
+                                                Ativa
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="sf-badge sf-badge-inativo">
+                                                Inativa
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    @if (isAdmin)
+                                    {
+                                        <td class="text-center pe-4">
+
+                                            <a class="btn btn-sm border-0 text-white sf-btn-edit"
+                                               asp-controller="Categoria"
+                                               asp-action="Editar"
+                                               asp-route-id="@categoria.CategoriaID"
+                                               data-bs-toggle="tooltip"
+                                               title="Edição completa">
+
+                                                <i class="bi bi-pencil-square"></i>
+
+                                            </a>
+
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#Categorias').DataTable({
+
+                pageLength: 10,
+                lengthMenu: [10, 20, 30],
+
+                scrollX: true,
+                paging: true,
+
+                language: {
+                    decimal: "",
+                    emptyTable: "Nenhuma categoria cadastrada",
+                    info: "Mostrando de _START_ a _END_ de um total de _TOTAL_ categorias",
+                    infoEmpty: "Mostrando de 0 a 0 de 0 categorias",
+                    infoFiltered: "(filtrado de _MAX_ categorias no total)",
+                    lengthMenu: "Mostrar _MENU_ categorias",
+                    loadingRecords: "Carregando...",
+                    search: "Procurar:",
+                    zeroRecords: "Categoria não encontrada",
+
+                    paginate: {
+                        first: "Primeiro",
+                        last: "Último",
+                        next: "Próximo",
+                        previous: "Anterior"
+                    }
+                }
+
+            });
+
+
+            setTimeout(function () {
+
+                $(".alert").fadeOut("slow", function () {
+                    $(this).alert('close');
+                });
+
+            }, 3000);
+
+        });
+
+    </script>
+}
+

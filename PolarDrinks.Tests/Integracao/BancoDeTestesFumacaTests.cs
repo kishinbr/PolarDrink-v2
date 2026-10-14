@@ -1,4 +1,4 @@
-﻿using PolarDrinks.Models;
+﻿using PolarDrinks.Modules.Estoque.Models;
 
 namespace PolarDrinks.Tests.Integracao;
 

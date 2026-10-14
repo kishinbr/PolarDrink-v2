@@ -1,17 +1,34 @@
 using Microsoft.EntityFrameworkCore;
-using PolarDrinks.Data;
-using PolarDrinks.Models;
-using PolarDrinks.Repositories;
-using PolarDrinks.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using PolarDrinks.Compartilhado.Repositories;
+using PolarDrinks.Compartilhado.Mvc;
+using PolarDrinks.Data;
+using PolarDrinks.Modules.Compras.Repositories;
+using PolarDrinks.Modules.Compras.Services;
+using PolarDrinks.Modules.Dashboard.Services;
+using PolarDrinks.Modules.Estoque.Repositories;
+using PolarDrinks.Modules.Estoque.Services;
+using PolarDrinks.Modules.Loja.Jobs;
+using PolarDrinks.Modules.Loja.Repositories;
+using PolarDrinks.Modules.Loja.Services;
+using PolarDrinks.Modules.Usuarios.Models;
+using PolarDrinks.Modules.Usuarios.Repositories;
+using PolarDrinks.Modules.Usuarios.Services;
+using PolarDrinks.Modules.Vendas.Repositories;
+using PolarDrinks.Modules.Vendas.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews()
+    .AddRazorOptions(options =>
+    {
+        // Procura as views dentro da pasta do módulo do controller (Modules/<Modulo>/Views/...)
+        options.ViewLocationExpanders.Add(new ModuloViewLocationExpander());
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
@@ -36,17 +53,17 @@ builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-builder.Services.AddHostedService<PolarDrinks.Jobs.ExpiracaoPedidosJob>();
+builder.Services.AddHostedService<ExpiracaoPedidosJob>();
 
 
-builder.Services.AddScoped<PolarDrinks.Services.Loja.ICatalogoService, PolarDrinks.Services.Loja.CatalogoService>();
-builder.Services.AddScoped<PolarDrinks.Services.Loja.IClienteAuthService, PolarDrinks.Services.Loja.ClienteAuthService>();
-builder.Services.AddScoped<PolarDrinks.Services.Loja.ITokenService, PolarDrinks.Services.Loja.TokenService>();
-builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IClienteRepository, PolarDrinks.Repositories.Loja.ClienteRepository>();
-builder.Services.AddScoped<PolarDrinks.Repositories.Loja.ICarrinhoRepository, PolarDrinks.Repositories.Loja.CarrinhoRepository>();
-builder.Services.AddScoped<PolarDrinks.Services.Loja.ICarrinhoService, PolarDrinks.Services.Loja.CarrinhoService>();
-builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IPedidoRepository, PolarDrinks.Repositories.Loja.PedidoRepository>();
-builder.Services.AddScoped<PolarDrinks.Services.Loja.IPedidoService, PolarDrinks.Services.Loja.PedidoService>();
+builder.Services.AddScoped<ICatalogoService, CatalogoService>();
+builder.Services.AddScoped<IClienteAuthService, ClienteAuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
+builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
 
 // Autenticação JWT (Loja Online / Clientes)
 var jwtChave = builder.Configuration["Jwt:ChaveSecreta"]!;

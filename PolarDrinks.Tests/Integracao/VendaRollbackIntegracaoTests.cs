@@ -1,9 +1,12 @@
-﻿using PolarDrinks.Data;
-using PolarDrinks.Models;
-using PolarDrinks.Models.Requests;
-using PolarDrinks.Repositories;
-using PolarDrinks.Services;
-using PolarDrinks.Services.Common;
+﻿using PolarDrinks.Compartilhado.Common;
+using PolarDrinks.Compartilhado.Repositories;
+using PolarDrinks.Data;
+using PolarDrinks.Modules.Estoque.Models;
+using PolarDrinks.Modules.Estoque.Repositories;
+using PolarDrinks.Modules.Estoque.Services;
+using PolarDrinks.Modules.Vendas.Models;
+using PolarDrinks.Modules.Vendas.Repositories;
+using PolarDrinks.Modules.Vendas.Services;
 
 namespace PolarDrinks.Tests.Integracao;
 

@@ -1,4 +1,4 @@
-﻿using PolarDrinks.Services.Common;
+﻿using PolarDrinks.Compartilhado.Common;
 
 namespace PolarDrinks.Tests;
 

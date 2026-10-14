@@ -1,9 +1,9 @@
 ﻿using NSubstitute;
+using PolarDrinks.Compartilhado.Repositories;
 using PolarDrinks.Data;
-using PolarDrinks.Models;
-using PolarDrinks.Models.Loja;
-using PolarDrinks.Repositories;
-using PolarDrinks.Services;
+using PolarDrinks.Modules.Estoque.Models;
+using PolarDrinks.Modules.Estoque.Repositories;
+using PolarDrinks.Modules.Estoque.Services;
 
 namespace PolarDrinks.Tests.Integracao;
 

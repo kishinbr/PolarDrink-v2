@@ -22,7 +22,7 @@ namespace PolarDrinks.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PolarDrinks.Models.CompraEstoqueModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.CompraEstoqueModel", b =>
                 {
                     b.Property<int>("CompraID")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("ComprasEstoque");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.FornecedorModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.FornecedorModel", b =>
                 {
                     b.Property<int>("FornecedorID")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Fornecedores");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.ItemCompraModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.ItemCompraModel", b =>
                 {
                     b.Property<int>("ItemCompraID")
                         .ValueGeneratedOnAdd()
@@ -155,7 +155,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("ItensCompra");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.ItemVendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", b =>
                 {
                     b.Property<int>("ItemVendaID")
                         .ValueGeneratedOnAdd()
@@ -189,7 +189,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("ItensVenda");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.CarrinhoItemModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.CarrinhoItemModel", b =>
                 {
                     b.Property<int>("CarrinhoItemID")
                         .ValueGeneratedOnAdd()
@@ -218,7 +218,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("CarrinhoItens");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.CategoriaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.CategoriaModel", b =>
                 {
                     b.Property<int>("CategoriaID")
                         .ValueGeneratedOnAdd()
@@ -239,7 +239,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Categorias");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.ClienteModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.ClienteModel", b =>
                 {
                     b.Property<int>("ClienteID")
                         .ValueGeneratedOnAdd()
@@ -288,7 +288,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Clientes");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.ItemPedidoModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.ItemPedidoModel", b =>
                 {
                     b.Property<int>("ItemPedidoID")
                         .ValueGeneratedOnAdd()
@@ -322,7 +322,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("ItensPedido");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.PedidoModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.PedidoModel", b =>
                 {
                     b.Property<int>("PedidoID")
                         .ValueGeneratedOnAdd()
@@ -378,7 +378,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Pedidos");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.ProdutoCategoriaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoCategoriaModel", b =>
                 {
                     b.Property<int>("ProdutoID")
                         .HasColumnType("int");
@@ -393,7 +393,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("ProdutoCategorias");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.MovimentacaoEstoqueModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.MovimentacaoEstoqueModel", b =>
                 {
                     b.Property<int>("MovimentacaoID")
                         .ValueGeneratedOnAdd()
@@ -445,7 +445,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("MovimentacoesEstoque");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.ProdutoModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoModel", b =>
                 {
                     b.Property<int>("ProdutoID")
                         .ValueGeneratedOnAdd()
@@ -504,7 +504,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Produtos");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.UsuarioModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", b =>
                 {
                     b.Property<int>("UsuarioID")
                         .ValueGeneratedOnAdd()
@@ -544,7 +544,7 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.VendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.VendaModel", b =>
                 {
                     b.Property<int>("VendaID")
                         .ValueGeneratedOnAdd()
@@ -577,15 +577,15 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Vendas");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.CompraEstoqueModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.CompraEstoqueModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.FornecedorModel", "Fornecedor")
+                    b.HasOne("PolarDrinks.Modules.Compras.Models.FornecedorModel", "Fornecedor")
                         .WithMany("Compras")
                         .HasForeignKey("FornecedorID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.UsuarioModel", "Usuario")
+                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -595,15 +595,15 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.ItemCompraModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.ItemCompraModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.CompraEstoqueModel", "Compra")
+                    b.HasOne("PolarDrinks.Modules.Compras.Models.CompraEstoqueModel", "Compra")
                         .WithMany("Itens")
                         .HasForeignKey("CompraID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.ProdutoModel", "Produto")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -614,15 +614,15 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.ItemVendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.ProdutoModel", "Produto")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.VendaModel", "Venda")
+                    b.HasOne("PolarDrinks.Modules.Vendas.Models.VendaModel", "Venda")
                         .WithMany("Itens")
                         .HasForeignKey("VendaID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -633,15 +633,15 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Venda");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.CarrinhoItemModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.CarrinhoItemModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.Loja.ClienteModel", "Cliente")
+                    b.HasOne("PolarDrinks.Modules.Loja.Models.ClienteModel", "Cliente")
                         .WithMany()
                         .HasForeignKey("ClienteID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.ProdutoModel", "Produto")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -652,15 +652,15 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.ItemPedidoModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.ItemPedidoModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.Loja.PedidoModel", "Pedido")
+                    b.HasOne("PolarDrinks.Modules.Loja.Models.PedidoModel", "Pedido")
                         .WithMany("Itens")
                         .HasForeignKey("PedidoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.ProdutoModel", "Produto")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -671,20 +671,20 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.PedidoModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.PedidoModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.Loja.ClienteModel", "Cliente")
+                    b.HasOne("PolarDrinks.Modules.Loja.Models.ClienteModel", "Cliente")
                         .WithMany()
                         .HasForeignKey("ClienteID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.UsuarioModel", "UsuarioEntregou")
+                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "UsuarioEntregou")
                         .WithMany()
                         .HasForeignKey("UsuarioEntregouID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PolarDrinks.Models.UsuarioModel", "UsuarioSeparou")
+                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "UsuarioSeparou")
                         .WithMany()
                         .HasForeignKey("UsuarioSeparouID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -696,15 +696,15 @@ namespace PolarDrinks.Migrations
                     b.Navigation("UsuarioSeparou");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.ProdutoCategoriaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoCategoriaModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.Loja.CategoriaModel", "Categoria")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.CategoriaModel", "Categoria")
                         .WithMany()
                         .HasForeignKey("CategoriaID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.ProdutoModel", "Produto")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -715,30 +715,30 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.MovimentacaoEstoqueModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.MovimentacaoEstoqueModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.ItemCompraModel", "ItemCompra")
+                    b.HasOne("PolarDrinks.Modules.Compras.Models.ItemCompraModel", "ItemCompra")
                         .WithMany()
                         .HasForeignKey("ItemCompraID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PolarDrinks.Models.Loja.ItemPedidoModel", "ItemPedido")
+                    b.HasOne("PolarDrinks.Modules.Loja.Models.ItemPedidoModel", "ItemPedido")
                         .WithMany()
                         .HasForeignKey("ItemPedidoID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PolarDrinks.Models.ItemVendaModel", "ItemVenda")
+                    b.HasOne("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", "ItemVenda")
                         .WithMany()
                         .HasForeignKey("ItemVendaID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PolarDrinks.Models.ProdutoModel", "Produto")
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Models.UsuarioModel", "Usuario")
+                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -754,9 +754,9 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.VendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.VendaModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Models.UsuarioModel", "Usuario")
+                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -764,22 +764,22 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.CompraEstoqueModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.CompraEstoqueModel", b =>
                 {
                     b.Navigation("Itens");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.FornecedorModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Compras.Models.FornecedorModel", b =>
                 {
                     b.Navigation("Compras");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.Loja.PedidoModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.PedidoModel", b =>
                 {
                     b.Navigation("Itens");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Models.VendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.VendaModel", b =>
                 {
                     b.Navigation("Itens");
                 });
