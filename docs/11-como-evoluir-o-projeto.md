@@ -112,7 +112,7 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 | S1 | Trocar "Confirmar entrega" de compra de `GET` para `POST` com botão em formulário | Alta | B | [05](05-api.md#11-limitações) |
 | S2 | Ativar validação de antifalsificação (CSRF) nos formulários, de forma global (`AutoValidateAntiforgeryToken`) | Alta | M | [05](05-api.md#11-limitações) |
 | S3 | Segredos fora do repositório: chave do JWT e senha do SQL Server por variável de ambiente ou *user-secrets*; obrigar a troca da senha `admin123` | Alta | B | [06](06-autenticacao-e-permissoes.md#7-configuração-e-segredos) |
-| S4 | Imagem de produto: nome gerado pelo servidor, só extensões de imagem, tamanho máximo, `Path.GetFileName` | Alta | B | [04](04-comunicacao-com-o-banco.md#11-limitações), [07](07-casos-de-uso.md#11-limitações-observadas) |
+| S4 | Imagem de produto: tamanho máximo (nome gerado pelo servidor e extensões aceitas já foram feitos) | Alta | B | [04](04-comunicacao-com-o-banco.md#11-limitações), [07](07-casos-de-uso.md#11-limitações-observadas) |
 | S5 | Desativar usuário deve encerrar a sessão dele (o filtro consultar a situação do usuário ou uma versão de sessão) | Média | M | [06](06-autenticacao-e-permissoes.md#9-limitações) |
 | S6 | HTTPS obrigatório (redirecionamento, HSTS, cookies `Secure`) ou publicação atrás de proxy com TLS | Média | B | [06](06-autenticacao-e-permissoes.md#9-limitações) |
 | S7 | Limite de tentativas de login (equipe e cliente) | Média | M | [06](06-autenticacao-e-permissoes.md#9-limitações) |
@@ -127,7 +127,7 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 | C3 | Troca da própria senha pelo usuário, e redefinição pelo Admin | Média | M | [06](06-autenticacao-e-permissoes.md#4-gestão-de-usuários) |
 | C4 | Estoque inicial do cadastro de produto gerar uma movimentação (`Entrada`, "Estoque inicial") | Média | B | [07](07-casos-de-uso.md#11-limitações-observadas) |
 | C5 | Cancelamento pelo cliente identificar o cliente na movimentação (hoje só a descrição) | Baixa | M | [08](08-fluxos-principais.md#11-limitações) |
-| C6 | Edição de produto: gravar a nova imagem antes de apagar a antiga, e usar transação | Média | B | [04](04-comunicacao-com-o-banco.md#8-imagens-o-banco-e-o-disco) |
+| C6 | Edição de produto: usar transação (gravar a nova imagem antes de apagar a antiga já foi feito) | Média | B | [04](04-comunicacao-com-o-banco.md#8-imagens-o-banco-e-o-disco) |
 | C7 | Não devolver o texto técnico da exceção ao usuário (venda e checkout) | Média | B | [05](05-api.md#11-limitações) |
 | C8 | Venda no balcão com nova tentativa em conflito de concorrência, como o checkout | Baixa | B | [08](08-fluxos-principais.md#11-limitações) |
 | C9 | Código de retirada maior, ou limite de tentativas de código errado | Baixa | B | [08](08-fluxos-principais.md#11-limitações) |
@@ -187,5 +187,5 @@ As melhorias C2, C3, C5, C8, C9 e C10 são decisões de produto: vale conversar 
 
 Itens que ainda precisam de ação nesta documentação (não são de código):
 
-- Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: nome da imagem do produto, confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
+- Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
 - Manter este mapa vivo: ao corrigir um item, remova-o da tabela e da limitação de origem.

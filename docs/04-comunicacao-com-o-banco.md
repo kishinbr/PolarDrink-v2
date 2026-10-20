@@ -164,7 +164,9 @@ Como a transação do SQL Server não desfaz arquivos, o cadastro de produto faz
 3. Grava as categorias e confirma.
 4. Se algo falhar: `Rollback` e **remoção do arquivo** que já tinha sido salvo, para não sobrar imagem sem produto.
 
-Na edição de produto, a imagem antiga é removida **antes** de a nova ser gravada, sem a mesma compensação (limitação conhecida).
+Na edição de produto, a imagem nova é gravada **antes**, e a antiga só é apagada depois que o banco já aponta para a nova. Se a gravação falhar, a antiga continua valendo (sobra apenas o arquivo novo, sem uso).
+
+O nome do arquivo é gerado pelo servidor (`<ProdutoID>_<identificador único>.<extensão>`): do nome enviado pelo navegador só se aproveita a extensão, e só são aceitas `.jpg`, `.jpeg`, `.png`, `.webp` e `.gif`.
 
 ## 9. Consultas e desempenho
 
@@ -190,6 +192,5 @@ Para ver também os eventos de transação, acrescente `"Microsoft.EntityFramewo
 - **Detalhe de produto da loja carrega o catálogo inteiro.** `ObterCatalogoPorId` chama `ObterCatalogo(null, null)` e filtra depois; com um catálogo grande, isso é desperdício a cada consulta de detalhe.
 - **Serviços síncronos.** O acesso ao banco bloqueia a thread da requisição.
 - **Conflito de concorrência tratado só no checkout e na expiração.** Nas demais operações o usuário recebe a página de erro.
-- **Imagem salva com o nome original do arquivo.** O nome enviado pelo navegador é usado sem tratamento e sem identificador único: dois produtos com imagens de mesmo nome gravam o mesmo arquivo, e remover a imagem de um apagaria a do outro.
-- **Edição de imagem sem compensação** (a antiga é apagada antes da nova ser gravada).
+- **Imagem sem limite de tamanho.** Vale apenas o limite padrão do servidor para o tamanho da requisição.
 - **Política de gravação por convenção.** Nada impede que um serviço novo chame `SalvarAlteracoes` num fluxo com várias entidades; a regra está no mapa de responsabilidades e na revisão do código, não em teste.

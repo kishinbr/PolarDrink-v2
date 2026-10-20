@@ -168,6 +168,14 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 | `DashboardViewModel` permanece no serviço | Evita um modelo duplicado só para trafegar os mesmos dados |
 | Exceção de rastreabilidade em `MovimentacaoEstoqueModel` | Cada movimentação precisa apontar a venda, compra ou pedido de origem |
 
+## Imagem do produto
+
+**Problema.** A imagem era gravada com o nome enviado pelo navegador: dois produtos com imagens de mesmo nome sobrescreviam um ao outro, um nome com caminho podia gravar fora da pasta de imagens e qualquer tipo de arquivo era aceito. Na edição, a imagem antiga era apagada antes de a nova ser gravada.
+
+**Solução.** `ArmazenamentoService` gera o nome (`<ProdutoID>_<identificador único>.<extensão>`) e aceita só `.jpg`, `.jpeg`, `.png`, `.webp` e `.gif`; `EstoqueService` recusa outros formatos com a mensagem "Envie uma imagem JPG, JPEG, PNG, WEBP ou GIF." antes de gravar qualquer coisa. Na edição, a imagem nova é gravada primeiro e a antiga só é apagada depois que o banco foi atualizado.
+
+**Evidência.** Verificação manual: cadastro com imagem gera o nome no servidor; arquivo `.txt` é recusado sem gravar; a troca de imagem na edição remove a antiga; os 123 testes continuam passando.
+
 ## Carrinho com quantidade inválida
 
 **Problema.** `CarrinhoService.AdicionarItem` (usado em `POST /api/carrinho/itens` e na mesclagem) só conferia o limite superior: quantidade zero ou negativa entrava no carrinho, e uma quantidade muito grande estourava o `int` e passava pela validação. O checkout passava a ser recusado até o cliente remover o item.
@@ -194,7 +202,7 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 
 - **Pacote com aviso de vulnerabilidade:** `System.Security.Cryptography.Pkcs` (CVE-2026-84008 e CVE-2026-70162, afetam as versões 10.0.0 a 10.0.12, corrigidas na 10.0.13). Risco de negação de serviço; o código não chama `SignedCms` nem `EnvelopedCms`. Atualizar o pacote.
 - **Segredos no repositório:** a chave JWT e a conexão estão em arquivo de configuração versionado; mover para variáveis de ambiente.
-- **Upload de imagem sem restrição** de tipo e tamanho; na edição, a imagem antiga é removida antes de a nova ser gravada.
+- **Upload de imagem sem limite de tamanho** (o nome e o tipo do arquivo já são controlados pelo servidor).
 - **Retry de concorrência do checkout** sem teste de integração.
 - **Dashboard** ainda carrega parte do histórico para gráficos e previsão.
 - **Leitura de produtos** por outros módulos sem contrato próprio, e duas consultas de exibição (`VendaRepository.ObterMotivoCancelamento` e `CompraEstoqueRepository.ObterUsuarioConfirmacaoEntrada`) que leem movimentações direto do banco, apenas para mostrar dados.

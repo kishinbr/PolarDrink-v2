@@ -97,4 +97,4 @@ Antes de apresentar: confirmar que o SQL Server está ligado (os testes de integ
 | O dashboard ainda carrega histórico? | Os totais financeiros são somados no banco, mas gráficos e previsão ainda carregam parte do histórico. |
 | A previsão considera dias sem venda? | Não: usa só os dias com movimento, numerados em sequência. É um limite documentado. |
 | Pedido não retirado entra no faturamento? | Sim, junto com os concluídos. É decisão de negócio e pode ser revista. |
-| Segurança está completa? | Não era o escopo. Limitações conhecidas: segredos no repositório, upload de imagem sem restrição e um pacote com aviso de vulnerabilidade a atualizar. |
+| Segurança está completa? | Não era o escopo. Limitações conhecidas: segredos no repositório, upload de imagem sem limite de tamanho e um pacote com aviso de vulnerabilidade a atualizar. |

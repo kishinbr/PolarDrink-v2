@@ -155,6 +155,7 @@ O Admin também executa tudo o que o Funcionário faz (UC08 e UC15); para não p
 **Alternativos e erros**
 - Campos obrigatórios, faixas e tamanhos (por exemplo, código de barras com 13 a 20 caracteres) são validados na tela.
 - "Este código de barras já está cadastrado."
+- "Envie uma imagem JPG, JPEG, PNG, WEBP ou GIF." (arquivo enviado não é uma imagem aceita)
 - Falha ao gravar no cadastro: "Não foi possível cadastrar o produto. Nenhuma alteração foi salva." (e a imagem já gravada é removida).
 - "Produto não encontrado." (edição).
 
@@ -448,7 +449,7 @@ Todos os 34 requisitos funcionais têm ao menos um caso de uso.
 Ao percorrer cada fluxo no código, foram vistos pontos que merecem atenção. Todos já estão ou serão registrados nos documentos de arquitetura e segurança:
 
 - **Estoque inicial sem movimentação** (UC03): o saldo informado no cadastro não aparece no histórico.
-- **Imagem de produto sem tratamento do nome** (UC03): o arquivo é salvo com o nome enviado pelo navegador, sem nome único, sem restringir tipo ou tamanho e sem sanitizar o caminho (não há `Path.GetFileName`). Dois produtos com imagens de mesmo nome sobrescrevem um ao outro. Em tese, uma requisição forjada com caminho no nome do arquivo poderia gravar fora da pasta de imagens; como a ação é restrita ao Admin, o risco é de uso indevido por quem já é administrador, mas vale corrigir (nome gerado pelo servidor e lista de extensões aceitas).
+- **Imagem de produto sem limite de tamanho** (UC03): o nome é gerado pelo servidor e só formatos de imagem são aceitos, mas não há tamanho máximo.
 - **Confirmar entrega de compra por `GET`** (UC13): veja o [doc 05](05-api.md#11-limitações).
 - **Funcionário sem atalho no menu para os pedidos** (UC15): veja o [doc 06](06-autenticacao-e-permissoes.md#9-limitações).
 - **Mensagem técnica ao cliente** (UC08 e UC21): em falha inesperada, o texto da exceção é devolvido.

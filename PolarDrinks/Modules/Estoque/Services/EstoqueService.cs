@@ -11,6 +11,7 @@ namespace PolarDrinks.Modules.Estoque.Services
         private readonly IMovimentacaoEstoqueRepository _movimentacaoRepository;
         private readonly IArmazenamentoService _armazenamentoService;
         private readonly IUnitOfWork _unitOfWork;
+        private const string MensagemImagemInvalida = "Envie uma imagem JPG, JPEG, PNG, WEBP ou GIF.";
 
         public EstoqueService(
             IProdutoRepository produtoRepository,
@@ -57,6 +58,10 @@ namespace PolarDrinks.Modules.Estoque.Services
 
         public ResultadoOperacao CadastrarProduto(ProdutoModel produto, List<int> categoriaIds, (Stream Conteudo, string NomeArquivo)? imagem)
         {
+            if (imagem != null && !ArmazenamentoService.ExtensaoPermitida(imagem.Value.NomeArquivo))
+            {
+                return ResultadoOperacao.Erro(MensagemImagemInvalida, campoErro: "imagem");
+            }
             if (_produtoRepository.ExisteCodigoBarra(produto.ProdutoCodBarra!))
             {
                 return ResultadoOperacao.Erro(
@@ -99,6 +104,10 @@ namespace PolarDrinks.Modules.Estoque.Services
         }
         public ResultadoOperacao EditarProduto(ProdutoModel produto, List<int> categoriaIds, (Stream Conteudo, string NomeArquivo)? imagem)
         {
+            if (imagem != null && !ArmazenamentoService.ExtensaoPermitida(imagem.Value.NomeArquivo))
+            {
+                return ResultadoOperacao.Erro(MensagemImagemInvalida, campoErro: "imagem");
+            }
             if (_produtoRepository.ExisteCodigoBarra(produto.ProdutoCodBarra!, produto.ProdutoID))
             {
                 return ResultadoOperacao.Erro(
@@ -121,16 +130,20 @@ namespace PolarDrinks.Modules.Estoque.Services
             produtoDb.ProdutoPrecoCusto = produto.ProdutoPrecoCusto;
 
 
+            string? imagemAntiga = null;
+
             if (imagem != null)
             {
-                _armazenamentoService.RemoverImagemProduto(produtoDb.ProdutoImagemUrl);
+                imagemAntiga = produtoDb.ProdutoImagemUrl;
                 produtoDb.ProdutoImagemUrl = _armazenamentoService.SalvarImagemProduto(
                     imagem.Value.Conteudo, imagem.Value.NomeArquivo, produtoDb.ProdutoID);
             }
-            // se nenhuma imagem nova foi enviada, produtoDb.ProdutoImagemUrl simplesmente não é tocado, mantendo a atual
 
             _produtoRepository.DefinirCategoriasDoProduto(produtoDb.ProdutoID, categoriaIds);
             _unitOfWork.SaveChanges();
+
+
+            _armazenamentoService.RemoverImagemProduto(imagemAntiga);
 
             return ResultadoOperacao.Ok("Produto atualizado com sucesso!");
         }

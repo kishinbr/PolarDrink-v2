@@ -97,6 +97,7 @@
                         </div>
                     }
                     <input type="file" class="form-control bg-shadow text-light" name="imagem" accept="image/*">
+                    @Html.ValidationMessage("imagem", null, new { @class = "text-danger" })
                     <small class="text-secondary">Deixe em branco para manter a imagem atual.</small>
                 </div>
 

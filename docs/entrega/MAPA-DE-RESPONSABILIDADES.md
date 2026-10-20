@@ -196,7 +196,7 @@ Ou seja: `Compras`, `Vendas` e `Loja` **não conhecem uns aos outros**, e o `Das
 
 - **Leitura de produtos por outros módulos:** `Vendas`, `Compras` e `Loja` leem produtos diretamente por `IProdutoRepository`. Ainda não existe um contrato de leitura próprio do Estoque. A **escrita** do saldo, em contrapartida, passa só pelo Estoque (regra R3).
 - **Consultas de exibição que passam por fora:** `VendaRepository.ObterMotivoCancelamento` e `CompraEstoqueRepository.ObterUsuarioConfirmacaoEntrada` leem `MovimentacoesEstoque` direto do banco, apenas para mostrar motivo e responsável. São somente leitura e não alteram nada.
-- **Edição de produto com nova imagem:** a imagem antiga é removida antes de a nova ser gravada. Se a gravação nova falhar, a antiga já se perdeu.
+- **Edição de produto com nova imagem:** a nova imagem é gravada antes de a antiga ser apagada. Se a gravação no banco falhar, a antiga continua valendo e sobra apenas o arquivo novo, sem uso.
 - **Concorrência do checkout:** a nova tentativa em caso de conflito existe no código, mas não há teste de integração que a exercite.
 - **Dashboard:** ainda carrega parte do histórico para montar gráficos e previsão; os totais financeiros já são calculados no banco.
 - **Rastreabilidade:** a exceção do `MovimentacaoEstoqueModel` (seção 3) é um acoplamento aceito e protegido por teste.

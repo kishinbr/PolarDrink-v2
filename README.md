@@ -250,7 +250,7 @@ Registradas aqui para que ninguém as descubra por acidente:
 1. **Segredos no repositório.** A chave `Jwt:ChaveSecreta` (`appsettings.json`), a senha do SQL Server do `docker-compose.yml` e o usuário inicial `admin`/`admin123` (`Program.cs`) são valores de desenvolvimento. **Em produção, troque todos** e leia os segredos de variáveis de ambiente.
 2. **O dashboard ainda carrega o histórico** de vendas e pedidos para os gráficos, rankings e previsões. O resumo financeiro e as contagens de estoque já são calculados no banco, mas o restante pode ficar lento quando o volume de dados crescer.
 3. **A previsão de vendas usa só os dias com movimento:** dias sem venda não entram como zero na tendência.
-4. **Envio de imagens sem restrição de tipo e tamanho** (somente administradores enviam), e na edição de um produto a imagem antiga é removida antes de a nova ser gravada no banco.
+4. **Envio de imagens sem limite de tamanho** (somente administradores enviam). O nome do arquivo é gerado pelo servidor e só formatos de imagem são aceitos.
 5. **Leitura de produtos fora do Estoque.** Só o Estoque altera o saldo (isso é verificado por teste), mas Vendas, Compras e Loja ainda leem produtos pelo repositório do Estoque, em vez de por um contrato de consulta próprio.
 6. **A página de erro de produção exige login:** como a `HomeController` usa o filtro de autenticação, quem não tem sessão é enviado ao login em vez de ver a página de erro.
 7. **Concorrência no checkout:** o tratamento de conflito de `RowVersion` com nova tentativa existe, mas não tem teste de integração.
