@@ -41,7 +41,7 @@ async function carregarCarrinho() {
     carrinho.itens.forEach(function (item) {
         const imagemUrl = item.produtoImagemUrl
             ? "/" + item.produtoImagemUrl
-            : "/images/placeholder.jpg";
+            : "/img/icon.png";
 
         const div = document.createElement("div");
         div.className = "item-carrinho";

@@ -236,7 +236,7 @@ namespace PolarDrinks.Modules.Dashboard.Services
             var vendasHoje = d.VendasHoje;
             var vendas7Dias = d.Vendas7Dias;
             var vendas30Dias = d.Vendas30Dias;
-            var todosPedidos = d.TodosPedidos;
+            var todosPedidos = d.PedidosValidos;
 
             // ===== NOVA ESTRUTURA: PAGAMENTOS POR CANAL E PERÍODO =====
             var pedidosHojeParaPagamento = todosPedidos.Where(p => p.PedidoData.Date == hoje).ToList();

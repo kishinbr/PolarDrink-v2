@@ -140,7 +140,6 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 |---|---|:-:|:-:|---|
 | D1 | Restrições no banco: saldo maior ou igual a zero, quantidades maiores que zero, valores de status válidos (hoje só o código garante) | Média | M | [03](03-modelo-de-dados.md#5-o-que-o-banco-garante-e-o-que-só-o-código-garante) |
 | D2 | Trocar as exclusões em cascata a partir de `Produtos` por `Restrict` (o app nunca exclui produto) | Baixa | M | [03](03-modelo-de-dados.md#4-relacionamentos-e-exclusão) |
-| D3 | Remover a migration morta `20260422170112_criandobd.cs` (sem Designer; o EF a ignora) | Baixa | B | [03](03-modelo-de-dados.md#8-migrations) |
 
 ### 3.4 Qualidade, desempenho e arquitetura
 
@@ -155,7 +154,6 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 | Q7 | Serviços e controllers assíncronos (`async`/`await`, `SaveChangesAsync`) | Baixa | A | [04](04-comunicacao-com-o-banco.md#11-limitações) |
 | Q8 | `TreatWarningsAsErrors` no projeto | Baixa | B | – |
 | Q9 | Separar o atendimento de pedidos online num módulo próprio | Baixa | A | [09](09-modulos.md#12-limitações) |
-| Q10 | Remover o código morto listado no [registro](entrega/REGISTRO-DE-ALTERACOES.md) *(planejado por você)* | Baixa | B | [09](09-modulos.md#6-compras) |
 
 Cada item de **Q7** a **Q9** muda muito código ao mesmo tempo; faça-os separados, com os testes verdes entre um e outro.
 
@@ -180,7 +178,7 @@ Pensada em etapas curtas, cada uma terminando com testes verdes.
 | **1. Fechar buracos simples** | C1, S1, S4, S3, C7 | Baixo esforço e alto retorno: corrigem comportamentos incorretos e brechas conhecidas |
 | **2. Proteger o que já funciona** | T2, T1, T3 | Testes de autenticação, do retry e CI evitam que as correções seguintes quebrem algo sem aviso |
 | **3. Segurança de sessão e formulários** | S2, S5, S6, S7, S8 | Exigem alguns testes novos (da etapa 2) e mudança de comportamento |
-| **4. Consistência de dados** | C4, C6, D1, D2, D3 | Alteram o esquema do banco: faça com migration revisada |
+| **4. Consistência de dados** | C4, C6, D1, D2 | Alteram o esquema do banco: faça com migration revisada |
 | **5. Desempenho e robustez** | Q1, Q2, Q3, Q4, Q5 | Medem-se melhor depois que os testes protegem o comportamento |
 | **6. Evolução estrutural** | Q7, Q9, Q6, Q8 | Maiores e menos urgentes; só depois do resto estável |
 
@@ -190,5 +188,5 @@ As melhorias C2, C3, C5, C8, C9 e C10 são decisões de produto: vale conversar 
 
 Itens que ainda precisam de ação nesta documentação (não são de código):
 
-- Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: migration `criandobd.cs`, nome da imagem do produto, carrinho com quantidade inválida, confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
+- Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: nome da imagem do produto, carrinho com quantidade inválida, confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
 - Manter este mapa vivo: ao corrigir um item, remova-o da tabela e da limitação de origem.

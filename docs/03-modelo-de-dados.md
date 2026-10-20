@@ -272,7 +272,7 @@ Não é preciso rodar `dotnet ef database update`: a próxima execução da apli
 
 Regras de convivência: não editar migration já aplicada em outro ambiente e sempre gerar uma nova migration quando o modelo mudar.
 
-> **Arquivo sem efeito:** existe `Migrations/20260422170112_criandobd.cs`, que não tem o arquivo `.Designer.cs` nem o atributo `[Migration]`. O Entity Framework **não o reconhece** como migration, então ele nunca é aplicado. É um resíduo e pode ser removido sem alterar o banco.
+> **Limpeza:** existia `Migrations/20260422170112_criandobd.cs`, um resíduo sem `.Designer.cs` que o Entity Framework ignorava. Ele foi removido sem alterar o banco.
 
 ## 9. Dados iniciais
 

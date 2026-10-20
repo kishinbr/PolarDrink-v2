@@ -120,7 +120,7 @@ As dependências permitidas estão desenhadas no [doc 02](02-arquitetura.md); o 
 | Views | `CompraEstoque` (Index, Cadastrar, Detalhes, Excluir), `Fornecedor` (Index, Cadastrar, Editar) |
 | Testes | `CompraEstoqueServiceCadastroTests`, `CompraEstoqueServiceConfirmarEntregaTests` |
 
-**Depende de:** Estoque (`IProdutoRepository`, `IMovimentacaoEstoqueService`, `ProdutoModel`) e Usuários (quem registrou a compra). **Ponto de atenção:** o serviço tem duas versões de `CadastrarCompra`; a que recebe `int?` e uma lista de `ItemCompraCreateVM` não está na interface e não é usada (código morto já listado no [registro de alterações](entrega/REGISTRO-DE-ALTERACOES.md)).
+**Depende de:** Estoque (`IProdutoRepository`, `IMovimentacaoEstoqueService`, `ProdutoModel`) e Usuários (quem registrou a compra).
 
 ## 7. Vendas
 
@@ -131,7 +131,7 @@ As dependências permitidas estão desenhadas no [doc 02](02-arquitetura.md); o 
 | Controller | `VendaController` |
 | Service | `IVendaService`: `FinalizarVenda`, `CancelarVenda`, `ListarVendas`, `ObterDetalhesVenda`, `ObterVendaParaCancelamento`, `ListarProdutosAtivos` |
 | Repository | `IVendaRepository` (inclui o resumo financeiro do módulo) |
-| Models | `VendaModel` (com os tipos de pagamento), `ItemVendaModel`, `FinalizarVendaRequest` (contrato de entrada) e `VendaDetalhesViewModel` (**sem uso**: pendente de confirmação para remoção) |
+| Models | `VendaModel` (com os tipos de pagamento), `ItemVendaModel` e `FinalizarVendaRequest` (contrato de entrada) |
 | Views | `Venda` (Cadastrar, Index, Detalhes, Cancelar) |
 | Testes | `VendaServiceFinalizarVendaTests`, `VendaServiceCancelamentoTests`, `VendaRollbackIntegracaoTests` (banco real) |
 
@@ -228,4 +228,3 @@ Na prática: se você precisa de algo de outro módulo, **peça ao service dele*
 - **Entidades circulam entre camadas.** Controllers e views usam as entidades (`ProdutoModel`, `VendaModel`) diretamente, exceto onde há contrato específico (`FinalizarVendaRequest`, `PedidoResponse`, `CatalogoProdutoDto`).
 - **`Dashboard` e `Vendas` consultam repositories de outros módulos** em vez de serviços. É permitido pelas regras, mas acopla à forma como os dados são guardados.
 - **Registro de dependências centralizado.** Todo serviço novo precisa ser registrado em `Program.cs`; esquecer o registro só aparece em execução.
-- **Código morto pendente:** `CadastrarCompra` sobrecarregado, `VendaDetalhesViewModel` e os itens do [registro](entrega/REGISTRO-DE-ALTERACOES.md).

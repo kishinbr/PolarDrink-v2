@@ -54,7 +54,7 @@ namespace PolarDrinks.Modules.Compras.Services
         }
 
         public ResultadoOperacao CadastrarCompra(
-    int? fornecedorId, IEnumerable<(int? ProdutoId, int Quantidade, decimal Preco)> itens, int? usuarioId)
+            int? fornecedorId, IEnumerable<(int? ProdutoId, int Quantidade, decimal Preco)> itens, int? usuarioId)
         {
             var compra = new CompraEstoqueModel
             {
@@ -88,41 +88,7 @@ namespace PolarDrinks.Modules.Compras.Services
 
             return ResultadoOperacao.Ok("Compra cadastrada com sucesso!");
         }
-        public ResultadoOperacao CadastrarCompra(int? fornecedorId, List<ItemCompraCreateVM> itens, int? usuarioId)
-        {
-            var compra = new CompraEstoqueModel
-            {
-                FornecedorID = fornecedorId!.Value,
-                CompraData = DateTime.Now,
-                CompraStatus = "Aguardando",
-                UsuarioID = usuarioId,
-                Itens = new List<ItemCompraModel>()
-            };
-
-            foreach (var item in itens)
-            {
-                if (item.ProdutoID.HasValue && item.Quantidade > 0 && item.Preco > 0)
-                {
-                    compra.Itens.Add(new ItemCompraModel
-                    {
-                        ProdutoID = item.ProdutoID.Value,
-                        ItemCompraQtd = item.Quantidade,
-                        ItemCompraPreco = item.Preco
-                    });
-                }
-            }
-
-            if (compra.Itens.Count == 0)
-            {
-                return ResultadoOperacao.Erro("Adicione pelo menos um produto", campoErro: "");
-            }
-
-            _compraRepository.Adicionar(compra);
-            _compraRepository.SalvarAlteracoes();
-
-            return ResultadoOperacao.Ok("Compra cadastrada com sucesso!");
-        }
-
+        
         public (CompraEstoqueModel Compra, string? UsuarioConfirmacao)? ObterDetalhes(int id)
         {
             var compra = _compraRepository.ObterDetalhes(id);

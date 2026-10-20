@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using PolarDrinks.Compartilhado.Common;
+﻿using PolarDrinks.Compartilhado.Common;
 using PolarDrinks.Compartilhado.Repositories;
 using PolarDrinks.Modules.Estoque.Models;
 using PolarDrinks.Modules.Estoque.Repositories;

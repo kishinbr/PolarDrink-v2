@@ -72,7 +72,7 @@ async function carregarProdutos(termo = null) {
 
         const imagemUrl = produto.produtoImagemUrl
             ? "/" + produto.produtoImagemUrl
-            : "/images/placeholder.jpg";
+            : "/img/icon.png";
 
         const precoFinal = produto.produtoPromocao > 0
             ? produto.produtoPrecoVenda - (produto.produtoPrecoVenda * (produto.produtoPromocao / 100))

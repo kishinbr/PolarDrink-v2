@@ -29,10 +29,10 @@ Este documento mostra **como reproduzir** os testes, **em que ambiente** eles ro
 
 ## 2. Como reproduzir
 
-Na raiz do repositório::
+Na raiz do repositório:
 
 ```
- dotnet test PolarDrinks/PolarDrinks.sln
+dotnet test PolarDrinks/PolarDrinks.sln
 ```
 
 Para ver o nome de cada teste na saída:

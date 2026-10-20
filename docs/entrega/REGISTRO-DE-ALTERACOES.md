@@ -143,7 +143,7 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 
 **Solução.** `EstoqueService` recebe a imagem como `(Stream Conteudo, string NomeArquivo)?`; o controller faz a conversão do `IFormFile` e `ArmazenamentoService` lida com o arquivo. `CompraEstoqueService.CadastrarCompra` recebe uma lista de tuplas `(ProdutoId, Quantidade, Preco)`. O teste de arquitetura R5 impede que Services e Repositories usem tipos da camada web.
 
-**Pendência.** Resta em `CompraEstoqueService` uma segunda versão de `CadastrarCompra` que recebe `ItemCompraCreateVM`. Ela não consta em `ICompraEstoqueService` e o controller não a usa, ou seja, é código sem uso a remover (veja [limitações](#limitações-e-melhorias-futuras)).
+**Pendência resolvida.** A segunda versão de `CadastrarCompra`, que recebia `ItemCompraCreateVM` e não era usada, foi removida (veja [Limpeza de código sem uso](#limpeza-de-código-sem-uso)).
 
 ## Reorganização em módulos
 
@@ -167,11 +167,23 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 | Código de retirada no `PedidoResponse` | O cliente precisa dele e só acessa os próprios pedidos |
 | `DashboardViewModel` permanece no serviço | Evita um modelo duplicado só para trafegar os mesmos dados |
 | Exceção de rastreabilidade em `MovimentacaoEstoqueModel` | Cada movimentação precisa apontar a venda, compra ou pedido de origem |
-| `VendaDetalhesViewModel` mantido por ora | Remoção será feita junto com a limpeza de código sem uso |
+
+## Limpeza de código sem uso
+
+**Problema.** Restavam código e arquivos que nenhuma parte do sistema usava, o que confundia a leitura e contradizia a regra R5.
+
+**Solução.** Foram removidos:
+
+- a segunda versão de `CompraEstoqueService.CadastrarCompra` (recebia `ItemCompraCreateVM`, um tipo de tela) e o `using Microsoft.AspNetCore.Http` sem uso em `EstoqueService`;
+- `VendaDetalhesViewModel`;
+- as ações `HomeController.Privacy()` e `HomeController.Estoque()`, que não tinham view;
+- os arquivos estáticos não referenciados: `darka.css`, `site.css`, `pix.png`, `polaria2.png`, `_ValidationScriptsPartial.cshtml` e as bibliotecas `jquery-validation`;
+- a migration morta `20260422170112_criandobd.cs`, sem `.Designer.cs` e ignorada pelo Entity Framework.
+
+**Evidência.** O projeto compila e os 123 testes continuam passando. Nenhuma migration nova foi necessária, porque nenhum desses itens fazia parte do banco.
 
 ## Limitações e melhorias futuras
 
-- **Código sem uso a remover:** sobrecarga de `CadastrarCompra` com `ItemCompraCreateVM`; `VendaDetalhesViewModel`; `HomeController.Privacy()`/`Estoque()`; arquivos estáticos não referenciados (`darka.css`, `site.css`, `pix.png`, `polaria2.png`, `_ValidationScriptsPartial.cshtml`, bibliotecas `jquery-validation`).
 - **Pacote com aviso de vulnerabilidade:** `System.Security.Cryptography.Pkcs` (CVE-2026-84008 e CVE-2026-70162, afetam as versões 10.0.0 a 10.0.12, corrigidas na 10.0.13). Risco de negação de serviço; o código não chama `SignedCms` nem `EnvelopedCms`. Atualizar o pacote.
 - **Segredos no repositório:** a chave JWT e a conexão estão em arquivo de configuração versionado; mover para variáveis de ambiente.
 - **Upload de imagem sem restrição** de tipo e tamanho; na edição, a imagem antiga é removida antes de a nova ser gravada.
