@@ -37,8 +37,12 @@ namespace PolarDrinks.Modules.Loja.Controllers
         public IActionResult MarcarComoSeparado(int id)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
 
-            var resultado = _pedidoService.MarcarComoSeparado(id, usuarioId ?? 0);
+            var resultado = _pedidoService.MarcarComoSeparado(id, usuarioId.Value);
 
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Index");
@@ -57,8 +61,12 @@ namespace PolarDrinks.Modules.Loja.Controllers
         public IActionResult ConfirmarEntrega(int id, string codigo)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
 
-            var resultado = _pedidoService.ConfirmarEntrega(id, codigo, usuarioId ?? 0);
+            var resultado = _pedidoService.ConfirmarEntrega(id, codigo, usuarioId.Value);
 
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Index");
@@ -68,8 +76,12 @@ namespace PolarDrinks.Modules.Loja.Controllers
         public IActionResult CancelarAposEntrega(int id, string descricao)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
 
-            var resultado = _pedidoService.CancelarAposEntrega(id, descricao, usuarioId ?? 0);
+            var resultado = _pedidoService.CancelarAposEntrega(id, descricao, usuarioId.Value);
 
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Historico");
