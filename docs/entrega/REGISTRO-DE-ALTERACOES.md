@@ -168,6 +168,14 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 | `DashboardViewModel` permanece no serviço | Evita um modelo duplicado só para trafegar os mesmos dados |
 | Exceção de rastreabilidade em `MovimentacaoEstoqueModel` | Cada movimentação precisa apontar a venda, compra ou pedido de origem |
 
+## Carrinho com quantidade inválida
+
+**Problema.** `CarrinhoService.AdicionarItem` (usado em `POST /api/carrinho/itens` e na mesclagem) só conferia o limite superior: quantidade zero ou negativa entrava no carrinho, e uma quantidade muito grande estourava o `int` e passava pela validação. O checkout passava a ser recusado até o cliente remover o item.
+
+**Solução.** O método recusa quantidade menor ou igual a zero antes de qualquer consulta e soma as quantidades em `long`.
+
+**Evidência.** Verificação manual pela API: quantidades `-5`, `0` e `2147483647` respondem 400; uma adição normal continua funcionando.
+
 ## Limpeza de código sem uso
 
 **Problema.** Restavam código e arquivos que nenhuma parte do sistema usava, o que confundia a leitura e contradizia a regra R5.

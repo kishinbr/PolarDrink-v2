@@ -123,7 +123,6 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 
 | ID | Melhoria | Prioridade | Esforço | Origem |
 |---|---|:-:|:-:|---|
-| C1 | Carrinho: recusar quantidade menor ou igual a zero ao adicionar e ao mesclar | Alta | B | [05](05-api.md#11-limitações) |
 | C2 | Link de "Pedidos online" no menu do Funcionário (se ele deve atender pedidos) | Média | B | [06](06-autenticacao-e-permissoes.md#9-limitações) |
 | C3 | Troca da própria senha pelo usuário, e redefinição pelo Admin | Média | M | [06](06-autenticacao-e-permissoes.md#4-gestão-de-usuários) |
 | C4 | Estoque inicial do cadastro de produto gerar uma movimentação (`Entrada`, "Estoque inicial") | Média | B | [07](07-casos-de-uso.md#11-limitações-observadas) |
@@ -175,7 +174,7 @@ Pensada em etapas curtas, cada uma terminando com testes verdes.
 
 | Etapa | Itens | Por quê |
 |---|---|---|
-| **1. Fechar buracos simples** | C1, S1, S4, S3, C7 | Baixo esforço e alto retorno: corrigem comportamentos incorretos e brechas conhecidas |
+| **1. Fechar buracos simples** | S1, S4, S3, C7 | Baixo esforço e alto retorno: corrigem comportamentos incorretos e brechas conhecidas |
 | **2. Proteger o que já funciona** | T2, T1, T3 | Testes de autenticação, do retry e CI evitam que as correções seguintes quebrem algo sem aviso |
 | **3. Segurança de sessão e formulários** | S2, S5, S6, S7, S8 | Exigem alguns testes novos (da etapa 2) e mudança de comportamento |
 | **4. Consistência de dados** | C4, C6, D1, D2 | Alteram o esquema do banco: faça com migration revisada |
@@ -188,5 +187,5 @@ As melhorias C2, C3, C5, C8, C9 e C10 são decisões de produto: vale conversar 
 
 Itens que ainda precisam de ação nesta documentação (não são de código):
 
-- Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: nome da imagem do produto, carrinho com quantidade inválida, confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
+- Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: nome da imagem do produto, confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
 - Manter este mapa vivo: ao corrigir um item, remova-o da tabela e da limitação de origem.

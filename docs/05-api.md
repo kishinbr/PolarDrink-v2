@@ -183,6 +183,7 @@ Erros de regra (`400`, `{ "mensagem": ... }`):
 | Situação | Mensagem |
 |---|---|
 | Produto inexistente ou inativo | Produto não encontrado ou indisponível. |
+| Quantidade zero ou negativa ao adicionar ou mesclar | A quantidade deve ser maior que zero. |
 | Quantidade acima do disponível online | Apenas N unidade(s) de X disponíveis. |
 | Nada disponível online (só estoque mínimo) | X apenas na loja física. |
 | Atualizar item que não está no carrinho | Item não encontrado no carrinho. |
@@ -336,7 +337,6 @@ O cadastro precisa de e-mail e CPF novos a cada vez, porque ambos são únicos. 
 
 - **Sem OpenAPI/Swagger e sem versionamento.** A documentação é manual (esta página e o `.http`) e pode ficar desatualizada se a API mudar.
 - **Sem tratamento global de erros na API.** Uma exceção não prevista não vira o formato `{ "mensagem": ... }`: fora do ambiente de desenvolvimento, o ASP.NET reexecuta a requisição em `/Home/Error`, que é uma tela da equipe (exige sessão), então um cliente da loja pode não receber uma resposta de erro útil. Em dois pontos (checkout e finalização de venda) a mensagem devolvida inclui o texto técnico da exceção.
-- **O carrinho não valida quantidade menor ou igual a zero ao adicionar.** `POST /api/carrinho/itens` e a mesclagem só conferem o limite superior; o teste de quantidade zero ou negativa existe apenas na atualização (`PUT`). Um item com quantidade inválida entra no carrinho e o checkout é recusado pela camada de estoque, com rollback e a mensagem "A quantidade deve ser maior que zero."; o cliente precisa remover o item. O estoque não é corrompido, mas o carrinho fica bloqueado até a remoção.
 - **`GET /api/carrinho` altera dados.** Ao listar, remove do banco os itens de produtos inativos. É prático para o cliente, mas foge da expectativa de que um `GET` apenas leia.
 - **O catálogo público mostra o saldo real** (`produtoQtdEstoque`), além do disponível online.
 - **Confirmar entrega de compra é um `GET`.** Na tela de detalhes da compra, "Confirmar entrega" é um link (`CompraEstoque/ConfirmarEntrega/{id}`), e uma requisição `GET` altera o estoque. Um link externo aberto por um Admin logado poderia disparar a confirmação. O cookie de sessão usa o padrão `SameSite=Lax` do navegador, que ainda envia o cookie em navegação por link.

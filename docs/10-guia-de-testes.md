@@ -285,7 +285,7 @@ WHERE v.VendaCancelada = 1 AND EXISTS (
         SELECT 1 FROM MovimentacoesEstoque m
         WHERE m.ItemVendaID = i.ItemVendaID AND m.MovimentacaoTipo = 'Cancelamento'));
 
--- 6. Itens com quantidade inválida no carrinho (veja doc 05, limitações): esperado nenhuma linha
+-- 6. Itens com quantidade inválida no carrinho: esperado nenhuma linha
 SELECT CarrinhoItemID, ClienteID, ProdutoID, Quantidade FROM CarrinhoItens WHERE Quantidade <= 0;
 
 -- 7. Histórico de um produto (troque X pelo ProdutoID)
@@ -293,7 +293,7 @@ SELECT MovimentacaoData, MovimentacaoTipo, MovimentacaoQtd, MovimentacaoDescrica
 FROM MovimentacoesEstoque WHERE ProdutoID = X ORDER BY MovimentacaoData;
 ```
 
-A consulta 6 existe porque o carrinho aceita quantidade inválida ao adicionar (limitação do [doc 05](05-api.md#11-limitações)); se o ajuste for feito, ela passa a ser uma proteção.
+A consulta 6 é uma proteção: desde a correção do carrinho, nenhum item deve ter quantidade menor ou igual a zero.
 
 **Atenção ao interpretar o saldo.** O saldo inicial informado no cadastro de produto não gera movimentação (veja o [doc 07](07-casos-de-uso.md#11-limitações-observadas)); portanto, **saldo = estoque inicial + soma das movimentações** e a soma sozinha não fecha o saldo.
 

@@ -365,6 +365,7 @@ O Admin também executa tudo o que o Funcionário faz (UC08 e UC15); para não p
 
 **Alternativos e erros**
 - "Produto não encontrado ou indisponível."
+- "A quantidade deve ser maior que zero." (ao adicionar ou mesclar com quantidade zero ou negativa)
 - "Apenas n unidade(s) de X disponíveis." / "X apenas na loja física." (o estoque mínimo fica reservado ao balcão)
 - "Item não encontrado no carrinho." (ao alterar um item que não está lá)
 - Produto que ficou inativo depois de adicionado: sai do carrinho na próxima consulta, com aviso.
@@ -450,7 +451,6 @@ Ao percorrer cada fluxo no código, foram vistos pontos que merecem atenção. T
 - **Imagem de produto sem tratamento do nome** (UC03): o arquivo é salvo com o nome enviado pelo navegador, sem nome único, sem restringir tipo ou tamanho e sem sanitizar o caminho (não há `Path.GetFileName`). Dois produtos com imagens de mesmo nome sobrescrevem um ao outro. Em tese, uma requisição forjada com caminho no nome do arquivo poderia gravar fora da pasta de imagens; como a ação é restrita ao Admin, o risco é de uso indevido por quem já é administrador, mas vale corrigir (nome gerado pelo servidor e lista de extensões aceitas).
 - **Confirmar entrega de compra por `GET`** (UC13): veja o [doc 05](05-api.md#11-limitações).
 - **Funcionário sem atalho no menu para os pedidos** (UC15): veja o [doc 06](06-autenticacao-e-permissoes.md#9-limitações).
-- **Carrinho aceita quantidade inválida ao adicionar** (UC20): veja o [doc 05](05-api.md#11-limitações).
 - **Mensagem técnica ao cliente** (UC08 e UC21): em falha inesperada, o texto da exceção é devolvido.
 - **Dois prazos de 24 horas diferentes** (UC22 e UC23): o cliente cancela até 24 horas após **criar** o pedido; a expiração automática conta 24 horas após **separar**. Não é um erro, mas costuma confundir.
 - **Prazos fixos no código.** Os valores de 24 horas, 15 minutos e 3 tentativas estão escritos nos serviços, não em configuração.
