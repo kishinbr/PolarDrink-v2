@@ -1,0 +1,170 @@
+### =====================================================================
+### PolarDrinks - exemplos da API da loja online
+###
+### Como usar (Visual Studio 2022 17.8 ou superior):
+###   1. Inicie a aplicação (dotnet run, ou F5 no Visual Studio).
+###   2. Ajuste @host abaixo se a porta for outra (local: 5153, Docker: 8080).
+###   3. Execute os pedidos de cima para baixo, clicando em "Enviar solicitação"
+###      acima de cada um. O pedido "login" guarda o token, e os pedidos
+###      seguintes o usam sozinhos.
+###
+### Dica: o catálogo é público; carrinho e pedidos exigem o token (JWT).
+### O token vale 24 horas (Jwt:DuracaoEmHoras no appsettings.json).
+### =====================================================================
+
+@host = http://localhost:5153
+
+
+### ---------------------------------------------------------------------
+### 1. CATÁLOGO (público)
+### ---------------------------------------------------------------------
+
+### Listar produtos (todos)
+GET {{host}}/api/catalogo/produtos
+
+### Buscar produtos por termo e categoria (ajuste o termo e o id)
+GET {{host}}/api/catalogo/produtos?termo=cerveja&categoriaId=1
+
+### Detalhe de um produto (ajuste o id)
+GET {{host}}/api/catalogo/produtos/1
+
+### Listar categorias
+GET {{host}}/api/catalogo/categorias
+
+
+### ---------------------------------------------------------------------
+### 2. CONTA DO CLIENTE (público)
+### ---------------------------------------------------------------------
+
+### Cadastrar cliente (e-mail e CPF precisam ser novos a cada vez)
+### Regras: nome, e-mail e CPF obrigatórios; senha com pelo menos 6 caracteres
+### e igual à confirmação. Devolve um token já pronto para uso.
+POST {{host}}/api/cliente/auth/cadastrar
+Content-Type: application/json
+
+{
+  "nome": "Cliente de Teste",
+  "email": "cliente.teste@exemplo.com",
+  "senha": "senha123",
+  "confirmacaoSenha": "senha123",
+  "telefone": "11999990000",
+  "cpf": "12345678900"
+}
+
+### Login (guarda o token para os próximos pedidos)
+# @name login
+POST {{host}}/api/cliente/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente.teste@exemplo.com",
+  "senha": "senha123"
+}
+
+### Token usado pelos pedidos abaixo (vem da resposta do login)
+@token = {{login.response.body.$.token}}
+
+
+### ---------------------------------------------------------------------
+### 3. CARRINHO (exige token)
+### ---------------------------------------------------------------------
+
+### Ver o carrinho
+GET {{host}}/api/carrinho
+Authorization: Bearer {{token}}
+
+### Adicionar item (ajuste o produto; só vende o que sobra acima do estoque mínimo)
+POST {{host}}/api/carrinho/itens
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "produtoID": 1,
+  "quantidade": 2
+}
+
+### Alterar a quantidade de um item
+PUT {{host}}/api/carrinho/itens/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantidade": 3
+}
+
+### Remover um item
+DELETE {{host}}/api/carrinho/itens/1
+Authorization: Bearer {{token}}
+
+### Mesclar itens (junta o carrinho do navegador com o da conta)
+POST {{host}}/api/carrinho/mesclar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[
+  { "produtoID": 1, "quantidade": 1 }
+]
+
+### Esvaziar o carrinho
+DELETE {{host}}/api/carrinho
+Authorization: Bearer {{token}}
+
+
+### ---------------------------------------------------------------------
+### 4. PEDIDOS (exige token)
+### ---------------------------------------------------------------------
+
+### Finalizar a compra (checkout). Pagamento aceito: "Pix" ou "Cartao".
+### O preço e o total são sempre calculados pelo servidor.
+# @name checkout
+POST {{host}}/api/pedidos/checkout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tipoPagamento": "Pix"
+}
+
+### Guarda o id do pedido criado
+@pedidoId = {{checkout.response.body.$.pedidoID}}
+
+### Listar os pedidos do cliente
+GET {{host}}/api/pedidos
+Authorization: Bearer {{token}}
+
+### Detalhe de um pedido (só enxerga pedidos do próprio cliente)
+GET {{host}}/api/pedidos/{{pedidoId}}
+Authorization: Bearer {{token}}
+
+### Cancelar o pedido (até 24 horas, enquanto aguarda separação ou está separado)
+POST {{host}}/api/pedidos/{{pedidoId}}/cancelar
+Authorization: Bearer {{token}}
+
+
+### ---------------------------------------------------------------------
+### 5. CASOS DE ERRO PARA CONFERIR
+### ---------------------------------------------------------------------
+
+### Carrinho sem token deve responder 401
+GET {{host}}/api/carrinho
+
+### Login com senha errada deve responder 401
+POST {{host}}/api/cliente/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente.teste@exemplo.com",
+  "senha": "senha-errada"
+}
+
+### Checkout com forma de pagamento inválida deve responder 400
+POST {{host}}/api/pedidos/checkout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tipoPagamento": "Dinheiro"
+}
+
+### Produto inexistente no catálogo deve responder 404
+GET {{host}}/api/catalogo/produtos/999999
