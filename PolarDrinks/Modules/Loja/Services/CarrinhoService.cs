@@ -48,6 +48,11 @@ namespace PolarDrinks.Modules.Loja.Services
         }
         public ResultadoOperacao AdicionarItem(int clienteId, int produtoId, int quantidade)
         {
+            if (quantidade <= 0)
+            {
+                return ResultadoOperacao.Erro("A quantidade deve ser maior que zero.");
+            }
+
             var produto = _produtoRepository.ObterPorId(produtoId);
             if (produto == null || !produto.ProdutoAtivo)
             {
@@ -55,7 +60,7 @@ namespace PolarDrinks.Modules.Loja.Services
             }
 
             var itemExistente = _carrinhoRepository.ObterItem(clienteId, produtoId);
-            var quantidadeTotal = (itemExistente?.Quantidade ?? 0) + quantidade;
+            var quantidadeTotal = (long)(itemExistente?.Quantidade ?? 0) + quantidade;
 
             var disponivelOnline = Math.Max(0, (produto.ProdutoQtdEstoque ?? 0) - (produto.ProdutoEstoqueMinimo ?? 0));
 
@@ -68,7 +73,7 @@ namespace PolarDrinks.Modules.Loja.Services
 
             if (itemExistente != null)
             {
-                itemExistente.Quantidade = quantidadeTotal;
+                itemExistente.Quantidade = (int)quantidadeTotal;
             }
             else
             {
