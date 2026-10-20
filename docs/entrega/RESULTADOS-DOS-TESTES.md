@@ -17,7 +17,7 @@ Este documento mostra **como reproduzir** os testes, **em que ambiente** eles ro
 
 | Item | Valor |
 |---|---|
-| Comando | dotnet test PolarDrinks/PolarDrinks.sln (na raiz do repositório).|
+| Comando | `dotnet test PolarDrinks/PolarDrinks.sln` (na raiz do repositório) |
 | Total de testes | 123 |
 | Aprovados | 123 |
 | Falhas | 0 |
@@ -29,23 +29,23 @@ Este documento mostra **como reproduzir** os testes, **em que ambiente** eles ro
 
 ## 2. Como reproduzir
 
-Na pasta onde está o arquivo `PolarDrinks.sln`:
+Na raiz do repositório::
 
 ```
-dotnet test
+ dotnet test PolarDrinks/PolarDrinks.sln
 ```
 
 Para ver o nome de cada teste na saída:
 
 ```
-dotnet test --logger "console;verbosity=normal"
+dotnet test PolarDrinks/PolarDrinks.sln --logger "console;verbosity=normal"
 ```
 
 Para rodar por tipo (os testes têm o rótulo `Categoria`):
 
 ```
-dotnet test --filter "Categoria=Integracao"
-dotnet test --filter "Categoria=Arquitetura"
+dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Integracao"
+dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Arquitetura"
 ```
 
 Os testes sem rótulo (os de serviço, que usam dependências simuladas) rodam com o `dotnet test` completo.
