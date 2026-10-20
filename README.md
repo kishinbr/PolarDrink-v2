@@ -199,13 +199,12 @@ Qualquer chave pode ser substituída por uma **variável de ambiente**, trocando
 
 ## Como rodar os testes
 
-Na raiz do repositório:
 
 ```bash
-dotnet test                                          # todos os testes
-dotnet test --filter "Categoria=Arquitetura"         # só as regras de arquitetura
-dotnet test --filter "Categoria=Integracao"          # só os testes com banco real
-dotnet test --filter "Categoria!=Integracao"         # tudo, menos os que precisam do SQL Server
+dotnet test PolarDrinks/PolarDrinks.sln                                       # todos os testes
+dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Arquitetura"      # só as regras de arquitetura
+dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Integracao"       # só os testes com banco real
+dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria!=Integracao"      # tudo, menos os que precisam do SQL Server
 ```
 
 Os testes são de três tipos:

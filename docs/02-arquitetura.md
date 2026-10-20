@@ -78,7 +78,7 @@ Existem **duas portas de entrada**, com autenticação diferente: as telas admin
 | **Model** | Entidades e contratos de dados (e regras que protegem a própria entidade, como `CalcularPrecoFinal`) | Depender de Services, Repositories ou Controllers | R6 |
 | **Compartilhado** | Código comum (`ResultadoOperacao`, `IUnitOfWork`, filtros, expansor de Views) | Depender de qualquer módulo | R7 |
 
-As regras R1 a R9 estão descritas no mapa de responsabilidades (seção 3) e rodam com `dotnet test --filter "Categoria=Arquitetura"`.
+As regras R1 a R9 estão descritas no mapa de responsabilidades (seção 3) e rodam com `dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Arquitetura"`.
 
 **Resultado das operações.** Os Services não lançam exceção para erros esperados (saldo insuficiente, dado inválido). Eles devolvem `ResultadoOperacao` ou `ResultadoOperacao<T>`, com sucesso, mensagem e, quando faz sentido, o campo com erro. O Controller só traduz isso para a resposta.
 

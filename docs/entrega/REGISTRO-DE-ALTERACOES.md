@@ -123,7 +123,7 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 | Falha durante a venda, com banco real | `FinalizarVenda_FalhaNoMeio_DeveDesfazerTudoNoBanco` |
 | Cancelamento repetido | `CancelarPeloCliente_Repetido_DeveRejeitarSegundaTentativaSemNovaDevolucao`, `CancelarAposEntrega_Repetido_...` |
 
-**Como rodar.** `dotnet test` na raiz; para separar: `--filter "Categoria=Integracao"` ou `"Categoria=Arquitetura"`. Resultados em [RESULTADOS-DOS-TESTES.md](RESULTADOS-DOS-TESTES.md).
+**Como rodar.** `dotnet test PolarDrinks/PolarDrinks.sln` na raiz; para separar: `--filter "Categoria=Integracao"` ou `"Categoria=Arquitetura"`. Resultados em [RESULTADOS-DOS-TESTES.md](RESULTADOS-DOS-TESTES.md).
 
 ## Ponto 9: Ajustes complementares
 

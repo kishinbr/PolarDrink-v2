@@ -26,19 +26,19 @@ Um não substitui o outro. A rotina sugerida: rodar `dotnet test` a cada mudanç
 
 ## 2. Rodar os testes automatizados
 
-Na pasta da solução (onde está o `PolarDrinks.sln`):
+Na raiz do repositório:
 
 ```
-dotnet test
+dotnet test PolarDrinks/PolarDrinks.sln
 ```
 
 | Quero... | Comando |
 |---|---|
-| Ver o nome de cada teste | `dotnet test --logger "console;verbosity=normal"` |
-| Só os testes com banco real | `dotnet test --filter "Categoria=Integracao"` |
-| Só as regras de arquitetura | `dotnet test --filter "Categoria=Arquitetura"` |
-| Rodar um teste pelo nome | `dotnet test --filter "FullyQualifiedName~CancelarVenda_Repetido"` |
-| Medir cobertura de código | `dotnet test --collect:"XPlat Code Coverage"` |
+| Ver o nome de cada teste | `dotnet test PolarDrinks/PolarDrinks.sln --logger "console;verbosity=normal"` |
+| Só os testes com banco real | `dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Integracao"` |
+| Só as regras de arquitetura | `dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Arquitetura"` |
+| Rodar um teste pelo nome | `dotnet test PolarDrinks/PolarDrinks.sln --filter "FullyQualifiedName~CancelarVenda_Repetido"` |
+| Medir cobertura de código | `dotnet test PolarDrinks/PolarDrinks.sln --collect:"XPlat Code Coverage"` |
 
 No Visual Studio: *Teste > Gerenciador de Testes > Executar Todos os Testes*. Ali também dá para rodar um teste só, com clique direito, e depurá-lo.
 

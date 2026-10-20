@@ -17,7 +17,7 @@ Este documento mostra **como reproduzir** os testes, **em que ambiente** eles ro
 
 | Item | Valor |
 |---|---|
-| Comando | `dotnet test` (na raiz da solução) |
+| Comando | dotnet test PolarDrinks/PolarDrinks.sln (na raiz do repositório).|
 | Total de testes | 123 |
 | Aprovados | 123 |
 | Falhas | 0 |

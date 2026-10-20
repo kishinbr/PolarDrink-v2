@@ -79,10 +79,10 @@ Roteiro de fala para a discussão com o professor. Cada pergunta tem uma **respo
 ## 8. Sequência sugerida de demonstração
 
 1. **Estrutura:** abrir `Modules/` e o mapa de dependências.
-2. **Teste de arquitetura:** rodar `dotnet test --filter "Categoria=Arquitetura"`. Se der tempo, quebrar uma regra de propósito e mostrar o teste falhando (desfazer em seguida).
+2. **Teste de arquitetura:** rodar `dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Arquitetura"`. Se der tempo, quebrar uma regra de propósito e mostrar o teste falhando (desfazer em seguida).
 3. **Venda inválida:** no sistema ou pelo teste, enviar quantidade negativa, produto repetido acima do saldo e produto inativo; mostrar a rejeição sem efeitos.
 4. **Venda válida:** conferir preço, total, saldo e movimentação.
-5. **Rollback real:** rodar `dotnet test --filter "Categoria=Integracao"` e citar o teste de falha no meio.
+5. **Rollback real:** rodar `dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria=Integracao"` e citar o teste de falha no meio.
 6. **Cancelamento repetido:** cancelar um pedido e tentar de novo; mostrar que o estoque voltou uma vez só.
 
 Antes de apresentar: confirmar que o SQL Server está ligado (os testes de integração criam e apagam o próprio banco temporário).
