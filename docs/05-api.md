@@ -316,7 +316,7 @@ Duas observações de leitura:
 
 ## 10. Como experimentar
 
-O arquivo **`PolarDrinks.http`** (ao lado do `PolarDrinks.csproj`) reúne uma requisição pronta para cada endpoint da seção 3, mais os casos de erro. No Visual Studio 2022 (17.8 ou superior), abra o arquivo e clique em "Enviar solicitação" acima de cada requisição, de cima para baixo: o pedido `login` guarda o token e os seguintes o usam.
+O arquivo **`PolarDrinks.http`**, na pasta `docs/`, reúne uma requisição pronta para cada endpoint da seção 3, mais os casos de erro. No Visual Studio 2022 (17.8 ou superior), abra o arquivo e clique em "Enviar solicitação" acima de cada requisição, de cima para baixo: o pedido `login` guarda o token e os seguintes o usam.
 
 Sem o Visual Studio, o mesmo roteiro funciona com `curl`:
 

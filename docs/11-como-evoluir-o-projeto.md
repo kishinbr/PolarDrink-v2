@@ -190,7 +190,5 @@ As melhorias C2, C3, C5, C8, C9 e C10 são decisões de produto: vale conversar 
 
 Itens que ainda precisam de ação nesta documentação (não são de código):
 
-- Preencher **data, duração e "ignorados = 0"** em [RESULTADOS-DOS-TESTES](entrega/RESULTADOS-DOS-TESTES.md) e no [doc 10](10-guia-de-testes.md#2-rodar-os-testes-automatizados).
 - Acrescentar ao [REGISTRO-DE-ALTERACOES](entrega/REGISTRO-DE-ALTERACOES.md) os achados dos documentos 04 a 10: migration `criandobd.cs`, nome da imagem do produto, carrinho com quantidade inválida, confirmação de entrega por `GET`, ausência de CSRF, sessão que sobrevive à desativação, entre outros.
-- Atualizar o `README.md` da raiz para apontar para esta pasta (`docs/README.md`, índice e ordem de leitura).
 - Manter este mapa vivo: ao corrigir um item, remova-o da tabela e da limitação de origem.

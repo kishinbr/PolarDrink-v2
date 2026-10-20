@@ -53,9 +53,9 @@ Por isso, ao conferir o resultado, olhe os ignorados: **123 aprovados com 0 igno
 | Última execução registrada | Valor |
 |---|---|
 | Total / aprovados / falhas | 123 / 123 / 0 |
-| Ignorados | _preencher_ (deve ser 0) |
-| Data | _preencher_ |
-| Duração | _preencher_ |
+| Ignorados | 0 |
+| Data | 20/10/2026 |
+| Duração | 2 s |
 
 ## 3. O que existe: 123 testes em quatro grupos
 

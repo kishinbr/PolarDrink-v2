@@ -225,6 +225,18 @@ Os resultados e a lista dos cenários cobertos estão em [docs/entrega/RESULTADO
 
 | Documento | Conteúdo |
 |---|---|
+| [01 — Visão e requisitos](docs/01-visao-e-requisitos.md) | Objetivos, escopo e requisitos do sistema |
+| [02 — Arquitetura](docs/02-arquitetura.md) | Estrutura da aplicação e decisões arquiteturais |
+| [03 — Modelo de dados](docs/03-modelo-de-dados.md) | Entidades, relacionamentos e persistência |
+| [04 — Comunicação com o banco](docs/04-comunicacao-com-o-banco.md) | Acesso ao banco de dados e migrations |
+| [05 — API](docs/05-api.md) | Endpoints, contratos e exemplos de uso |
+| [06 — Autenticação e permissões](docs/06-autenticacao-e-permissoes.md) | Login, sessão e controle de acesso |
+| [07 — Casos de uso](docs/07-casos-de-uso.md) | Atores e funcionalidades do sistema |
+| [08 — Fluxos principais](docs/08-fluxos-principais.md) | Passos dos principais processos |
+| [09 — Módulos](docs/09-modulos.md) | Responsabilidades e organização dos módulos |
+| [10 — Guia de testes](docs/10-guia-de-testes.md) | Como executar e interpretar os testes |
+| [11 — Como evoluir o projeto](docs/11-como-evoluir-o-projeto.md) | Orientações para mudanças futuras |
+| [Apresentação](docs/entrega/APRESENTACAO.md) | Roteiro de apresentação do projeto |
 | [Mapa de responsabilidades](docs/entrega/MAPA-DE-RESPONSABILIDADES.md) | Quem é dono de quê (preço, estoque), dependências permitidas entre módulos, contratos e o que acontece quando uma operação falha |
 | [Registro das alterações](docs/entrega/REGISTRO-DE-ALTERACOES.md) | Cada problema encontrado na análise, a solução, os arquivos e a evidência |
 | [Resultados dos testes](docs/entrega/RESULTADOS-DOS-TESTES.md) | Comandos, ambiente e cenários cobertos |

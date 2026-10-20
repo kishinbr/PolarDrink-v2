@@ -22,8 +22,8 @@ Este documento mostra **como reproduzir** os testes, **em que ambiente** eles ro
 | Aprovados | 123 |
 | Falhas | 0 |
 | Código testado | branch `refactor/modulos` |
-| Data da execução | _preencher_ |
-| Duração | _preencher_ |
+| Data da execução | 20/10/2026 |
+| Duração | 2 s |
 
 > Os testes de integração são **pulados** (e aparecem como "ignorados", não como aprovados) quando o SQL Server de testes não está acessível. Por isso, confira no resumo do `dotnet test` que o número de **ignorados é 0**; só assim os 123 incluem o rollback real no banco.
 
