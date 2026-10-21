@@ -138,7 +138,7 @@ var localizationOptions = new RequestLocalizationOptions
 };
 
 app.UseRequestLocalization(localizationOptions);
-
+app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
