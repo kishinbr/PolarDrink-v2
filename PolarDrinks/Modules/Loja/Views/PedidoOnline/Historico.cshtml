@@ -223,7 +223,7 @@
                                             && DateTime.Now <= pedido.PedidoDataConcluido.Value.AddHours(24);
                                     }
 
-                                    @if (podeCancelar)
+                                    @if (podeCancelar && Context.Session.GetString("Perfil") == "Admin")
                                     {
                                         <button type="button"
                                                 class="btn btn-sm border-0 text-white"

@@ -36,6 +36,12 @@ async function chamarApi(url, metodo = "GET", corpo = null) {
     }
 
     const resposta = await fetch(url, opcoes);
+
+    if (resposta.status === 401 && token && !url.startsWith("/api/cliente/auth")) {
+        removerToken();
+        window.location.href = "/loja/catalogo";
+        return { ok: false, status: 401, dados: null };
+    }
     const dados = await resposta.json().catch(() => null);
 
     return {
