@@ -130,10 +130,11 @@ Erros (`400`) trazem também o campo problemático em `campo`:
 | Senha curta (menos de 6) | A senha deve ter pelo menos 6 caracteres. | `senha` |
 | Confirmação diferente | As senhas não conferem. | `confirmacaoSenha` |
 | CPF vazio | Informe seu CPF. | `cpf` |
+| CPF sem 11 dígitos | O CPF deve ter 11 dígitos. | `cpf` |
 | E-mail já cadastrado | Já existe uma conta com esse e-mail. | `email` |
 | CPF já cadastrado | Já existe uma conta com esse CPF. | `cpf` |
 
-O e-mail é guardado em minúsculas e sem espaços nas pontas; a senha, com hash BCrypt.
+O e-mail é guardado em minúsculas e sem espaços nas pontas, e o CPF só com os dígitos (a máscara `000.000.000-00` é removida); as duas verificações de duplicidade usam esses valores já normalizados. A senha é guardada com hash BCrypt.
 
 ### `POST /api/cliente/auth/login`
 

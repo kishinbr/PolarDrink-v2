@@ -168,6 +168,14 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 | `DashboardViewModel` permanece no serviço | Evita um modelo duplicado só para trafegar os mesmos dados |
 | Exceção de rastreabilidade em `MovimentacaoEstoqueModel` | Cada movimentação precisa apontar a venda, compra ou pedido de origem |
 
+## E-mail e CPF no cadastro do cliente
+
+**Problema.** O CPF era gravado do jeito que foi digitado: `123.456.789-00` e `12345678900` contavam como CPFs diferentes, e a mesma pessoa conseguia criar duas contas. O e-mail era conferido como digitado, mas gravado sem espaços e em minúsculas; com um espaço no início, a verificação não encontrava a conta existente e o banco recusava a gravação com um erro genérico.
+
+**Solução.** `ClienteAuthService.Cadastrar` normaliza o e-mail (sem espaços nas pontas e em minúsculas) e o CPF (só dígitos) antes das verificações, grava os valores normalizados e exige 11 dígitos no CPF ("O CPF deve ter 11 dígitos.").
+
+**Evidência.** Verificação manual: CPF com e sem máscara é reconhecido como o mesmo; CPF incompleto é recusado; e-mail com espaço e maiúsculas é reconhecido como já cadastrado; o login continua funcionando.
+
 ## Imagem do produto
 
 **Problema.** A imagem era gravada com o nome enviado pelo navegador: dois produtos com imagens de mesmo nome sobrescreviam um ao outro, um nome com caminho podia gravar fora da pasta de imagens e qualquer tipo de arquivo era aceito. Na edição, a imagem antiga era apagada antes de a nova ser gravada.

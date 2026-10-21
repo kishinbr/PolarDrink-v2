@@ -19,12 +19,16 @@ namespace PolarDrinks.Modules.Loja.Services
             string nome, string email, string senha, string confirmacaoSenha,
             string telefone, string cpf)
         {
+
+            var emailNormalizado = (email ?? string.Empty).Trim().ToLower();
+            var cpfNormalizado = new string((cpf ?? string.Empty).Where(char.IsDigit).ToArray());
+
             if (string.IsNullOrWhiteSpace(nome))
             {
                 return ResultadoOperacao<string>.Erro("Informe seu nome.", campoErro: nameof(nome));
             }
 
-            if (string.IsNullOrWhiteSpace(email))
+            if (emailNormalizado.Length == 0)
             {
                 return ResultadoOperacao<string>.Erro("Informe seu e-mail.", campoErro: nameof(email));
             }
@@ -39,28 +43,33 @@ namespace PolarDrinks.Modules.Loja.Services
                 return ResultadoOperacao<string>.Erro("As senhas não conferem.", campoErro: nameof(confirmacaoSenha));
             }
 
-            if (string.IsNullOrWhiteSpace(cpf))
+            if (cpfNormalizado.Length == 0)
             {
                 return ResultadoOperacao<string>.Erro("Informe seu CPF.", campoErro: nameof(cpf));
             }
 
-            if (_clienteRepository.ExisteEmail(email))
+            if (cpfNormalizado.Length != 11)
+            {
+                return ResultadoOperacao<string>.Erro("O CPF deve ter 11 dígitos.", campoErro: nameof(cpf));
+            }
+
+            if (_clienteRepository.ExisteEmail(emailNormalizado))
             {
                 return ResultadoOperacao<string>.Erro("Já existe uma conta com esse e-mail.", campoErro: nameof(email));
             }
 
-            if (_clienteRepository.ExisteCPF(cpf))
+            if (_clienteRepository.ExisteCPF(cpfNormalizado))
             {
                 return ResultadoOperacao<string>.Erro("Já existe uma conta com esse CPF.", campoErro: nameof(cpf));
             }
 
             var cliente = new ClienteModel
             {
-                ClienteNome = nome,
-                ClienteEmail = email.Trim().ToLower(),
+                ClienteNome = nome.Trim(),
+                ClienteEmail = emailNormalizado,
                 ClienteSenhaHash = BCrypt.Net.BCrypt.HashPassword(senha),
                 ClienteTelefone = telefone,
-                ClienteCPF = cpf,
+                ClienteCPF = cpfNormalizado,
                 ClienteCriadoEm = DateTime.Now,
                 ClienteAtivo = true
             };

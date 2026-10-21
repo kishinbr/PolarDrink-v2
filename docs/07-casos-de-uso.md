@@ -353,7 +353,7 @@ O Admin também executa tudo o que o Funcionário faz (UC08 e UC15); para não p
 2. O sistema cria a conta e devolve um token; a pessoa já entra logada.
 3. Nos acessos seguintes, entra com e-mail e senha e recebe um novo token (24 horas).
 
-**Erros:** os do cadastro (nome, e-mail, CPF, senha curta, confirmação, "Já existe uma conta com esse e-mail.", "Já existe uma conta com esse CPF."); no login, "E-mail ou senha incorretos." e "Esta conta está inativa.".
+**Erros:** os do cadastro (nome, e-mail, CPF vazio ou sem 11 dígitos, senha curta, confirmação, "Já existe uma conta com esse e-mail.", "Já existe uma conta com esse CPF."); no login, "E-mail ou senha incorretos." e "Esta conta está inativa.".
 
 ### UC20 Usar o carrinho
 
