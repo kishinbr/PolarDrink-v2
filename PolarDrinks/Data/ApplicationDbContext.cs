@@ -243,6 +243,14 @@ namespace PolarDrinks.Data
                 .Property(p => p.PedidoValorTotal)
                 .HasPrecision(18, 2);
 
+            // ===== TABELAS COM TRIGGER NO BANCO =====
+            // Com trigger, o SQL Server não aceita o jeito padrão de gravação do EF (OUTPUT).
+            // Declarar a trigger faz o EF gravar de um jeito compatível.
+            modelBuilder.Entity<UsuarioModel>()
+                .ToTable(t => t.HasTrigger("TR_Usuarios_ProtegerUltimoAdmin"));
+
+            modelBuilder.Entity<ProdutoModel>()
+                .ToTable(t => t.HasTrigger("TR_Produtos_ImpedirEstoqueNegativo"));
         }
     }
 }

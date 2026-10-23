@@ -155,38 +155,156 @@ namespace PolarDrinks.Migrations
                     b.ToTable("ItensCompra");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.CategoriaModel", b =>
                 {
-                    b.Property<int>("ItemVendaID")
+                    b.Property<int>("CategoriaID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemVendaID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaID"));
 
-                    b.Property<decimal>("ItemVendaCusto")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<bool>("CategoriaAtiva")
+                        .HasColumnType("bit");
 
-                    b.Property<decimal>("ItemVendaPreco")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("CategoriaNome")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("ItemVendaQtd")
+                    b.HasKey("CategoriaID");
+
+                    b.ToTable("Categorias");
+                });
+
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.MovimentacaoEstoqueModel", b =>
+                {
+                    b.Property<int>("MovimentacaoID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovimentacaoID"));
+
+                    b.Property<int?>("ItemCompraID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemPedidoID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemVendaID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("MovimentacaoData")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MovimentacaoDescricao")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("MovimentacaoQtd")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MovimentacaoTipo")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("ProdutoID")
                         .HasColumnType("int");
 
-                    b.Property<int>("VendaID")
+                    b.Property<int?>("UsuarioID")
                         .HasColumnType("int");
 
-                    b.HasKey("ItemVendaID");
+                    b.HasKey("MovimentacaoID");
+
+                    b.HasIndex("ItemCompraID");
+
+                    b.HasIndex("ItemPedidoID");
+
+                    b.HasIndex("ItemVendaID");
 
                     b.HasIndex("ProdutoID");
 
-                    b.HasIndex("VendaID");
+                    b.HasIndex("UsuarioID");
 
-                    b.ToTable("ItensVenda");
+                    b.ToTable("MovimentacoesEstoque");
+                });
+
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoCategoriaModel", b =>
+                {
+                    b.Property<int>("ProdutoID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoriaID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProdutoID", "CategoriaID");
+
+                    b.HasIndex("CategoriaID");
+
+                    b.ToTable("ProdutoCategorias");
+                });
+
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoModel", b =>
+                {
+                    b.Property<int>("ProdutoID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProdutoID"));
+
+                    b.Property<bool>("ProdutoAtivo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProdutoCodBarra")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ProdutoDescricao")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ProdutoEstoqueMinimo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProdutoImagemUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProdutoNome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("ProdutoPrecoCusto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ProdutoPrecoVenda")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ProdutoPromocao")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("ProdutoQtdEstoque")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("ProdutoID");
+
+                    b.HasIndex("ProdutoCodBarra")
+                        .IsUnique();
+
+                    b.ToTable("Produtos", t =>
+                        {
+                            t.HasTrigger("TR_Produtos_ImpedirEstoqueNegativo");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.CarrinhoItemModel", b =>
@@ -216,27 +334,6 @@ namespace PolarDrinks.Migrations
                     b.HasIndex("ProdutoID");
 
                     b.ToTable("CarrinhoItens");
-                });
-
-            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.CategoriaModel", b =>
-                {
-                    b.Property<int>("CategoriaID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaID"));
-
-                    b.Property<bool>("CategoriaAtiva")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CategoriaNome")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("CategoriaID");
-
-                    b.ToTable("Categorias");
                 });
 
             modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.ClienteModel", b =>
@@ -378,132 +475,6 @@ namespace PolarDrinks.Migrations
                     b.ToTable("Pedidos");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoCategoriaModel", b =>
-                {
-                    b.Property<int>("ProdutoID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoriaID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProdutoID", "CategoriaID");
-
-                    b.HasIndex("CategoriaID");
-
-                    b.ToTable("ProdutoCategorias");
-                });
-
-            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.MovimentacaoEstoqueModel", b =>
-                {
-                    b.Property<int>("MovimentacaoID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovimentacaoID"));
-
-                    b.Property<int?>("ItemCompraID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ItemPedidoID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ItemVendaID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("MovimentacaoData")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MovimentacaoDescricao")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("MovimentacaoQtd")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MovimentacaoTipo")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<int>("ProdutoID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UsuarioID")
-                        .HasColumnType("int");
-
-                    b.HasKey("MovimentacaoID");
-
-                    b.HasIndex("ItemCompraID");
-
-                    b.HasIndex("ItemPedidoID");
-
-                    b.HasIndex("ItemVendaID");
-
-                    b.HasIndex("ProdutoID");
-
-                    b.HasIndex("UsuarioID");
-
-                    b.ToTable("MovimentacoesEstoque");
-                });
-
-            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoModel", b =>
-                {
-                    b.Property<int>("ProdutoID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProdutoID"));
-
-                    b.Property<bool>("ProdutoAtivo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ProdutoCodBarra")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("ProdutoDescricao")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("ProdutoEstoqueMinimo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProdutoImagemUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProdutoNome")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("ProdutoPrecoCusto")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ProdutoPrecoVenda")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ProdutoPromocao")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<int>("ProdutoQtdEstoque")
-                        .HasColumnType("int");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.HasKey("ProdutoID");
-
-                    b.HasIndex("ProdutoCodBarra")
-                        .IsUnique();
-
-                    b.ToTable("Produtos");
-                });
-
             modelBuilder.Entity("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", b =>
                 {
                     b.Property<int>("UsuarioID")
@@ -541,7 +512,46 @@ namespace PolarDrinks.Migrations
                     b.HasIndex("UsuarioLogin")
                         .IsUnique();
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", t =>
+                        {
+                            t.HasTrigger("TR_Usuarios_ProtegerUltimoAdmin");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", b =>
+                {
+                    b.Property<int>("ItemVendaID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemVendaID"));
+
+                    b.Property<decimal>("ItemVendaCusto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ItemVendaPreco")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ItemVendaQtd")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutoID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VendaID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ItemVendaID");
+
+                    b.HasIndex("ProdutoID");
+
+                    b.HasIndex("VendaID");
+
+                    b.ToTable("ItensVenda");
                 });
 
             modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.VendaModel", b =>
@@ -614,23 +624,62 @@ namespace PolarDrinks.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.MovimentacaoEstoqueModel", b =>
                 {
+                    b.HasOne("PolarDrinks.Modules.Compras.Models.ItemCompraModel", "ItemCompra")
+                        .WithMany()
+                        .HasForeignKey("ItemCompraID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PolarDrinks.Modules.Loja.Models.ItemPedidoModel", "ItemPedido")
+                        .WithMany()
+                        .HasForeignKey("ItemPedidoID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", "ItemVenda")
+                        .WithMany()
+                        .HasForeignKey("ItemVendaID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Modules.Vendas.Models.VendaModel", "Venda")
-                        .WithMany("Itens")
-                        .HasForeignKey("VendaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ItemCompra");
+
+                    b.Navigation("ItemPedido");
+
+                    b.Navigation("ItemVenda");
 
                     b.Navigation("Produto");
 
-                    b.Navigation("Venda");
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoCategoriaModel", b =>
+                {
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.CategoriaModel", "Categoria")
+                        .WithMany()
+                        .HasForeignKey("CategoriaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
+
+                    b.Navigation("Produto");
                 });
 
             modelBuilder.Entity("PolarDrinks.Modules.Loja.Models.CarrinhoItemModel", b =>
@@ -696,62 +745,23 @@ namespace PolarDrinks.Migrations
                     b.Navigation("UsuarioSeparou");
                 });
 
-            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.ProdutoCategoriaModel", b =>
+            modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", b =>
                 {
-                    b.HasOne("PolarDrinks.Modules.Estoque.Models.CategoriaModel", "Categoria")
-                        .WithMany()
-                        .HasForeignKey("CategoriaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Categoria");
-
-                    b.Navigation("Produto");
-                });
-
-            modelBuilder.Entity("PolarDrinks.Modules.Estoque.Models.MovimentacaoEstoqueModel", b =>
-                {
-                    b.HasOne("PolarDrinks.Modules.Compras.Models.ItemCompraModel", "ItemCompra")
-                        .WithMany()
-                        .HasForeignKey("ItemCompraID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PolarDrinks.Modules.Loja.Models.ItemPedidoModel", "ItemPedido")
-                        .WithMany()
-                        .HasForeignKey("ItemPedidoID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PolarDrinks.Modules.Vendas.Models.ItemVendaModel", "ItemVenda")
-                        .WithMany()
-                        .HasForeignKey("ItemVendaID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PolarDrinks.Modules.Estoque.Models.ProdutoModel", "Produto")
-                        .WithMany()
-                        .HasForeignKey("ProdutoID")
+                    b.HasOne("PolarDrinks.Modules.Vendas.Models.VendaModel", "Venda")
+                        .WithMany("Itens")
+                        .HasForeignKey("VendaID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PolarDrinks.Modules.Usuarios.Models.UsuarioModel", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ItemCompra");
-
-                    b.Navigation("ItemPedido");
-
-                    b.Navigation("ItemVenda");
-
                     b.Navigation("Produto");
 
-                    b.Navigation("Usuario");
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("PolarDrinks.Modules.Vendas.Models.VendaModel", b =>
