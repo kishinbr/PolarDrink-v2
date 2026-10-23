@@ -520,7 +520,7 @@
         <div class="modal-content bg-shadow text-light">
             <div class="modal-header">
                 <h5 class="modal-title" id="tituloRelatorioVendas">
-                    <i class="bi bi-file-earmark-pdf me-2"></i>Resumo de vendas do balcão
+                    <i class="bi bi-file-earmark-pdf me-2"></i>Resumo de vendas — <span id="relatorioCanalNome">Presencial</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -598,6 +598,13 @@
         document.getElementById("relatorioFim").value = paraCampoData(fim);
         document.getElementById("relatorioErro").style.display = "none";
     }
+        // Canal escolhido no topo do dashboard (Presencial / Online / Geral)
+    function canalSelecionado() {
+        const ativo = document.querySelector(".sf-segment button.active");
+        return ativo ? ativo.dataset.ch : "presencial";
+    }
+
+    const nomesDosCanais = { presencial: "Presencial", online: "Online", geral: "Geral" };
 
     function gerarRelatorioVendas() {
         const inicio = document.getElementById("relatorioInicio").value;
@@ -619,8 +626,9 @@
 
         erro.style.display = "none";
 
-        const url = "@Url.Action("RelatorioPeriodo", "Venda")"
-            + "?inicio=" + encodeURIComponent(inicio)
+        const url = "@Url.Action("RelatorioVendas", "Dashboard")"
+            + "?canal=" + encodeURIComponent(canalSelecionado())
+            + "&inicio=" + encodeURIComponent(inicio)
             + "&fim=" + encodeURIComponent(fim);
 
         window.open(url, "_blank");
@@ -632,7 +640,13 @@
     }
 
     // A janela já abre com o mês atual preenchido
-    document.addEventListener("DOMContentLoaded", function () {
+       document.addEventListener("DOMContentLoaded", function () {
+        // A janela já abre com o mês atual preenchido
         preencherPeriodo("mesAtual");
+
+        // Toda vez que a janela abre, mostra no título o canal selecionado no dashboard
+        document.getElementById("modalRelatorioVendas").addEventListener("show.bs.modal", function () {
+            document.getElementById("relatorioCanalNome").innerText = nomesDosCanais[canalSelecionado()];
+        });
     });
 </script>

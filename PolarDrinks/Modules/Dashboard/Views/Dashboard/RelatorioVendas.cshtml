@@ -2,9 +2,17 @@
 @{
     Layout = null;
     var br = new System.Globalization.CultureInfo("pt-BR");
+    var canal = ViewBag.Canal as string;
     var inicio = ViewBag.Inicio as DateTime?;
     var fim = ViewBag.Fim as DateTime?;
     var erro = ViewBag.Erro as string;
+
+    var nomeCanal = canal switch
+    {
+        "online" => "Online",
+        "geral" => "Geral (balcão + online)",
+        _ => "Presencial (balcão)"
+    };
 
     string Moeda(decimal valor) => "R$ " + valor.ToString("N2", br);
     string Percentual(decimal parte, decimal total) =>
@@ -41,8 +49,9 @@
         <button type="button" onclick="window.close()">Fechar</button>
     </div>
 
-    <h1>Polar Drinks — Resumo de Vendas do Balcão</h1>
+    <h1>Polar Drinks — Resumo de Vendas</h1>
     <div class="info">
+        Canal: <strong>@nomeCanal</strong><br />
         Período: @(inicio?.ToString("dd/MM/yyyy") ?? "—") a @(fim?.ToString("dd/MM/yyyy") ?? "—")<br />
         Gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm") por @Context.Session.GetString("Nome")
     </div>
@@ -91,11 +100,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Dinheiro</td>
-                    <td class="num">@Moeda(Model.TotalDinheiro)</td>
-                    <td class="num">@Percentual(Model.TotalDinheiro, Model.Faturamento)</td>
-                </tr>
+                @if (canal != "online")
+                {
+                    <tr>
+                        <td>Dinheiro</td>
+                        <td class="num">@Moeda(Model.TotalDinheiro)</td>
+                        <td class="num">@Percentual(Model.TotalDinheiro, Model.Faturamento)</td>
+                    </tr>
+                }
                 <tr>
                     <td>Pix</td>
                     <td class="num">@Moeda(Model.TotalPix)</td>
@@ -113,7 +125,7 @@
         <table>
             <thead>
                 <tr>
-                    <th class="num">Vendas canceladas</th>
+                    <th class="num">Cancelados</th>
                     <th class="num">Valor cancelado</th>
                 </tr>
             </thead>
@@ -126,9 +138,10 @@
         </table>
 
         <p class="info">
-            Considera apenas as vendas do balcão. Vendas canceladas não entram no faturamento nem no lucro;
-            aparecem só na seção de cancelamentos. Lucro = (preço − custo) × quantidade de cada item, com os
-            valores registrados no momento da venda.
+            Mesmas regras do dashboard. No balcão, vendas canceladas não entram no faturamento. Na loja online,
+            contam como venda os pedidos concluídos e os expirados (não retirados); os cancelados pelo cliente ou
+            pelo Admin aparecem só em cancelamentos, e pedidos ainda em andamento não entram no relatório.
+            Lucro = (preço − custo) × quantidade de cada item, com os valores registrados no momento da venda.
         </p>
     }
 

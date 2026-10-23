@@ -1,4 +1,4 @@
-﻿namespace PolarDrinks.Modules.Vendas.Models
+﻿namespace PolarDrinks.Modules.Dashboard.Models
 {
     public class ResumoVendasDto
     {

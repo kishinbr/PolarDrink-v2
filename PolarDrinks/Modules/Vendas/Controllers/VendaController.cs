@@ -84,21 +84,6 @@ namespace PolarDrinks.Modules.Vendas.Controllers
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Index");
         }
-        [AdminFilter]
-        public IActionResult RelatorioPeriodo(DateTime? inicio, DateTime? fim)
-        {
-            ViewBag.Inicio = inicio;
-            ViewBag.Fim = fim;
-
-            var resultado = _vendaService.GerarResumoPorPeriodo(inicio, fim);
-
-            if (!resultado.Sucesso)
-            {
-                ViewBag.Erro = resultado.Mensagem;
-                return View();
-            }
-
-            return View(resultado.Dado);
-        }
+        
     }
 }

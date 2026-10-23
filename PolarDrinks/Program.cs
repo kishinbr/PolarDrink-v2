@@ -10,6 +10,7 @@ using PolarDrinks.Data;
 using PolarDrinks.Modules.Compras.Repositories;
 using PolarDrinks.Modules.Compras.Services;
 using PolarDrinks.Modules.Dashboard.Services;
+using PolarDrinks.Modules.Dashboard.Repositories;
 using PolarDrinks.Modules.Estoque.Repositories;
 using PolarDrinks.Modules.Estoque.Services;
 using PolarDrinks.Modules.Loja.Jobs;
@@ -20,6 +21,7 @@ using PolarDrinks.Modules.Usuarios.Repositories;
 using PolarDrinks.Modules.Usuarios.Services;
 using PolarDrinks.Modules.Vendas.Repositories;
 using PolarDrinks.Modules.Vendas.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +54,8 @@ builder.Services.AddScoped<IMovimentacaoEstoqueService, MovimentacaoEstoqueServi
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IRelatorioRepository, RelatorioRepository>();
+builder.Services.AddScoped<IRelatorioService, RelatorioService>();
 
 builder.Services.AddHostedService<ExpiracaoPedidosJob>();
 
