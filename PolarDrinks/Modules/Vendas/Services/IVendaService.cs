@@ -14,5 +14,6 @@ namespace PolarDrinks.Modules.Vendas.Services
 
         ResultadoOperacao FinalizarVenda(FinalizarVendaRequest request, int? usuarioId);
         ResultadoOperacao CancelarVenda(int id, string? descricao, int? usuarioId);
+        ResultadoOperacao<ResumoVendasDto> GerarResumoPorPeriodo(DateTime? inicio, DateTime? fim);
     }
 }

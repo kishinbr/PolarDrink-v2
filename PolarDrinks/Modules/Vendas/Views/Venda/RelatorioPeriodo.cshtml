@@ -1,0 +1,145 @@
+﻿@model ResumoVendasDto
+@{
+    Layout = null;
+    var br = new System.Globalization.CultureInfo("pt-BR");
+    var inicio = ViewBag.Inicio as DateTime?;
+    var fim = ViewBag.Fim as DateTime?;
+    var erro = ViewBag.Erro as string;
+
+    string Moeda(decimal valor) => "R$ " + valor.ToString("N2", br);
+    string Percentual(decimal parte, decimal total) =>
+        total > 0 ? (parte / total * 100).ToString("N1", br) + "%" : "—";
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resumo de Vendas - Polar Drinks</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; color: #111; margin: 32px; }
+        h1 { font-size: 20px; margin: 0 0 4px; }
+        h2 { font-size: 14px; margin: 24px 0 8px; }
+        .info { color: #555; font-size: 12px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+        th { background: #f0f0f0; }
+        .num { text-align: right; }
+        .acoes { margin-bottom: 16px; }
+        .acoes button { padding: 8px 14px; margin-right: 8px; cursor: pointer; }
+        .vazio { padding: 16px; border: 1px dashed #ccc; text-align: center; color: #555; }
+        .erro { padding: 16px; border: 1px solid #f87171; background: #fef2f2; color: #b91c1c; }
+        @@media print {
+            .acoes { display: none; }
+            body { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="acoes">
+        <button type="button" onclick="window.print()">Salvar como PDF / Imprimir</button>
+        <button type="button" onclick="window.close()">Fechar</button>
+    </div>
+
+    <h1>Polar Drinks — Resumo de Vendas do Balcão</h1>
+    <div class="info">
+        Período: @(inicio?.ToString("dd/MM/yyyy") ?? "—") a @(fim?.ToString("dd/MM/yyyy") ?? "—")<br />
+        Gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm") por @Context.Session.GetString("Nome")
+    </div>
+
+    @if (erro != null)
+    {
+        <div class="erro">@erro</div>
+    }
+    else if (Model.QuantidadeVendas == 0 && Model.QuantidadeCanceladas == 0)
+    {
+        <div class="vazio">Nenhuma venda registrada no período.</div>
+    }
+    else
+    {
+        var ticketMedio = Model.QuantidadeVendas > 0 ? Model.Faturamento / Model.QuantidadeVendas : 0;
+
+        <h2>Resultado do período</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th class="num">Vendas realizadas</th>
+                    <th class="num">Faturamento</th>
+                    <th class="num">Lucro</th>
+                    <th class="num">Ticket médio</th>
+                    <th class="num">Margem de lucro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="num">@Model.QuantidadeVendas</td>
+                    <td class="num">@Moeda(Model.Faturamento)</td>
+                    <td class="num">@Moeda(Model.Lucro)</td>
+                    <td class="num">@Moeda(ticketMedio)</td>
+                    <td class="num">@Percentual(Model.Lucro, Model.Faturamento)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Formas de pagamento</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Forma</th>
+                    <th class="num">Valor</th>
+                    <th class="num">Participação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Dinheiro</td>
+                    <td class="num">@Moeda(Model.TotalDinheiro)</td>
+                    <td class="num">@Percentual(Model.TotalDinheiro, Model.Faturamento)</td>
+                </tr>
+                <tr>
+                    <td>Pix</td>
+                    <td class="num">@Moeda(Model.TotalPix)</td>
+                    <td class="num">@Percentual(Model.TotalPix, Model.Faturamento)</td>
+                </tr>
+                <tr>
+                    <td>Cartão</td>
+                    <td class="num">@Moeda(Model.TotalCartao)</td>
+                    <td class="num">@Percentual(Model.TotalCartao, Model.Faturamento)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Cancelamentos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th class="num">Vendas canceladas</th>
+                    <th class="num">Valor cancelado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="num">@Model.QuantidadeCanceladas</td>
+                    <td class="num">@Moeda(Model.ValorCancelado)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="info">
+            Considera apenas as vendas do balcão. Vendas canceladas não entram no faturamento nem no lucro;
+            aparecem só na seção de cancelamentos. Lucro = (preço − custo) × quantidade de cada item, com os
+            valores registrados no momento da venda.
+        </p>
+    }
+
+    @if (erro == null)
+    {
+        <script>
+            // Abre a janela de impressão assim que a página carrega (ali dá para escolher "Salvar como PDF")
+            window.addEventListener("load", function () {
+                window.print();
+            });
+        </script>
+    }
+</body>
+</html>

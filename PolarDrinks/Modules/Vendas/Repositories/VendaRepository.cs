@@ -102,5 +102,13 @@ namespace PolarDrinks.Modules.Vendas.Repositories
 
             return (quantidade, faturamento, lucro);
         }
+        // Executa a procedure sp_ResumoVendasPorPeriodo 
+        public ResumoVendasDto ObterResumoPorPeriodo(DateTime inicio, DateTime fim)
+        {
+            return _db.Database
+                .SqlQuery<ResumoVendasDto>($"EXEC sp_ResumoVendasPorPeriodo @Inicio = {inicio}, @Fim = {fim}")
+                .ToList()
+                .First();
+        }
     }
 }

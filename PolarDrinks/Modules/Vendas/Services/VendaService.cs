@@ -210,5 +210,21 @@ namespace PolarDrinks.Modules.Vendas.Services
 
             return ResultadoOperacao.Ok("Venda cancelada com sucesso!");
         }
+        public ResultadoOperacao<ResumoVendasDto> GerarResumoPorPeriodo(DateTime? inicio, DateTime? fim)
+        {
+            if (inicio == null || fim == null)
+            {
+                return ResultadoOperacao<ResumoVendasDto>.Erro("Informe a data de início e a data de fim.");
+            }
+
+            if (inicio.Value.Date > fim.Value.Date)
+            {
+                return ResultadoOperacao<ResumoVendasDto>.Erro("A data de início não pode ser maior que a data de fim.");
+            }
+
+            var resumo = _vendaRepository.ObterResumoPorPeriodo(inicio.Value.Date, fim.Value.Date);
+
+            return ResultadoOperacao<ResumoVendasDto>.Ok(resumo);
+        }
     }
 }

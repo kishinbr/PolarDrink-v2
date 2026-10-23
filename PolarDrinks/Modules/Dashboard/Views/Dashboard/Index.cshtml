@@ -15,6 +15,13 @@
                 </h6>
                 <span class="text-secondary" style="font-size:.75rem;" id="dashDate"></span>
             </div>
+                <button type="button"
+                    class="btn btn-outline-light fw-semibold px-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalRelatorioVendas"
+                    title="Gerar relatório de vendas por período">
+                <i class="bi bi-file-earmark-pdf me-2"></i>Relatório de Vendas
+            </button>
 
             <div class="sf-segment" role="tablist" aria-label="Canal de vendas">
                 <button type="button" data-ch="presencial" class="active" onclick="sfSetCanal('presencial')">
@@ -507,3 +514,125 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="~/js/dash.js"></script>
+<!-- JANELA: RELATÓRIO DE VENDAS POR PERÍODO -->
+<div class="modal fade" id="modalRelatorioVendas" tabindex="-1" aria-labelledby="tituloRelatorioVendas" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-shadow text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloRelatorioVendas">
+                    <i class="bi bi-file-earmark-pdf me-2"></i>Resumo de vendas do balcão
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="text-secondary small mb-2">Atalhos</div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-light" onclick="preencherPeriodo('7dias')">Últimos 7 dias</button>
+                        <button type="button" class="btn btn-sm btn-outline-light" onclick="preencherPeriodo('mesAtual')">Mês atual</button>
+                        <button type="button" class="btn btn-sm btn-outline-light" onclick="preencherPeriodo('mesPassado')">Mês passado</button>
+                        <button type="button" class="btn btn-sm btn-outline-light" onclick="preencherPeriodo('90dias')">Últimos 90 dias</button>
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label for="relatorioInicio" class="form-label small">Data início</label>
+                        <input type="date" id="relatorioInicio" class="form-control bg-tpreto text-light" style="color-scheme: dark;" />
+                    </div>
+                    <div class="col-6">
+                        <label for="relatorioFim" class="form-label small">Data fim</label>
+                        <input type="date" id="relatorioFim" class="form-control bg-tpreto text-light" style="color-scheme: dark;" />
+                    </div>
+                </div>
+
+                <div id="relatorioErro" class="text-danger small mt-2" style="display:none;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning fw-semibold" onclick="gerarRelatorioVendas()">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Gerar relatório
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Converte uma data para "aaaa-mm-dd" (formato do campo de data), usando o horário local
+    function paraCampoData(data) {
+        const ano = data.getFullYear();
+        const mes = String(data.getMonth() + 1).padStart(2, "0");
+        const dia = String(data.getDate()).padStart(2, "0");
+        return `${ano}-${mes}-${dia}`;
+    }
+
+    function preencherPeriodo(atalho) {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        let inicio;
+        let fim;
+
+        if (atalho === "7dias") {
+            // os 7 dias anteriores, sem contar hoje
+            inicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 7);
+            fim = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 1);
+        } else if (atalho === "mesAtual") {
+            // do dia 1 do mês até hoje
+            inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            fim = hoje;
+        } else if (atalho === "mesPassado") {
+            // o mês anterior inteiro (o dia 0 do mês atual é o último dia do mês anterior)
+            inicio = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+            fim = new Date(hoje.getFullYear(), hoje.getMonth(), 0);
+        } else if (atalho === "90dias") {
+            // os 90 dias anteriores, sem contar hoje
+            inicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 90);
+            fim = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 1);
+        }
+
+        document.getElementById("relatorioInicio").value = paraCampoData(inicio);
+        document.getElementById("relatorioFim").value = paraCampoData(fim);
+        document.getElementById("relatorioErro").style.display = "none";
+    }
+
+    function gerarRelatorioVendas() {
+        const inicio = document.getElementById("relatorioInicio").value;
+        const fim = document.getElementById("relatorioFim").value;
+        const erro = document.getElementById("relatorioErro");
+
+        if (!inicio || !fim) {
+            erro.innerText = "Informe a data de início e a data de fim.";
+            erro.style.display = "block";
+            return;
+        }
+
+        // as datas vêm como "aaaa-mm-dd", então dá para comparar como texto
+        if (inicio > fim) {
+            erro.innerText = "A data de início não pode ser maior que a data de fim.";
+            erro.style.display = "block";
+            return;
+        }
+
+        erro.style.display = "none";
+
+        const url = "@Url.Action("RelatorioPeriodo", "Venda")"
+            + "?inicio=" + encodeURIComponent(inicio)
+            + "&fim=" + encodeURIComponent(fim);
+
+        window.open(url, "_blank");
+
+        const janela = bootstrap.Modal.getInstance(document.getElementById("modalRelatorioVendas"));
+        if (janela) {
+            janela.hide();
+        }
+    }
+
+    // A janela já abre com o mês atual preenchido
+    document.addEventListener("DOMContentLoaded", function () {
+        preencherPeriodo("mesAtual");
+    });
+</script>
