@@ -166,6 +166,12 @@ namespace PolarDrinks.Modules.Estoque.Controllers
 
             return View(movimentacoes);
         }
+        [AdminFilter]
+        public IActionResult RelatorioReposicao()
+        {
+            var produtos = _estoqueService.GerarRelatorioReposicao();
+            return View(produtos);
+        }
         private static (Stream Conteudo, string NomeArquivo)? ConverterImagem(IFormFile? imagem)
         {
             if (imagem == null || imagem.Length == 0)

@@ -17,5 +17,6 @@ namespace PolarDrinks.Modules.Estoque.Services
         List<MovimentacaoEstoqueModel> ObterMovimentacoes(int produtoId);
         List<int> ObterCategoriasDoProduto(int produtoId);
         (int SemEstoque, int AbaixoDoMinimo) ContarAlertasDeEstoque();
+        List<ProdutoReposicaoDto> GerarRelatorioReposicao();
     }
 }

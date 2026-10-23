@@ -19,5 +19,7 @@ namespace PolarDrinks.Modules.Estoque.Repositories
         List<CatalogoProdutoDto> ObterCatalogo(string? termo, int? categoriaId);
         CatalogoProdutoDto? ObterCatalogoPorId(int produtoId);
 
+        List<ProdutoReposicaoDto> ObterParaReposicao();
+
     }
 }

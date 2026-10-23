@@ -44,7 +44,10 @@ namespace PolarDrinks.Modules.Estoque.Services
         {
             return (_produtoRepository.ContarSemEstoque(), _produtoRepository.ContarAbaixoDoMinimo());
         }
-
+        public List<ProdutoReposicaoDto> GerarRelatorioReposicao()
+        {
+            return _produtoRepository.ObterParaReposicao();
+        }
         public List<int> ObterCategoriasDoProduto(int produtoId)
         {
             return _produtoRepository.ObterCategoriasDoProduto(produtoId);

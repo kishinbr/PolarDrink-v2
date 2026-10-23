@@ -1,0 +1,93 @@
+﻿@model List<ProdutoReposicaoDto>
+@{
+    Layout = null;
+    var br = new System.Globalization.CultureInfo("pt-BR");
+    var custoTotal = Model.Sum(p => p.QuantidadeFaltante * p.ProdutoPrecoCusto);
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório de Reposição - Polar Drinks</title>
+    <style>
+            body { font-family: Arial, Helvetica, sans-serif; color: #111; margin: 32px; }
+            h1 { font-size: 20px; margin: 0 0 4px; }
+            .info { color: #555; font-size: 12px; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+            th { background: #f0f0f0; }
+            .num { text-align: right; }
+            .zerado { color: #b91c1c; font-weight: bold; }
+            tfoot td { font-weight: bold; background: #f9f9f9; }
+            .acoes { margin-bottom: 16px; }
+            .acoes button { padding: 8px 14px; margin-right: 8px; cursor: pointer; }
+            .vazio { padding: 16px; border: 1px dashed #ccc; text-align: center; color: #555; }
+            @@media print {
+                .acoes { display: none; }
+                body { margin: 0; }
+            }
+    </style>
+</head>
+<body>
+    <div class="acoes">
+        <button type="button" onclick="window.print()">Salvar como PDF / Imprimir</button>
+        <button type="button" onclick="window.close()">Fechar</button>
+    </div>
+
+    <h1>Polar Drinks — Relatório de Reposição</h1>
+    <div class="info">
+        Produtos ativos com estoque igual ou abaixo do mínimo.<br />
+        Gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm") por @Context.Session.GetString("Nome")
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="vazio">Nenhum produto precisa de reposição no momento.</div>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Código de barras</th>
+                    <th>Produto</th>
+                    <th class="num">Estoque atual</th>
+                    <th class="num">Estoque mínimo</th>
+                    <th class="num">Faltam para o mínimo</th>
+                    <th class="num">Custo unitário</th>
+                    <th class="num">Custo estimado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>@p.ProdutoCodBarra</td>
+                        <td>@p.ProdutoNome</td>
+                        <td class="num @(p.ProdutoQtdEstoque == 0 ? "zerado" : "")">@p.ProdutoQtdEstoque</td>
+                        <td class="num">@p.ProdutoEstoqueMinimo</td>
+                        <td class="num">@p.QuantidadeFaltante</td>
+                        <td class="num">R$ @p.ProdutoPrecoCusto.ToString("N2", br)</td>
+                        <td class="num">R$ @((p.QuantidadeFaltante * p.ProdutoPrecoCusto).ToString("N2", br))</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6">Total de produtos: @Model.Count</td>
+                    <td class="num">R$ @custoTotal.ToString("N2", br)</td>
+                </tr>
+            </tfoot>
+        </table>
+        <p class="info">Custo estimado = quantidade que falta para atingir o mínimo × custo unitário cadastrado.</p>
+    }
+
+    <script>
+            // Abre a janela de impressão assim que a página carrega (ali dá para escolher "Salvar como PDF")
+            window.addEventListener("load", function () {
+                window.print();
+            });
+    </script>
+</body>
+</html>

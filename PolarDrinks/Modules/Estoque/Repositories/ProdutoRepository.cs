@@ -32,6 +32,15 @@ namespace PolarDrinks.Modules.Estoque.Repositories
         {
             return _db.Produtos.Count(p => p.ProdutoAtivo && (p.ProdutoQtdEstoque ?? 0) <= p.ProdutoEstoqueMinimo);
         }
+        // Executa a procedure sp_ProdutosAbaixoDoMinimo
+        public List<ProdutoReposicaoDto> ObterParaReposicao()
+        {
+            return _db.Database
+                .SqlQuery<ProdutoReposicaoDto>($"EXEC sp_ProdutosAbaixoDoMinimo")
+                .ToList();
+        }
+
+
         public ProdutoModel? ObterPorId(int id)
         {
             return _db.Produtos.FirstOrDefault(p => p.ProdutoID == id);

@@ -20,16 +20,27 @@
                 </div>
             </div>
 
-            @if (Context.Session.GetString("Perfil") == "Admin")
+              @if (Context.Session.GetString("Perfil") == "Admin")
             {
-                <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
-                   style="background: linear-gradient(135deg,#10b981,#059669);"
-                   asp-controller="Estoque"
-                   asp-action="Cadastrar"
-                   data-bs-toggle="tooltip"
-                   title="Cadastrar">
-                    <i class="bi bi-file-earmark-plus-fill me-2"></i>Cadastrar novo Produto
-                </a>
+                <div class="d-flex gap-2">
+                    <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
+                       style="background: linear-gradient(135deg,#f59e0b,#d97706);"
+                       asp-controller="Estoque"
+                       asp-action="RelatorioReposicao"
+                       target="_blank"
+                       title="Relatório de reposição">
+                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Relatório de Reposição
+                    </a>
+
+                    <a class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
+                       style="background: linear-gradient(135deg,#10b981,#059669);"
+                       asp-controller="Estoque"
+                       asp-action="Cadastrar"
+                       data-bs-toggle="tooltip"
+                       title="Cadastrar">
+                        <i class="bi bi-file-earmark-plus-fill me-2"></i>Cadastrar novo Produto
+                    </a>
+                </div>
             }
         </div>
 
