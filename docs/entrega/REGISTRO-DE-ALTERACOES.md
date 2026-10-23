@@ -16,6 +16,7 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 - [Ponto 9: Ajustes complementares](#ponto-9-ajustes-complementares)
 - [Reorganização em módulos](#reorganização-em-módulos)
 - [Decisões de projeto](#decisões-de-projeto)
+- [Banco de dados: triggers, procedures e relatórios](#banco-de-dados-triggers-procedures-e-relatórios)
 - [Limitações e melhorias futuras](#limitações-e-melhorias-futuras)
 
 ---
@@ -205,6 +206,20 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 - a migration morta `20260422170112_criandobd.cs`, sem `.Designer.cs` e ignorada pelo Entity Framework.
 
 **Evidência.** O projeto compila e os 123 testes continuam passando. Nenhuma migration nova foi necessária, porque nenhum desses itens fazia parte do banco.
+
+## Banco de dados: triggers, procedures e relatórios
+
+**Problema.** O banco não tinha triggers nem procedures: todas as regras e consultas ficavam no C#, e não havia um script SQL completo do banco.
+
+**Solução.**
+- Triggers `TR_Usuarios_ProtegerUltimoAdmin` (o sistema nunca fica sem administrador ativo) e `TR_Produtos_ImpedirEstoqueNegativo` (o saldo nunca fica negativo), declaradas no `ApplicationDbContext` com `HasTrigger` para o Entity Framework continuar gravando.
+- Procedures de leitura: `sp_ProdutosAbaixoDoMinimo`, `sp_ResumoVendasPorPeriodo`, `sp_ResumoPedidosOnlinePorPeriodo` e `sp_ResumoGeralPorPeriodo` (esta soma as duas anteriores, sem recalcular).
+- Relatórios em PDF (página pronta para "Salvar como PDF"), só para o Admin: reposição, na tela de Estoque e no dashboard; vendas por período e canal (Presencial, Online e Geral), no dashboard, com atalhos de período.
+- Script completo em `docs/banco/PolarDrinks.sql`, gerado a partir das migrations.
+
+**Arquivos.** `Data/ApplicationDbContext.cs`; migrations `AdicionarTriggersEProcedures` e `AdicionarProceduresOnlineEGeral`; Estoque: `ProdutoReposicaoDto`, `IProdutoRepository`/`ProdutoRepository`, `IEstoqueService`/`EstoqueService`, `EstoqueController`, `Views/Estoque/RelatorioReposicao.cshtml` e `Views/Estoque/Index.cshtml`; Dashboard: `ResumoVendasDto`, `IRelatorioRepository`/`RelatorioRepository`, `IRelatorioService`/`RelatorioService`, `DashboardController`, `Views/Dashboard/RelatorioVendas.cshtml` e `Views/Dashboard/Index.cshtml`; `Program.cs`; `docs/banco/PolarDrinks.sql`.
+
+**Evidência.** Verificação manual no SQL Server Management Studio: as triggers bloqueiam a desativação de todos os administradores e o estoque negativo (testado com `BEGIN TRAN`/`ROLLBACK`); as procedures de resumo batem com o dashboard nos três canais; o script foi executado num banco vazio e criou todos os objetos. No sistema, venda, edição de produto, desativação de usuário e troca de senha continuam funcionando, e os 123 testes passam.
 
 ## Limitações e melhorias futuras
 

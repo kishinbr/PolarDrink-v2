@@ -72,6 +72,8 @@ flowchart LR
 
 Ou seja: `Compras`, `Vendas` e `Loja` **não conhecem uns aos outros**, e o `Dashboard` apenas **lê**.
 
+**Acesso de leitura do relatório de vendas.** O relatório de vendas do Dashboard lê as tabelas de Vendas e de Loja por meio das procedures de resumo (`sp_ResumoVendasPorPeriodo`, `sp_ResumoPedidosOnlinePorPeriodo` e `sp_ResumoGeralPorPeriodo`), chamadas pelo `RelatorioRepository`. É um acesso somente de leitura, documentado aqui de propósito; nenhuma regra de atualização fica no Dashboard.
+
 **Como isso é verificado:** os testes em `PolarDrinks.Tests/Arquitetura` (categoria `Arquitetura`) leem o código-fonte e falham se uma regra for quebrada. As regras estão em `RegrasDeArquitetura.cs`:
 
 | Regra | O que garante |

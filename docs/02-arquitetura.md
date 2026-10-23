@@ -91,7 +91,7 @@ As regras R1 a R9 estão descritas no mapa de responsabilidades (seção 3) e ro
 | `Compras` | Compras e fornecedores | `CompraEstoqueController`, `FornecedorController` | `CompraEstoqueRepository`, `FornecedorRepository` |
 | `Vendas` | Vendas no balcão | `VendaController` | `VendaRepository` |
 | `Loja` | Catálogo, carrinho, conta do cliente, pedidos e atendimento | `LojaController`, `PedidoOnlineController` e 4 controllers de API | `ClienteRepository`, `CarrinhoRepository`, `PedidoRepository` |
-| `Dashboard` | Indicadores e previsões | `DashboardController` | nenhum (usa os repositories de Vendas, Loja e Estoque) |
+| `Dashboard` | Indicadores, previsões e relatórios | `DashboardController` | `RelatorioRepository` (só leitura, pelas procedures de resumo); usa também os repositories de Vendas, Loja e Estoque |
 
 ```mermaid
 flowchart LR

@@ -298,7 +298,7 @@ As telas seguem a rota convencional `/{controller}/{action}/{id?}` e a página i
 | Usuários | `Auth` | `Login` (GET e POST), `Logout`, `Deslogar`, `AcessoNegado` | Público |
 | Usuários | `Usuario` | `Index`, `Cadastrar`, `AlterarSenha`, `Desativar` | Admin |
 | Estoque | `Estoque` | `Index` | Equipe |
-| Estoque | `Estoque` | `Cadastrar`, `Editar`, `EdicaoRapida`, `AjustarEstoque`, `Movimentacoes` | Admin |
+| Estoque | `Estoque` | `Cadastrar`, `Editar`, `EdicaoRapida`, `AjustarEstoque`, `Movimentacoes`, `RelatorioReposicao` | Admin |
 | Estoque | `Categoria` | `Index`, `Cadastrar`, `Editar` | Admin |
 | Compras | `Fornecedor` | `Index` | Equipe |
 | Compras | `Fornecedor` | `Cadastrar`, `Editar` | Admin |
@@ -307,7 +307,7 @@ As telas seguem a rota convencional `/{controller}/{action}/{id?}` e a página i
 | Vendas | `Venda` | `Index`, `Detalhes`, `Cancelar`, `CancelarVenda` | Admin |
 | Loja (atendimento) | `PedidoOnline` | `Index`, `Detalhes`, `MarcarComoSeparado`, `VoltarParaSeparacao`, `ConfirmarEntrega`, `Historico` | Equipe |
 | Loja (atendimento) | `PedidoOnline` | `CancelarAposEntrega` | Admin |
-| Dashboard | `Dashboard` | `Index` | Admin |
+| Dashboard | `Dashboard` | `Index`, `RelatorioVendas` | Admin |
 | Compartilhado | `Home` | `Index`, `Error` | Equipe |
 | Loja (páginas) | `Loja` | `Catalogo`, `Conta`, `Carrinho`, `PedidoConfirmado`, `Perfil` | Público (a página; os dados vêm da API) |
 

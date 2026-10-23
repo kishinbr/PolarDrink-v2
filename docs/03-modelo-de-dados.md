@@ -14,6 +14,7 @@ Este documento responde: **quais tabelas existem, como se relacionam, o que o ba
 8. [Migrations](#8-migrations)
 9. [Dados iniciais](#9-dados-iniciais)
 10. [Limitações do modelo](#10-limitações-do-modelo)
+11. [Triggers, procedures e script do banco](#11-triggers-procedures-e-script-do-banco)
 
 ---
 
@@ -188,6 +189,8 @@ Comportamento de exclusão definido no mapeamento (confirmado no *snapshot* das 
 | Colunas obrigatórias | `NOT NULL` nas colunas sem `?` (quantidade e estoque mínimo do produto são obrigatórios no banco, mesmo sendo `int?` no código) |
 | Precisão dos valores | `decimal(18,2)` para dinheiro e `decimal(5,2)` para promoção |
 | Controle de concorrência | Coluna `RowVersion` em `Produtos` (se dois processos alterarem o mesmo produto, o segundo recebe um conflito) |
+| Saldo nunca negativo | Trigger `TR_Produtos_ImpedirEstoqueNegativo` (o código também garante, em `RegistrarSaida`) |
+| Sempre há pelo menos um administrador ativo | Trigger `TR_Usuarios_ProtegerUltimoAdmin` (o código também garante, em `UsuarioService.Desativar`) |
 
 ### Só o código garante
 
@@ -195,7 +198,6 @@ Estas regras **não têm** restrição no banco; dependem dos serviços:
 
 | Regra | Quem garante |
 |---|---|
-| Saldo nunca negativo | `MovimentacaoEstoqueService.RegistrarSaida` (não há `CHECK` no banco) |
 | Devolver ao estoque uma única vez por item | `RegistrarDevolucao`, que consulta a movimentação existente (não há índice único) |
 | Nome de categoria único | `CategoriaService` |
 | Código de retirada do pedido não repetido entre pedidos ativos | `PedidoService.GerarCodigoUnico` (número de 4 dígitos; não há índice) |
@@ -260,6 +262,8 @@ As migrations ficam em `Migrations/` e são aplicadas **sozinhas ao iniciar a ap
 | `RemoverColunaItemVendaTotal` | Removeu a coluna `ItemVendaTotal` (passou a ser calculada no código) |
 | `AdicionarLojaOnline` | Criou Categorias, Clientes, ProdutoCategorias, CarrinhoItens, Pedidos e ItensPedido; adicionou `ProdutoImagemUrl`, `RowVersion` e `ItemPedidoID` na movimentação |
 | `AdicionarTipoPagamentoPedido` | Adicionou `PedidoTipoPagamento` aos pedidos |
+| `AdicionarTriggersEProcedures` | Criou as triggers `TR_Usuarios_ProtegerUltimoAdmin` e `TR_Produtos_ImpedirEstoqueNegativo` e as procedures `sp_ProdutosAbaixoDoMinimo` e `sp_ResumoVendasPorPeriodo` |
+| `AdicionarProceduresOnlineEGeral` | Criou as procedures `sp_ResumoPedidosOnlinePorPeriodo` e `sp_ResumoGeralPorPeriodo` |
 
 **Criar uma migration** (a ferramenta `dotnet-ef` está registrada no projeto; rode dentro da pasta `PolarDrinks`, a mesma do README):
 
@@ -281,8 +285,49 @@ Ao iniciar, se a tabela `Usuarios` estiver vazia, o `Program.cs` cria o usuário
 ## 10. Limitações do modelo
 
 - **Exclusão em cascata no histórico.** Excluir um produto diretamente no banco removeria também os itens de venda e de compra e as movimentações desse produto. O sistema nunca exclui produtos, mas o banco, por si só, não impede.
-- **Garantias só no código.** Devolução única, nome de categoria único, saldo não negativo e código de retirada único não têm restrição no banco (seção 5). Uma gravação feita fora da aplicação poderia violá-las.
+- **Garantias só no código.** Devolução única, nome de categoria único e código de retirada único não têm restrição no banco (seção 5). Uma gravação feita fora da aplicação poderia violá-las.
 - **Texto livre em colunas de domínio fechado.** Status, perfil e tipos são `nvarchar`, sem `CHECK` ou tabela de apoio.
 - **Datas sem fuso.** Servidores em fusos diferentes interpretariam os mesmos horários de forma diferente.
 - **Telefone do cliente.** A coluna é obrigatória (`NOT NULL`), mas o serviço de cadastro não valida o telefone, então o campo pode ficar vazio (texto vazio, não nulo).
 - **Sem exclusão lógica padronizada.** Cada tabela usa seu próprio indicador (`Ativo`, `Cancelada`, status), e vendas e compras não têm campo de "excluída".
+
+## 11. Triggers, procedures e script do banco
+
+Os objetos abaixo ficam no próprio SQL Server. São criados por migrations (`AdicionarTriggersEProcedures` e `AdicionarProceduresOnlineEGeral`), então nascem sozinhos em qualquer banco onde a aplicação rode (local, Docker ou nuvem) e também aparecem no script completo.
+
+### Triggers
+
+| Trigger | Tabela | Quando dispara | O que faz |
+|---|---|---|---|
+| `TR_Usuarios_ProtegerUltimoAdmin` | `Usuarios` | Depois de alterar | Desfaz a alteração (erro 50001) se ela deixar o sistema sem nenhum administrador ativo |
+| `TR_Produtos_ImpedirEstoqueNegativo` | `Produtos` | Depois de inserir ou alterar | Desfaz a gravação (erro 50002) se algum produto ficar com estoque negativo |
+
+As duas repetem, no banco, regras que o C# já garante. São uma segunda camada de proteção: valem também para alterações feitas fora do sistema, pelo SQL Server Management Studio ou por outro programa. Uma restrição `CHECK` não serviria para a primeira, porque ela precisa contar os administradores ativos em outras linhas da tabela.
+
+**Cuidado com o Entity Framework.** Por padrão, o EF grava usando a cláusula `OUTPUT`, que o SQL Server não aceita em tabelas com trigger. Por isso o `ApplicationDbContext` declara as duas triggers com `HasTrigger`; sem essa declaração, toda gravação em `Usuarios` e `Produtos` falharia.
+
+### Procedures
+
+Todas são só de leitura (relatórios): não alteram dados e não competem com o Estoque como dono do saldo.
+
+| Procedure | Parâmetros | Devolve | Usada por |
+|---|---|---|---|
+| `sp_ProdutosAbaixoDoMinimo` | nenhum | Produtos ativos com estoque igual ou abaixo do mínimo, com a quantidade que falta e o custo | Relatório de reposição (`Estoque/RelatorioReposicao`) |
+| `sp_ResumoVendasPorPeriodo` | `@Inicio`, `@Fim` | Resumo das vendas do balcão: quantidade, faturamento, lucro, totais por forma de pagamento e cancelamentos | Relatório de vendas, canal Presencial |
+| `sp_ResumoPedidosOnlinePorPeriodo` | `@Inicio`, `@Fim` | O mesmo resumo para os pedidos online: concluídos e expirados contam como venda; cancelados pelo cliente ou pelo Admin, como cancelamentos | Relatório de vendas, canal Online |
+| `sp_ResumoGeralPorPeriodo` | `@Inicio`, `@Fim` | A soma das duas anteriores: executa as duas e soma os resultados, sem recalcular nada | Relatório de vendas, canal Geral |
+
+A data fim é inclusiva. As três procedures de resumo devolvem as mesmas colunas e seguem as mesmas regras do dashboard, para os números baterem.
+
+As procedures são chamadas pelos repositories (`ProdutoRepository.ObterParaReposicao` e `RelatorioRepository.ObterResumoPorPeriodo`) com `Database.SqlQuery`, passando as datas como parâmetros. Para testar direto no banco:
+
+```sql
+EXEC sp_ProdutosAbaixoDoMinimo;
+EXEC sp_ResumoGeralPorPeriodo '2026-10-01', '2026-10-31';
+```
+
+### Script completo
+
+O arquivo [`docs/banco/PolarDrinks.sql`](banco/PolarDrinks.sql) cria o banco inteiro: as 14 tabelas, os índices, as chaves, as triggers e as procedures. Ele é gerado a partir das migrations, com `Script-Migration` (Console do Gerenciador de Pacotes) ou `dotnet ef migrations script`. Para usar: crie um banco vazio, selecione-o e execute o script. O usuário `admin` não está no script: ele é criado pelo `Program.cs` na primeira vez que a aplicação inicia.
+
+Sempre que uma migration nova for criada, gere o script de novo, para ele continuar completo.

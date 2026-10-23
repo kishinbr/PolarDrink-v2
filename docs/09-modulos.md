@@ -162,15 +162,16 @@ As dependências permitidas estão desenhadas no [doc 02](02-arquitetura.md); o 
 
 ## 9. Dashboard
 
-**Responsabilidade:** números do negócio para o Admin. Não possui tabelas nem repositories próprios: **só lê** dados de outros módulos.
+**Responsabilidade:** números do negócio para o Admin. Não possui tabelas. Tem um único repository próprio, `RelatorioRepository`, só de leitura: ele chama as procedures de resumo de vendas (veja o [doc 03](03-modelo-de-dados.md#11-triggers-procedures-e-script-do-banco)).
 
 | Parte | Itens |
 |---|---|
 | Controller | `DashboardController` (Admin) |
-| Service | `IDashboardService.GerarDashboard()` |
+| Services | `IDashboardService.GerarDashboard()`, `IRelatorioService.GerarResumoPorPeriodo` (relatório de vendas por canal e período) |
+| Repository | `IRelatorioRepository` (procedures de resumo: balcão, online e geral) |
 | Outros | `PrevisaoLinear` (a regressão linear da previsão) |
-| Models | `DashboardViewModel` |
-| Views | `Dashboard/Index` |
+| Models | `DashboardViewModel`, `ResumoVendasDto` |
+| Views | `Dashboard/Index`, `Dashboard/RelatorioVendas` |
 | Testes | `DashboardServiceFinanceiroTests`, `PrevisaoLinearTests` |
 
 **Depende de:** Estoque (`IProdutoRepository`, `IEstoqueService`), Vendas (`IVendaRepository`) e Loja (`IPedidoRepository`). Ninguém depende do Dashboard, e por isso ele é o módulo mais seguro de alterar.

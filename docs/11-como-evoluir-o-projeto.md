@@ -137,7 +137,7 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 
 | ID | Melhoria | Prioridade | Esforço | Origem |
 |---|---|:-:|:-:|---|
-| D1 | Restrições no banco: saldo maior ou igual a zero, quantidades maiores que zero, valores de status válidos (hoje só o código garante) | Média | M | [03](03-modelo-de-dados.md#5-o-que-o-banco-garante-e-o-que-só-o-código-garante) |
+| D1 | Restrições no banco: quantidades maiores que zero e valores de status válidos (hoje só o código garante; o saldo não negativo já tem trigger) | Média | M | [03](03-modelo-de-dados.md#5-o-que-o-banco-garante-e-o-que-só-o-código-garante) |
 | D2 | Trocar as exclusões em cascata a partir de `Produtos` por `Restrict` (o app nunca exclui produto) | Baixa | M | [03](03-modelo-de-dados.md#4-relacionamentos-e-exclusão) |
 
 ### 3.4 Qualidade, desempenho e arquitetura

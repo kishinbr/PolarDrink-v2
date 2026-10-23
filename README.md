@@ -30,12 +30,12 @@ Sistema de gestão para uma loja de bebidas, com duas frentes no mesmo projeto:
 | Área | O que faz |
 |---|---|
 | **Vendas (balcão)** | Nova venda com pagamento em dinheiro, Pix ou cartão; histórico; detalhes; cancelamento com motivo em até 24 horas |
-| **Estoque** | Cadastro e edição de produtos (com imagem e categorias), promoção pela edição rápida, ajuste de estoque com justificativa e tela de movimentações |
+| **Estoque** | Cadastro e edição de produtos (com imagem e categorias), promoção pela edição rápida, ajuste de estoque com justificativa e tela de movimentações, e relatório de reposição em PDF |
 | **Categorias** | Cadastro e edição de categorias de produtos |
 | **Compras e fornecedores** | Registro de compras, confirmação de entrega (que dá entrada no estoque), exclusão de compras pendentes e cadastro de fornecedores |
 | **Pedidos online** | Separar o pedido, confirmar a entrega com o código de retirada, cancelar após a entrega e consultar o histórico |
 | **Usuários** | Cadastro, desativação e troca de senha, com perfis **Admin** e **Funcionário** |
-| **Dashboard** | Faturamento, lucro e ticket médio, formas de pagamento, alertas de estoque, giro, produtos mais vendidos, previsão de vendas, gráficos e cancelamentos |
+| **Dashboard** | Faturamento, lucro e ticket médio, formas de pagamento, alertas de estoque, giro, produtos mais vendidos, previsão de vendas, gráficos e cancelamentos, e relatório de vendas por período e canal em PDF |
 
 Alguns recursos são exclusivos do perfil **Admin** (como o dashboard, os usuários, as compras e as categorias). O detalhamento por perfil está no [mapa de responsabilidades](docs/entrega/MAPA-DE-RESPONSABILIDADES.md).
 
@@ -113,6 +113,7 @@ PolarDrink-v2/
 │   ├── Integracao/                    testes com banco SQL Server de verdade
 │   └── Arquitetura/                   regras de arquitetura
 ├── docs/                              documentação
+│   └── banco/PolarDrinks.sql          script completo do banco (tabelas, triggers e procedures)
 ├── docker-compose.yml                 aplicação + SQL Server em contêineres
 └── README.md
 ```
