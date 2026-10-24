@@ -42,7 +42,7 @@ O namespace segue a pasta (`PolarDrinks.Modules.Vendas.Services`), regra R8 veri
 | Mudar uma consulta ou o que é carregado do banco | `Modules/<Modulo>/Repositories` |
 | Adicionar um campo a uma tabela | `Models` do módulo dono, depois uma migration (veja [03](03-modelo-de-dados.md#8-migrations)) |
 | Mudar uma tela | `Modules/<Modulo>/Views/<Controller>` |
-| Mudar o menu ou o layout | `Views/Shared` (`_Layout`, `_LayoutFun`, `_LayoutLogin`) |
+| Mudar o menu ou o layout | `Views/Shared` (`_Layout`, `_LayoutFun`, `_LayoutLogin` e `_VLibras`, usado pelos dois primeiros) |
 | Mudar um endpoint da loja | `Modules/Loja/Controllers/Api` (e o contrato em `Models`) |
 | Mudar como o saldo de estoque varia | `Modules/Estoque/Services/MovimentacaoEstoqueService.cs`, e **só ali** |
 | Mudar quem pode acessar uma tela | O filtro no controller ou na ação; os filtros ficam em `Compartilhado/Filters` |

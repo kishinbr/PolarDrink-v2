@@ -121,6 +121,7 @@ Na coluna **Quem**, `Admin` significa que só o perfil Admin executa; `Equipe` s
 | RNF08 | Manter fronteiras claras entre módulos. | Pastas por módulo e regras R1 a R9 verificadas por teste |
 | RNF09 | Ter testes automatizados dos fluxos críticos. | 123 testes (serviço, integração com banco e arquitetura) |
 | RNF10 | Executar a expiração de pedidos sem intervenção. | Tarefa em segundo plano a cada 15 minutos |
+| RNF11 | Oferecer acessibilidade em LIBRAS no sistema administrativo. | VLibras, ativado pelo item "Ativar LIBRAS" do menu (Admin e Funcionário) |
 
 ## 5. Regras de negócio principais
 

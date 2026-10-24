@@ -221,6 +221,16 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 
 **Evidência.** Verificação manual no SQL Server Management Studio: as triggers bloqueiam a desativação de todos os administradores e o estoque negativo (testado com `BEGIN TRAN`/`ROLLBACK`); as procedures de resumo batem com o dashboard nos três canais; o script foi executado num banco vazio e criou todos os objetos. No sistema, venda, edição de produto, desativação de usuário e troca de senha continuam funcionando, e os 123 testes passam.
 
+## Acessibilidade em LIBRAS
+
+**Problema.** O VLibras estava desativado no Admin, e no Funcionário o botão "Desativar LIBRAS" não funcionava. A versão 7 do VLibras passou a criar o próprio botão ao carregar o script, e ignora a `div` que o layout escondia.
+
+**Solução.** O código foi para `Views/Shared/_VLibras.cshtml`, usado pelos dois layouts. O script do VLibras só é carregado quando a pessoa ativa pelo menu; desativar esconde o botão e a janela do intérprete. A escolha fica salva no navegador.
+
+**Arquivos.** `Views/Shared/_VLibras.cshtml`, `Views/Shared/_Layout.cshtml` e `Views/Shared/_LayoutFun.cshtml`.
+
+**Evidência.** Verificação manual como Admin e como Funcionário: a página abre sem o VLibras quando está desativado; ativar mostra o botão; desativar esconde o botão e o intérprete; a escolha se mantém ao trocar de página. A loja online não exibe o VLibras.
+
 ## Limitações e melhorias futuras
 
 - **Pacote com aviso de vulnerabilidade:** `System.Security.Cryptography.Pkcs` (CVE-2026-84008 e CVE-2026-70162, afetam as versões 10.0.0 a 10.0.12, corrigidas na 10.0.13). Risco de negação de serviço; o código não chama `SignedCms` nem `EnvelopedCms`. Atualizar o pacote.
