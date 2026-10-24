@@ -34,7 +34,7 @@ Este documento diz **quem é dono de cada regra** no PolarDrinks, **quem pode de
 | `Compras` | `CompraEstoqueController`, `FornecedorController` | `CompraEstoqueService`, `FornecedorService` | `CompraEstoqueModel`, `ItemCompraModel`, `FornecedorModel` |
 | `Vendas` | `VendaController` | `VendaService` | `VendaModel`, `ItemVendaModel` |
 | `Loja` | `LojaController`, `PedidoOnlineController` e as APIs em `Controllers/Api` | `PedidoService`, `CarrinhoService`, `CatalogoService`, `ClienteAuthService`, `TokenService` | `PedidoModel`, `ItemPedidoModel`, `CarrinhoItemModel`, `ClienteModel` |
-| `Dashboard` | `DashboardController` | `DashboardService`, `PrevisaoLinear` | nenhuma (só lê dos outros módulos) |
+| `Dashboard` | `DashboardController` | `DashboardService`, `RelatorioService`, `PrevisaoLinear` | nenhuma (só lê dos outros módulos) |
 
 Observações:
 
