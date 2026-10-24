@@ -1,0 +1,54 @@
+﻿@* VLibras: tradução para LIBRAS no sistema administrativo (Admin e Funcionário).
+   Usado pelos dois layouts com <partial name="_VLibras" />.
+   O script do VLibras cria o botão sozinho ao carregar, por isso ele só
+   é carregado quando a pessoa ativa pelo menu. *@
+<script>
+    let vlibrasAtivo = false;
+    let vlibrasCarregado = false;
+
+    // Carrega o script do VLibras (ele cria o botão sozinho ao carregar)
+    function carregarVLibras() {
+        const script = document.createElement("script");
+        script.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
+        document.body.appendChild(script);
+        vlibrasCarregado = true;
+    }
+
+    // Mostra ou esconde o botão do VLibras e a janela do intérprete
+    function mostrarVLibras(mostrar) {
+        const valor = mostrar ? "" : "none";
+        const botao = document.getElementById("vlibras-access-wrapper");
+        const janela = document.getElementById("vlibras-app-root");
+        if (botao) botao.style.display = valor;
+        if (janela) janela.style.display = valor;
+    }
+
+    // Troca o texto dos links do menu (lateral e mobile)
+    function atualizarTextoMenu() {
+        const texto = vlibrasAtivo ? "Desativar LIBRAS" : "Ativar LIBRAS";
+        ["btnLibras", "btnLibrasMobile"].forEach(function (id) {
+            const link = document.getElementById(id);
+            if (link) link.innerHTML = '<i class="bi bi-universal-access"></i> ' + texto;
+        });
+    }
+
+    function toggleLibras() {
+        vlibrasAtivo = !vlibrasAtivo;
+
+        // Só carrega o VLibras na primeira vez que for ativado
+        if (vlibrasAtivo && !vlibrasCarregado) {
+            carregarVLibras();
+        }
+
+        mostrarVLibras(vlibrasAtivo);
+        atualizarTextoMenu();
+        localStorage.setItem("vlibrasAtivo", vlibrasAtivo ? "true" : "false");
+    }
+
+    // Ao abrir a página, mantém a escolha anterior
+    window.addEventListener("load", function () {
+        if (localStorage.getItem("vlibrasAtivo") === "true") {
+            toggleLibras();
+        }
+    });
+</script>

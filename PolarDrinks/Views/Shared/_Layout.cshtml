@@ -83,11 +83,11 @@
         <a asp-controller="CompraEstoque" asp-action="Index">
             <i class="bi bi-box-arrow-in-down"></i> Reabastecer
         </a>
-        @* <div class="menu-section">ACESSIBILIDADE</div>
+        <div class="menu-section">ACESSIBILIDADE</div>
 
         <a href="javascript:void(0)" onclick="toggleLibras()" id="btnLibras">
             <i class="bi bi-universal-access"></i> Ativar LIBRAS
-        </a> *@
+        </a>
         <div class="menu-section">Acesso</div>
 
         <a asp-controller="Usuario" asp-action="Index">
@@ -154,11 +154,11 @@
         <a class="menu-item" href="/CompraEstoque/Index">
             <i class="bi bi-box-arrow-in-down"></i> Reabastecer
         </a>
-@*         <div class="menu-section">ACESSIBILIDADE</div>
+        <div class="menu-section">ACESSIBILIDADE</div>
 
         <a class="menu-item" href="javascript:void(0)" onclick="toggleLibras()" id="btnLibrasMobile">
             <i class="bi bi-universal-access"></i> Ativar LIBRAS
-        </a> *@
+        </a>
 
         <div class="menu-section">Acesso</div>
             
@@ -178,14 +178,7 @@
         @RenderBody()
     </div>
 
-    <div id="vlibras-container" style="display: none;">
-        <div vw class="enabled">
-            <div vw-access-button class="active"></div>
-            <div vw-plugin-wrapper>
-                <div class="vw-plugin-top-wrapper"></div>
-            </div>
-        </div>
-    </div>
+    <partial name="_VLibras" />
 
 
 
