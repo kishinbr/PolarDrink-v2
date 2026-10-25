@@ -117,7 +117,6 @@ Todas as limitações abaixo aparecem nos documentos 03 a 10 (coluna **Origem**)
 | S6 | HTTPS obrigatório (redirecionamento, HSTS, cookies `Secure`) ou publicação atrás de proxy com TLS | Média | B | [06](06-autenticacao-e-permissoes.md#9-limitações) |
 | S7 | Limite de tentativas de login (equipe e cliente) | Média | M | [06](06-autenticacao-e-permissoes.md#9-limitações) |
 | S8 | Verificar a situação do cliente a cada chamada autenticada, ou tokens de curta duração com renovação | Média | M | [06](06-autenticacao-e-permissoes.md#9-limitações) |
-| S9 | Atualizar o pacote com vulnerabilidade apontada (Pkcs) *(planejado por você)* | Alta | B | – |
 
 ### 3.2 Correções de comportamento
 

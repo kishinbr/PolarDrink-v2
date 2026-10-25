@@ -233,7 +233,6 @@ Os caminhos abaixo usam a estrutura **atual** (`Modules/<Modulo>/...`). Os teste
 
 ## Limitações e melhorias futuras
 
-- **Pacote com aviso de vulnerabilidade:** `System.Security.Cryptography.Pkcs` (CVE-2026-84008 e CVE-2026-70162, afetam as versões 10.0.0 a 10.0.12, corrigidas na 10.0.13). Risco de negação de serviço; o código não chama `SignedCms` nem `EnvelopedCms`. Atualizar o pacote.
 - **Segredos no repositório:** a chave JWT e a conexão estão em arquivo de configuração versionado; mover para variáveis de ambiente.
 - **Upload de imagem sem limite de tamanho** (o nome e o tipo do arquivo já são controlados pelo servidor).
 - **Retry de concorrência do checkout** sem teste de integração.
