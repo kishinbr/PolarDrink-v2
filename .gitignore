@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Imagens enviadas pelo cadastro de produtos (ficam só na máquina de cada um)
+PolarDrinks/wwwroot/uploads/
