@@ -1,4 +1,8 @@
 ﻿document.addEventListener("DOMContentLoaded", async function () {
+    if (!estaLogado()) {
+        window.location.href = "/loja/conta";
+        return;
+    }
     const params = new URLSearchParams(window.location.search);
     const pedidoId = params.get("id");
     const conteudo = document.getElementById("conteudoPedido");

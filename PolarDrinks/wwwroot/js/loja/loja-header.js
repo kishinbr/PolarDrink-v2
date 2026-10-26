@@ -21,13 +21,44 @@ function medirCabecalho() {
 
 document.addEventListener("DOMContentLoaded", async function () {
     medirCabecalho();
+    iniciarTema();
     iniciarFaixaAviso();
     atualizarLinkLogin();
     iniciarBusca();
     await montarMenuCategorias();
     await atualizarContadorCarrinho();
 });
+function iniciarTema() {
+    const botao = document.getElementById("btnTema");
+    if (!botao) return;
 
+    atualizarBotaoTema();
+
+    botao.addEventListener("click", function () {
+        const escuro = document.documentElement.dataset.tema !== "escuro";
+
+        if (escuro) {
+            document.documentElement.dataset.tema = "escuro";
+        } else {
+            delete document.documentElement.dataset.tema;
+        }
+
+        try {
+            localStorage.setItem("tema_loja", escuro ? "escuro" : "claro");
+        } catch { }
+
+        atualizarBotaoTema();
+    });
+}
+
+function atualizarBotaoTema() {
+    const botao = document.getElementById("btnTema");
+    const escuro = document.documentElement.dataset.tema === "escuro";
+
+    botao.innerHTML = escuro ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+    botao.title = escuro ? "Tema claro" : "Tema escuro";
+    botao.setAttribute("aria-label", escuro ? "Ativar tema claro" : "Ativar tema escuro");
+}
 // ===== Faixa de aviso =====
 
 function iniciarFaixaAviso() {

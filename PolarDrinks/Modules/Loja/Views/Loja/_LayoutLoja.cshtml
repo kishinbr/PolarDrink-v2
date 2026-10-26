@@ -9,6 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} | Polar Drinks" : "Polar Drinks")</title>
     <link rel="icon" type="image/png" href="~/img/polaria.png" />
+    
+    <script>
+        try {
+            if (localStorage.getItem("tema_loja") === "escuro") document.documentElement.dataset.tema = "escuro";
+        } catch (e) { }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
