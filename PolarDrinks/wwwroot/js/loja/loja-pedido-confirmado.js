@@ -39,15 +39,22 @@
     `).join("");
 
     conteudo.innerHTML = `
-        <div class="codigo-box">
-            <span>SEU CÓDIGO DE RETIRADA</span>
-            <h2>${escaparHtml(pedido.pedidoCodigo)}</h2>
+       <div class="codigo-box">
+            <div class="codigo-item">
+                <span>NÚMERO DO PEDIDO</span>
+                <h2>#${pedido.pedidoID}</h2>
+            </div>
+
+            <div class="codigo-item">
+                <span>CÓDIGO DE RETIRADA</span>
+                <h2>${escaparHtml(pedido.pedidoCodigo)}</h2>
+            </div>
         </div>
 
         <div class="aviso aviso-info">
             <i class="bi bi-info-circle"></i>
             <div>
-                Apresente esse código e o seu nome na loja para retirar o pedido.
+                Apresente esse código e o número do pedido na loja para retirar o pedido.
                 <strong>Você tem até 24 horas após a separação para retirar.</strong>
             </div>
         </div>

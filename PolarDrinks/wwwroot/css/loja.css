@@ -2652,3 +2652,186 @@ img {
         padding: 24px;
     }
 }
+
+/* Número do pedido e código de retirada lado a lado (página de pedido confirmado) */
+.codigo-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.codigo-item + .codigo-item {
+    border-left: 2px dashed var(--azul);
+}
+
+@media (max-width: 768px) {
+    .codigo-box {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .codigo-item + .codigo-item {
+        border-left: 0;
+        border-top: 2px dashed var(--azul);
+        padding-top: 16px;
+    }
+}
+
+/* Tema escuro: o número e o código em azul-noite ficariam invisíveis no fundo escuro */
+html[data-tema="escuro"] .codigo-box h2 {
+    color: var(--texto);
+}
+
+html[data-tema="escuro"] .codigo-box span,
+html[data-tema="escuro"] .aviso-info {
+    color: var(--azul-gelo);
+}
+
+/* =========================================================
+   TEMA ESCURO
+   Ativado pelo botão de lua no cabeçalho (loja-header.js),
+   que coloca data-tema="escuro" na tag <html>.
+   1) Troca as variáveis de cor.
+   2) Ajusta os pontos que usam cor fixa (branco, preto translúcido).
+   ========================================================= */
+
+html[data-tema="escuro"] {
+    color-scheme: dark;
+    --azul-tinta: rgba(2, 119, 201, .2);
+    --texto: #f0f3f6;
+    --texto-suave: #c9d1d9;
+    --texto-fraco: #8b949e;
+    --texto-apagado: rgba(255, 255, 255, .35);
+    --fundo: #0d1117;
+    --fundo-suave: #161b22;
+    --fundo-gelo: #111923;
+    --midia: #eef1f4; /* fundo das fotos continua claro: as fotos têm fundo branco */
+    --borda: #2a313c;
+    --sucesso: #4ade80;
+    --sucesso-tinta: rgba(34, 197, 94, .14);
+    --alerta: #fbbf24;
+    --alerta-tinta: rgba(245, 158, 11, .14);
+    --erro: #f87171;
+    --erro-tinta: rgba(239, 68, 68, .14);
+    /* Cor das superfícies que no tema claro são brancas (cartões, menus, campos) */
+    --superficie: #161b22;
+}
+
+    /* Superfícies brancas */
+    html[data-tema="escuro"] .btn-secundario,
+    html[data-tema="escuro"] #campoBusca:focus,
+    html[data-tema="escuro"] #dropdownSugestoes,
+    html[data-tema="escuro"] #dropdownSugestoes button,
+    html[data-tema="escuro"] .menu-conta,
+    html[data-tema="escuro"] #sidecart,
+    html[data-tema="escuro"] .painel-filtros,
+    html[data-tema="escuro"] .filtro-input,
+    html[data-tema="escuro"] .faq details,
+    html[data-tema="escuro"] .formas-pagamento span,
+    html[data-tema="escuro"] .btn-pagamento,
+    html[data-tema="escuro"] .estado-vazio .icone-vazio,
+    html[data-tema="escuro"] .conta-card,
+    html[data-tema="escuro"] .campo-input input:focus,
+    html[data-tema="escuro"] .pedido-item,
+    html[data-tema="escuro"] #modalDetalhePedido,
+    html[data-tema="escuro"] .btn-cancelar-pedido {
+        background: var(--superficie);
+    }
+
+    /* Blocos de categoria: fundo claro (como as fotos), então o texto fica escuro */
+    html[data-tema="escuro"] .tile-categoria span {
+        color: #0a0a0a;
+    }
+
+    html[data-tema="escuro"] .tile-categoria:not(.tile-sem-imagem):hover {
+        background: #dbeaf6;
+    }
+
+    html[data-tema="escuro"] .tile-sem-imagem span {
+        color: #fff;
+    }
+
+    /* Foto do item na página do carrinho: o "multiply" escureceria a foto sobre o fundo escuro */
+    html[data-tema="escuro"] .imagem-item-carrinho {
+        mix-blend-mode: normal;
+    }
+
+    /* Cabeçalho e setas do menu de categorias */
+    html[data-tema="escuro"] .loja-header {
+        background: rgba(13, 17, 23, .96);
+    }
+
+    html[data-tema="escuro"] .menu-seta-esquerda {
+        background: linear-gradient(to right, var(--fundo) 45%, rgba(13, 17, 23, 0));
+    }
+
+    html[data-tema="escuro"] .menu-seta-direita {
+        background: linear-gradient(to left, var(--fundo) 45%, rgba(13, 17, 23, 0));
+    }
+
+    html[data-tema="escuro"] .menu-categorias-lista a {
+        color: rgba(255, 255, 255, .55);
+    }
+
+    /* Botões que usam a cor do texto como fundo (no escuro o texto é claro) */
+    html[data-tema="escuro"] .btn-escuro,
+    html[data-tema="escuro"] .btn-adicionar {
+        background: var(--azul);
+    }
+
+    html[data-tema="escuro"] .btn-secundario:hover:not(:disabled) {
+        color: var(--fundo);
+    }
+
+    /* Fundos coloridos com texto branco: mantêm as cores do tema claro */
+    html[data-tema="escuro"] .selo-alerta {
+        background: #b45309;
+    }
+
+    html[data-tema="escuro"] .btn-adicionar.adicionado {
+        background: #15803d;
+    }
+
+    html[data-tema="escuro"] .btn-cancelar-pedido:hover:not(:disabled) {
+        background: #c81e1e;
+    }
+
+    /* Bordas, sombras e detalhes em preto translúcido */
+    html[data-tema="escuro"] .painel-filtros,
+    html[data-tema="escuro"] .filtro-input {
+        border-color: var(--borda);
+        box-shadow: none;
+    }
+
+    html[data-tema="escuro"] .painel-filtros-topo,
+    html[data-tema="escuro"] .filtro-grupo {
+        border-bottom-color: var(--borda);
+    }
+
+    html[data-tema="escuro"] .filtro-input::placeholder,
+    html[data-tema="escuro"] .filtro-input-icone i {
+        color: rgba(255, 255, 255, .35);
+    }
+
+    html[data-tema="escuro"] .sem-produtos i,
+    html[data-tema="escuro"] .controle-quantidade button:disabled {
+        color: #4b5563;
+    }
+
+    html[data-tema="escuro"] .produto-esqueleto .produto-midia,
+    html[data-tema="escuro"] .produto-esqueleto .esqueleto-linha {
+        background: linear-gradient(90deg, #1b222c 0%, #232b36 50%, #1b222c 100%);
+        background-size: 200% 100%;
+    }
+
+    html[data-tema="escuro"] #dropdownSugestoes,
+    html[data-tema="escuro"] .menu-conta,
+    html[data-tema="escuro"] #sidecart,
+    html[data-tema="escuro"] .conta-card,
+    html[data-tema="escuro"] #modalDetalhePedido {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+    }
+
+    html[data-tema="escuro"] #sidecartOverlay,
+    html[data-tema="escuro"] #overlayModal {
+        background: rgba(0, 0, 0, .65);
+    }
