@@ -255,5 +255,4 @@ Registradas aqui para que ninguém as descubra por acidente:
 5. **Leitura de produtos fora do Estoque.** Só o Estoque altera o saldo (isso é verificado por teste), mas Vendas, Compras e Loja ainda leem produtos pelo repositório do Estoque, em vez de por um contrato de consulta próprio.
 6. **A página de erro de produção exige login:** como a `HomeController` usa o filtro de autenticação, quem não tem sessão é enviado ao login em vez de ver a página de erro.
 7. **Concorrência no checkout:** o tratamento de conflito de `RowVersion` com nova tentativa existe, mas não tem teste de integração.
-8. **Imagens de produtos versionadas** no repositório (`wwwroot/uploads/produtos`).
-9. **Preço promocional do catálogo calculado no navegador.** O valor cobrado é sempre o do servidor; em casos raros de arredondamento, o centavo exibido no catálogo pode diferir do cobrado.
+8. **Preço promocional do catálogo calculado no navegador.** O valor cobrado é sempre o do servidor; em casos raros de arredondamento, o centavo exibido no catálogo pode diferir do cobrado.
