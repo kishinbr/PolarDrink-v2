@@ -518,6 +518,15 @@ async function adicionarAoCarrinho(produtoId) {
         const carrinhoLocal = lerCarrinhoLocal();
         const itemExistente = carrinhoLocal.find(i => i.produtoID === produtoId);
 
+
+        const produto = produtosCarregados.find(p => p.produtoID === produtoId);
+        const quantidadeAtual = itemExistente ? itemExistente.quantidade : 0;
+
+        if (produto && quantidadeAtual + 1 > produto.estoqueDisponivelOnline) {
+            alert(`Apenas ${produto.estoqueDisponivelOnline} unidade(s) de ${produto.produtoNome} disponíveis.`);
+            return false;
+        }
+
         if (itemExistente) {
             itemExistente.quantidade += 1;
         } else {
