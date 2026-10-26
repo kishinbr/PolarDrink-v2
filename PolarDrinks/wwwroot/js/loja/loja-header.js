@@ -121,6 +121,8 @@ async function montarMenuCategorias() {
         });
     });
 
+    ligarSetasMenu();
+
     const params = new URLSearchParams(window.location.search);
     marcarCategoriaAtiva(params.get("categoria") ? parseInt(params.get("categoria")) : null);
 }
@@ -130,8 +132,52 @@ function marcarCategoriaAtiva(categoriaId) {
 
     document.querySelectorAll("#menuCategorias a").forEach(link => {
         const id = link.dataset.categoria ? parseInt(link.dataset.categoria) : null;
-        link.classList.toggle("ativo", naVitrine && id === categoriaId);
+        const ativo = naVitrine && id === categoriaId;
+        link.classList.toggle("ativo", ativo);
+
+        // Se a categoria ativa estiver fora da área visível do menu, rola até ela
+        if (ativo) {
+            const lista = document.getElementById("menuCategorias");
+            const inicio = link.offsetLeft - lista.offsetLeft;
+            const fim = inicio + link.offsetWidth;
+
+            if (inicio < lista.scrollLeft || fim > lista.scrollLeft + lista.clientWidth) {
+                lista.scrollTo({ left: inicio - 48, behavior: "smooth" });
+            }
+        }
     });
+}
+
+// Setas do menu: aparecem só quando há categorias escondidas para aquele lado
+function ligarSetasMenu() {
+    const trilho = document.getElementById("trilhoCategorias");
+    const lista = document.getElementById("menuCategorias");
+    if (!trilho || !lista) return;
+
+    const atualizar = () => {
+        const max = lista.scrollWidth - lista.clientWidth;
+        trilho.classList.toggle("pode-voltar", lista.scrollLeft > 4);
+        trilho.classList.toggle("pode-avancar", lista.scrollLeft < max - 4);
+    };
+
+    trilho.querySelectorAll(".menu-seta").forEach(seta => {
+        seta.addEventListener("click", () => {
+            const direcao = parseInt(seta.dataset.direcao);
+            lista.scrollBy({ left: direcao * lista.clientWidth * 0.7, behavior: "smooth" });
+        });
+    });
+
+    // Roda do mouse na vertical também rola o menu na horizontal
+    lista.addEventListener("wheel", e => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && lista.scrollWidth > lista.clientWidth) {
+            e.preventDefault();
+            lista.scrollLeft += e.deltaY;
+        }
+    }, { passive: false });
+
+    lista.addEventListener("scroll", atualizar, { passive: true });
+    window.addEventListener("resize", atualizar);
+    atualizar();
 }
 
 // ===== Busca =====

@@ -272,12 +272,62 @@ img {
     border-top: 1px solid var(--borda);
 }
 
+.menu-categorias-trilho {
+    position: relative;
+}
+
 .menu-categorias-lista {
     display: flex;
-    justify-content: center;
     gap: 4px;
     overflow-x: auto;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
+}
+
+    /* Centraliza quando cabe; quando não cabe, começa pela esquerda (justify-content: center cortaria o início) */
+    .menu-categorias-lista > :first-child {
+        margin-left: auto;
+    }
+
+    .menu-categorias-lista > :last-child {
+        margin-right: auto;
+    }
+
+/* Setas e esmaecimento nas bordas quando há categorias escondidas */
+.menu-seta {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 56px;
+    display: none;
+    align-items: center;
+    border: 0;
+    color: var(--texto);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.menu-seta-esquerda {
+    left: 0;
+    justify-content: flex-start;
+    background: linear-gradient(to right, #fff 45%, rgba(255, 255, 255, 0));
+}
+
+.menu-seta-direita {
+    right: 0;
+    justify-content: flex-end;
+    background: linear-gradient(to left, #fff 45%, rgba(255, 255, 255, 0));
+}
+
+    .menu-seta:hover {
+        color: var(--azul);
+    }
+
+.menu-categorias-trilho.pode-voltar .menu-seta-esquerda,
+.menu-categorias-trilho.pode-avancar .menu-seta-direita {
+    display: flex;
 }
 
     .menu-categorias-lista::-webkit-scrollbar {
@@ -1023,6 +1073,26 @@ img {
             background: var(--azul);
             color: #fff;
         }
+
+.filtro-mais {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 6px 10px;
+    border: 0;
+    background: none;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--azul);
+    cursor: pointer;
+}
+
+    .filtro-mais:hover {
+        text-decoration: underline;
+    }
 
 .filtro-preco {
     display: grid;
@@ -2467,9 +2537,15 @@ img {
             height: 32px;
         }
 
-    .menu-categorias-lista {
-        justify-content: flex-start;
+    /* No celular a lista é arrastada com o dedo: sem setas, só o esmaecimento */
+    .menu-seta {
+        width: 32px;
+        pointer-events: none;
     }
+
+        .menu-seta i {
+            display: none;
+        }
 
     .hero {
         grid-template-columns: 1fr;

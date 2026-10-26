@@ -19,6 +19,7 @@ const filtros = {
 // A vitrine (banner, categorias, FAQ) some quando há categoria ou uma busca feita pelo cabeçalho.
 // Digitar a palavra-chave no painel lateral não esconde a vitrine, para a página não "pular".
 let modoFocado = false;
+let categoriasExpandidas = false;
 
 document.addEventListener("DOMContentLoaded", async function () {
     const params = new URLSearchParams(window.location.search);
@@ -311,7 +312,15 @@ function renderizarOpcoesCategoria() {
 
     const opcoes = [{ categoriaID: null, categoriaNome: "Todas" }, ...todasCategorias];
 
-    opcoes.forEach(categoria => {
+    // Muitas categorias: mostra as primeiras (e sempre a selecionada) e um botão "Mostrar mais"
+    const LIMITE = 7;
+    const indiceAtivo = opcoes.findIndex(c => (c.categoriaID ?? null) === filtros.categoriaId);
+    const recolher = !categoriasExpandidas && opcoes.length > LIMITE + 1;
+    const visiveis = recolher
+        ? opcoes.filter((c, i) => i < LIMITE || i === indiceAtivo)
+        : opcoes;
+
+    visiveis.forEach(categoria => {
         const ativo = (categoria.categoriaID ?? null) === filtros.categoriaId;
 
         const botao = document.createElement("button");
@@ -331,6 +340,25 @@ function renderizarOpcoesCategoria() {
 
         container.appendChild(botao);
     });
+
+    if (opcoes.length > LIMITE + 1) {
+        const escondidas = opcoes.length - visiveis.length;
+
+        const alternar = document.createElement("button");
+        alternar.type = "button";
+        alternar.className = "filtro-mais";
+        alternar.innerHTML = categoriasExpandidas
+            ? `Mostrar menos <i class="bi bi-chevron-up"></i>`
+            : `Mostrar mais ${escondidas} <i class="bi bi-chevron-down"></i>`;
+
+        alternar.addEventListener("click", function () {
+            categoriasExpandidas = !categoriasExpandidas;
+            renderizarOpcoesCategoria();
+            ajustarPainelFixo();
+        });
+
+        container.appendChild(alternar);
+    }
 }
 
 // ===== Blocos de categoria (imagem = primeiro produto com foto da categoria) =====

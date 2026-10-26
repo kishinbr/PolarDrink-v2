@@ -56,8 +56,18 @@
 
     <nav class="menu-categorias" aria-label="Categorias">
         <div class="container-loja">
-            <div id="menuCategorias" class="menu-categorias-lista">
-                <a href="/loja/catalogo" data-categoria="">Início</a>
+            <div id="trilhoCategorias" class="menu-categorias-trilho">
+                <button type="button" class="menu-seta menu-seta-esquerda" data-direcao="-1" aria-label="Ver categorias anteriores" tabindex="-1">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div id="menuCategorias" class="menu-categorias-lista">
+                    <a href="/loja/catalogo" data-categoria="">Início</a>
+                </div>
+
+                <button type="button" class="menu-seta menu-seta-direita" data-direcao="1" aria-label="Ver mais categorias" tabindex="-1">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
             </div>
         </div>
     </nav>
