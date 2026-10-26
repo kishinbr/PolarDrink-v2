@@ -1,0 +1,119 @@
+﻿@model List<PolarDrinks.Models.Loja.CategoriaModel>
+
+<div class="container rounded-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3 bg-shadow text-light p-4 rounded-4 mt-2">
+
+        <h1 class="m-0">Categorias</h1>
+        @if (Context.Session.GetString("Perfil") == "Admin")
+        {
+            <a class="btn btn-success mx-2" asp-controller="Categoria" asp-action="Cadastrar" data-bs-toggle="tooltip" title="Cadastrar">
+                <i class="bi bi-file-earmark-plus-fill mx-2"></i>Cadastrar nova Categoria
+            </a>
+        }
+    </div>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert bg-success text-light" role="alert">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+    else if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert bg-danger text-light" role="alert">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <div class="bg-shadow text-light p-4 rounded-4">
+        <table id="Categorias" class="table table-hover mb-auto bg-shadowt">
+            <thead class="bg-tpreto">
+                <tr>
+                    <th style="width: 15%;">Nome</th>
+                    <th style="width: 15%;">Ativa</th>
+                    @if (Context.Session.GetString("Perfil") == "Admin")
+                    {
+                        <th style="width: 10%;" class="text-center">Edição</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var categoria in Model)
+                    {
+                        <tr>
+                            <td>@categoria.CategoriaNome</td>
+
+                            <td>
+                                @if (categoria.CategoriaAtiva)
+                                {
+                                    <span class="badge bg-primary">Ativa</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inativa</span>
+                                }
+                            </td>
+
+                            @if (Context.Session.GetString("Perfil") == "Admin")
+                            {
+                                <td class="text-center">
+                                    <a class="btn btn-warning btn-sm mx-1"
+                                       asp-controller="Categoria"
+                                       asp-action="Editar"
+                                       asp-route-id="@categoria.CategoriaID"
+                                       data-bs-toggle="tooltip"
+                                       title="Edição completa">
+
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#Categorias').DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 20, 30],
+                scrollX: true,
+                paging: true,
+
+                language: {
+                    decimal: "",
+                    emptyTable: "Nenhuma categoria cadastrada",
+                    info: "Mostrando de _START_ a _END_ de um total de _TOTAL_ categorias",
+                    infoEmpty: "Mostrando de 0 a 0 de 0 categorias",
+                    infoFiltered: "(filtrado de _MAX_ categorias no total)",
+                    lengthMenu: "Mostrar _MENU_ categorias",
+                    loadingRecords: "Carregando...",
+                    search: "Procurar:",
+                    zeroRecords: "Categoria não encontrada",
+                    paginate: {
+                        first: "Primeiro",
+                        last: "Último",
+                        next: "Próximo",
+                        previous: "Anterior"
+                    }
+                }
+            });
+
+            setTimeout(function () {
+                $(".alert").fadeOut("slow", function () {
+                    $(this).alert('close');
+                });
+            }, 3000);
+
+        });
+    </script>
+}

@@ -47,11 +47,11 @@
         <table id="tabelaMovimentacoes" class="table  table-hover mb-auto bg-shadowt">
         <thead class="bg-tpreto">
             <tr>
-                <th style="width: 10%;">ID Movi</th>
+                <th style="width: 5%;">COD Movi</th>
                 <th style="width: 10%;">Data</th>
                 <th style="width: 10%;" >Tipo</th>
-                <th style="width: 10%;" >Quantidade</th>
-                <th style="width: 15%;" >ID Venda/Compra</th>
+                <th style="width: 10%;" >QTD</th>
+                <th style="width: 15%;" >COD Venda/Compra</th>
                 <th style="width: 10%;">Responsável</th>
                 <th style="width: 15%;">Descrição</th>
             </tr>
@@ -69,32 +69,40 @@
 
                         <td>@mov.MovimentacaoData.ToString("dd/MM/yyyy HH:mm")</td>
 
-                        <td class="text-center">
-                            @if (mov.MovimentacaoTipo == "Entrada")
-                            {
-                                <span class="badge bg-success">Reabastecimento</span>
-                            }
-                            else if (mov.MovimentacaoTipo == "Saida")
-                            {
-                                <span class="badge bg-primary">Venda</span>
-                            }
-                            else if (mov.MovimentacaoTipo == "Cancelamento")
-                            {
-                                <span class="badge bg-primary">Venda</span>
-                                <span class="badge bg-danger text-light">Cancelamento</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning text-dark">Edição</span>
-                            }
-                        </td>
+                            <td class="text-center">
+                                @if (mov.MovimentacaoTipo == "Entrada")
+                                {
+                                    <span class="badge bg-success">Reabastecimento</span>
+                                }
+                                else if (mov.MovimentacaoTipo == "Saida")
+                                {
+                                    <span class="badge bg-primary">Venda</span>
+                                }
+                                else if (mov.MovimentacaoTipo == "SaidaOnline")
+                                {
+                                    <span class="badge bg-info text-dark">Venda Online</span>
+                                }
+                                else if (mov.MovimentacaoTipo == "Cancelamento")
+                                {
+
+                                    <span class="badge bg-danger text-light">Cancelamento</span>
+                                }
+                                else if (mov.MovimentacaoTipo == "CancelamentoOnline")
+                                {
+                                    <span class="badge bg-danger text-light">Cancelamento Online</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Edição</span>
+                                }
+                            </td>
 
                         <td class="text-center">
                             @if (mov.MovimentacaoTipo == "Entrada")
                             {
                                 <span class="text-success">+@mov.MovimentacaoQtd</span>
                             }
-                            else if (mov.MovimentacaoTipo == "Saida")
+                            else if (mov.MovimentacaoTipo == "Saida" || mov.MovimentacaoTipo == "SaidaOnline")
                             {
                                 <span class="text-danger">-@mov.MovimentacaoQtd</span>
                             }
@@ -117,10 +125,12 @@
 
                             <td class="text-center"
                                 data-order="@(mov.ItemVenda != null
-                                                    ? mov.ItemVenda.VendaID
-                                                    : mov.ItemCompra != null
-                                                        ? mov.ItemCompra.CompraID
-                                                        : 0)">
+                                            ? mov.ItemVenda.VendaID
+                                            : mov.ItemCompra != null
+                                            ? mov.ItemCompra.CompraID
+                                            : mov.ItemPedido != null
+                                            ? mov.ItemPedido.PedidoID
+                                            : 0)">
 
                                 @if (mov.ItemVenda != null)
                                 {
@@ -134,12 +144,27 @@
                                         #@mov.ItemCompra.CompraID
                                     </span>
                                 }
+                                else if (mov.ItemPedido != null)
+                                {
+                                    <span class="badge bg-info text-dark">
+                                        #@mov.ItemPedido.PedidoID
+                                    </span>
+                                }
                                 else
                                 {
                                     <span class="text-muted">-</span>
                                 }
                             </td>
-                        <td>@mov.Usuario?.UsuarioNome</td>
+                            <td>
+                                @if (mov.ItemPedido != null)
+                                {
+                                    @(mov.ItemPedido.Pedido?.UsuarioSeparou?.UsuarioNome ?? "-")
+                                }
+                                else
+                                {
+                                    @mov.Usuario?.UsuarioNome
+                                }
+                            </td>
 
                         <td title="@mov.MovimentacaoDescricao">
                             @(mov.MovimentacaoDescricao != null && mov.MovimentacaoDescricao.Length > 20

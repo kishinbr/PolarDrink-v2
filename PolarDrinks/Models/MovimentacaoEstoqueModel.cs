@@ -8,8 +8,10 @@ namespace PolarDrinks.Models
         {
             public const string Entrada = "Entrada";
             public const string Saida = "Saida";
+            public const string SaidaOnline = "SaidaOnline";
             public const string Edicao = "Edicao";
             public const string Cancelamento = "Cancelamento";
+            public const string CancelamentoOnline = "CancelamentoOnline";
         }
 
         [Key]
@@ -33,6 +35,9 @@ namespace PolarDrinks.Models
 
         public int? ItemVendaID { get; set; }
         public ItemVendaModel? ItemVenda { get; set; }
+
+        public int? ItemPedidoID { get; set; }
+        public PolarDrinks.Models.Loja.ItemPedidoModel? ItemPedido { get; set; }
 
         public int? UsuarioID { get; set; }
         public UsuarioModel? Usuario { get; set; }

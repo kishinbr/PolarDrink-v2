@@ -1,0 +1,78 @@
+﻿@model List<PolarDrinks.Models.Loja.PedidoModel>
+@{
+    var canceladosCliente = (List<PolarDrinks.Models.Loja.PedidoModel>)ViewBag.CanceladosCliente;
+    var canceladosExpirados = (List<PolarDrinks.Models.Loja.PedidoModel>)ViewBag.CanceladosExpirados;
+}
+
+<h2>Histórico de Pedidos Online</h2>
+
+<a asp-action="Index">Voltar para pedidos ativos</a>
+
+<h3>Concluídos (@Model.Count)</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Data Concluído</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pedido in Model)
+        {
+            <tr>
+                <td>#@pedido.PedidoID (@pedido.PedidoCodigo)</td>
+                <td>@pedido.Cliente?.ClienteNome</td>
+                <td>@pedido.PedidoValorTotal.ToString("C")</td>
+                <td>@pedido.PedidoDataConcluido?.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Cancelados pelo Cliente (@canceladosCliente.Count)</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pedido in canceladosCliente)
+        {
+            <tr>
+                <td>#@pedido.PedidoID (@pedido.PedidoCodigo)</td>
+                <td>@pedido.Cliente?.ClienteNome</td>
+                <td>@pedido.PedidoValorTotal.ToString("C")</td>
+                <td>@pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Não Retirados / Expirados (@canceladosExpirados.Count)</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pedido in canceladosExpirados)
+        {
+            <tr>
+                <td>#@pedido.PedidoID (@pedido.PedidoCodigo)</td>
+                <td>@pedido.Cliente?.ClienteNome</td>
+                <td>@pedido.PedidoValorTotal.ToString("C")</td>
+                <td>@pedido.PedidoData.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

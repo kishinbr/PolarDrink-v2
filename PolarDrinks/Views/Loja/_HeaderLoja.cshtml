@@ -1,0 +1,47 @@
+﻿<header style="display:flex; align-items:center; gap:20px; padding:10px; border-bottom:1px solid #ccc;">
+
+    <a href="/loja/catalogo" style="font-weight:bold;">Polar Drinks</a>
+
+    <div id="areaBusca" style="position:relative; display:none;">
+        <input type="text" id="campoBusca" placeholder="Buscar produtos..." autocomplete="off" />
+        <div id="dropdownSugestoes" style="display:none; position:absolute; top:100%; left:0; background:white; border:1px solid #ccc; width:250px; z-index:10;"></div>
+    </div>
+
+    <div style="margin-left:auto; display:flex; gap:15px; align-items:center; position:relative;">
+
+        <div id="areaConta" style="position:relative;">
+            <a href="/loja/conta" id="linkLogin">Login</a>
+
+            <div id="menuConta" style="display:none; position:absolute; top:100%; right:0; background:white; border:1px solid #ccc; padding:10px; z-index:10; min-width:120px;">
+                <a href="/loja/perfil" style="display:block;">Ver Perfil</a>
+                <a href="#" id="btnSairMenu" style="display:block;">Sair</a>
+            </div>
+        </div>
+
+        <a href="/loja/carrinho">
+            Carrinho <span id="contadorCarrinho" style="display:none;">0</span>
+        </a>
+
+    </div>
+
+</header>
+
+<div id="sidecartOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:20;"></div>
+
+<div id="sidecart" style="display:none; position:fixed; top:0; right:0; width:320px; height:100%; background:white; border-left:1px solid #ccc; z-index:21; padding:15px; overflow-y:auto;">
+    <button id="btnFecharSidecart">Fechar</button>
+
+    <h3>Seu Carrinho</h3>
+
+    <div id="sidecartItens">
+        <!-- preenchido via JavaScript -->
+    </div>
+
+    <p><strong>Total: <span id="sidecartTotal">R$ 0,00</span></strong></p>
+
+    <button id="btnProsseguir">Prosseguir</button>
+</div>
+
+<button id="btnAbrirSidecart" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background:#333; color:white; border:none; font-size:20px; z-index:19;">
+    🛒
+</button>

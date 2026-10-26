@@ -1,13 +1,72 @@
 using Microsoft.EntityFrameworkCore;
 using PolarDrinks.Data;
 using PolarDrinks.Models;
+using PolarDrinks.Repositories;
+using PolarDrinks.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IMovimentacaoEstoqueRepository, MovimentacaoEstoqueRepository>();
+builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IVendaRepository, VendaRepository>();
+builder.Services.AddScoped<ICompraEstoqueRepository, CompraEstoqueRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+
+builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+builder.Services.AddScoped<IFornecedorService, FornecedorService>();
+builder.Services.AddScoped<IVendaService, VendaService>();
+builder.Services.AddScoped<ICompraEstoqueService, CompraEstoqueService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
+
+builder.Services.AddHostedService<PolarDrinks.Jobs.ExpiracaoPedidosJob>();
+
+
+builder.Services.AddScoped<PolarDrinks.Services.Loja.ICatalogoService, PolarDrinks.Services.Loja.CatalogoService>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.IClienteAuthService, PolarDrinks.Services.Loja.ClienteAuthService>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.ITokenService, PolarDrinks.Services.Loja.TokenService>();
+builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IClienteRepository, PolarDrinks.Repositories.Loja.ClienteRepository>();
+builder.Services.AddScoped<PolarDrinks.Repositories.Loja.ICarrinhoRepository, PolarDrinks.Repositories.Loja.CarrinhoRepository>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.ICarrinhoService, PolarDrinks.Services.Loja.CarrinhoService>();
+builder.Services.AddScoped<PolarDrinks.Repositories.Loja.IPedidoRepository, PolarDrinks.Repositories.Loja.PedidoRepository>();
+builder.Services.AddScoped<PolarDrinks.Services.Loja.IPedidoService, PolarDrinks.Services.Loja.PedidoService>();
+
+// Autenticação JWT (Loja Online / Clientes)
+var jwtChave = builder.Configuration["Jwt:ChaveSecreta"]!;
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Emissor"],
+        ValidAudience = builder.Configuration["Jwt:Emissor"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtChave))
+    };
+});
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -19,6 +78,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 
 var app = builder.Build();
 
