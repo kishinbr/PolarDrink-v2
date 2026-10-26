@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", async function () {
     if (!estaLogado()) {
         window.location.href = "/loja/conta?redirecionarPara=carrinho";
         return;
@@ -14,14 +14,16 @@ async function carregarCarrinho() {
 
     const carrinho = resultado.dados;
 
+    document.getElementById("carrinhoCarregando").style.display = "none";
+
     const avisoDiv = document.getElementById("mensagemAviso");
 
     if (carrinho.avisosRemocao.length > 0) {
         avisoDiv.innerHTML = `
             <i class="bi bi-exclamation-triangle"></i>
-            ${carrinho.avisosRemocao.join("<br>")}
+            <div>${carrinho.avisosRemocao.map(escaparHtml).join("<br>")}</div>
         `;
-        avisoDiv.style.display = "block";
+        avisoDiv.style.display = "flex";
     } else {
         avisoDiv.style.display = "none";
     }
@@ -29,19 +31,22 @@ async function carregarCarrinho() {
     if (carrinho.itens.length === 0) {
         document.getElementById("carrinhoVazio").style.display = "block";
         document.getElementById("carrinhoConteudo").style.display = "none";
+
+        if (typeof atualizarContadorCarrinho === "function") {
+            await atualizarContadorCarrinho();
+        }
+
         return;
     }
 
     document.getElementById("carrinhoVazio").style.display = "none";
-    document.getElementById("carrinhoConteudo").style.display = "flex";
+    document.getElementById("carrinhoConteudo").style.display = "grid";
 
     const lista = document.getElementById("listaItensCarrinho");
     lista.innerHTML = "";
 
     carrinho.itens.forEach(function (item) {
-        const imagemUrl = item.produtoImagemUrl
-            ? "/" + item.produtoImagemUrl
-            : "/img/icon.png";
+        const imagemUrl = urlImagemProduto(item.produtoImagemUrl);
 
         const div = document.createElement("div");
         div.className = "item-carrinho";
@@ -64,14 +69,14 @@ async function carregarCarrinho() {
 
         const preco = document.createElement("span");
         preco.className = "preco-unitario";
-        preco.textContent = "R$ " + item.precoUnitario.toFixed(2).replace(".", ",") + " cada";
+        preco.textContent = formatarPreco(item.precoUnitario) + " cada";
 
         dadosProduto.appendChild(nome);
         dadosProduto.appendChild(preco);
 
         const subtotal = document.createElement("strong");
         subtotal.className = "subtotal-item";
-        subtotal.textContent = "R$ " + item.subtotal.toFixed(2).replace(".", ",");
+        subtotal.textContent = formatarPreco(item.subtotal);
 
         topo.appendChild(dadosProduto);
         topo.appendChild(subtotal);
@@ -83,7 +88,9 @@ async function carregarCarrinho() {
         controle.className = "controle-quantidade";
 
         const diminuir = document.createElement("button");
+        diminuir.type = "button";
         diminuir.className = "btn-diminuir";
+        diminuir.setAttribute("aria-label", "Diminuir quantidade");
         diminuir.dataset.produtoId = item.produtoID;
         diminuir.disabled = item.quantidade <= 1;
         diminuir.innerHTML = '<i class="bi bi-dash"></i>';
@@ -92,7 +99,9 @@ async function carregarCarrinho() {
         quantidade.textContent = item.quantidade;
 
         const aumentar = document.createElement("button");
+        aumentar.type = "button";
         aumentar.className = "btn-aumentar";
+        aumentar.setAttribute("aria-label", "Aumentar quantidade");
         aumentar.dataset.produtoId = item.produtoID;
         aumentar.innerHTML = '<i class="bi bi-plus"></i>';
 
@@ -101,9 +110,10 @@ async function carregarCarrinho() {
         controle.appendChild(aumentar);
 
         const excluir = document.createElement("button");
+        excluir.type = "button";
         excluir.className = "btn-excluir-item";
         excluir.dataset.produtoId = item.produtoID;
-        excluir.innerHTML = '<i class="bi bi-trash3"></i> Excluir';
+        excluir.textContent = "Remover";
 
         acoes.appendChild(controle);
         acoes.appendChild(excluir);
@@ -117,10 +127,13 @@ async function carregarCarrinho() {
         lista.appendChild(div);
     });
 
-    document.getElementById("totalCarrinho").innerText =
-        "R$ " + carrinho.total.toFixed(2).replace(".", ",");
+    document.getElementById("totalCarrinho").innerText = formatarPreco(carrinho.total);
 
     religarBotoesItens();
+
+    if (typeof atualizarContadorCarrinho === "function") {
+        await atualizarContadorCarrinho();
+    }
 }
 
 function religarBotoesItens() {
@@ -239,7 +252,7 @@ document.getElementById("btnFinalizarCompra").addEventListener("click", async fu
         botao.disabled = false;
 
         botao.innerHTML = `
-            Finalizar Compra <i class="bi bi-arrow-right"></i>
+            Finalizar compra <i class="bi bi-arrow-right"></i>
         `;
 
         return;

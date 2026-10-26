@@ -50,3 +50,35 @@ async function chamarApi(url, metodo = "GET", corpo = null) {
         dados: dados
     };
 }
+
+// ===== Utilitários de exibição =====
+
+// Escapa texto antes de colocá-lo dentro de innerHTML (nomes, descrições, mensagens).
+function escaparHtml(valor) {
+    return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+// 1234.5 -> "R$ 1.234,50"
+function formatarPreco(valor) {
+    return "R$ " + Number(valor || 0).toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+// Estimativa do preço com promoção, igual à regra do servidor (o valor cobrado é sempre o do servidor).
+function calcularPrecoFinal(produto) {
+    const preco = Math.max(0, produto.produtoPrecoVenda || 0);
+    const promocao = produto.produtoPromocao || 0;
+    const final = promocao > 0 && promocao <= 100 ? preco - preco * (promocao / 100) : preco;
+    return Math.round(final * 100) / 100;
+}
+
+function urlImagemProduto(caminho) {
+    return caminho ? "/" + caminho : "/img/polaria.png";
+}

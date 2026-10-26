@@ -1,4 +1,4 @@
-﻿const blocoLogin = document.getElementById("blocoLogin");
+const blocoLogin = document.getElementById("blocoLogin");
 const blocoCadastro = document.getElementById("blocoCadastro");
 const mensagemErro = document.getElementById("mensagemErro");
 
@@ -20,7 +20,26 @@ document.getElementById("linkIrLogin").addEventListener("click", function (e) {
 
 function mostrarErro(texto) {
     mensagemErro.innerText = texto;
-    mensagemErro.style.display = "block";
+    mensagemErro.style.display = "flex";
+}
+
+// Enter envia o formulário visível
+document.querySelectorAll("#blocoLogin input").forEach(campo => {
+    campo.addEventListener("keydown", e => {
+        if (e.key === "Enter") document.getElementById("btnLogin").click();
+    });
+});
+
+document.querySelectorAll("#blocoCadastro input").forEach(campo => {
+    campo.addEventListener("keydown", e => {
+        if (e.key === "Enter") document.getElementById("btnCadastrar").click();
+    });
+});
+
+// Já logado: não faz sentido mostrar o login
+if (estaLogado()) {
+    const destino = new URLSearchParams(window.location.search).get("redirecionarPara");
+    window.location.href = destino === "carrinho" ? "/loja/carrinho" : "/loja/perfil";
 }
 
 document.getElementById("btnLogin").addEventListener("click", async function () {
@@ -43,10 +62,7 @@ document.getElementById("btnLogin").addEventListener("click", async function () 
         mostrarErro(resultado.dados?.mensagem || "Erro ao entrar.");
 
         botao.disabled = false;
-        botao.innerHTML = `
-            <i class="bi bi-box-arrow-in-right"></i>
-            Entrar
-        `;
+        botao.innerHTML = `Entrar <i class="bi bi-arrow-right"></i>`;
 
         return;
     }
@@ -116,10 +132,7 @@ document.getElementById("btnCadastrar").addEventListener("click", async function
         );
 
         botao.disabled = false;
-        botao.innerHTML = `
-            <i class="bi bi-person-plus"></i>
-            Criar Conta
-        `;
+        botao.innerHTML = `Criar conta <i class="bi bi-arrow-right"></i>`;
 
         return;
     }
