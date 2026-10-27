@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PolarDrinks
 
 Sistema de gestão para uma loja de bebidas, com duas frentes no mesmo projeto:
@@ -256,3 +257,8 @@ Registradas aqui para que ninguém as descubra por acidente:
 6. **A página de erro de produção exige login:** como a `HomeController` usa o filtro de autenticação, quem não tem sessão é enviado ao login em vez de ver a página de erro.
 7. **Concorrência no checkout:** o tratamento de conflito de `RowVersion` com nova tentativa existe, mas não tem teste de integração.
 8. **Preço promocional do catálogo calculado no navegador.** O valor cobrado é sempre o do servidor; em casos raros de arredondamento, o centavo exibido no catálogo pode diferir do cobrado.
+=======
+# Polar Drinks
+
+João Paasou aqui Minha branch sai pra la
+>>>>>>> fea36515a8c3178b248b55290ae0f2d527c812a9
