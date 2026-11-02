@@ -1,0 +1,43 @@
+name: Publicar imagem Docker
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGEM: ghcr.io/kishinbr/polardrinks-app
+
+jobs:
+  publicar-imagem:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar o Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Entrar no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Montar e enviar a imagem
+        uses: docker/build-push-action@v6
+        with:
+          context: ./PolarDrinks
+          file: ./PolarDrinks/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGEM }}:latest
+            ${{ env.IMAGEM }}:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/kishinbr/PolarDrink-v2
