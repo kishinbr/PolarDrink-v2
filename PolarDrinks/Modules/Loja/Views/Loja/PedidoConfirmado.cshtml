@@ -1,0 +1,30 @@
+﻿@{
+    Layout = "~/Modules/Loja/Views/Loja/_LayoutLoja.cshtml";
+    ViewData["Title"] = "Pedido confirmado";
+}
+
+<div class="container-loja">
+    <div class="confirmado-container">
+
+        <div class="confirmado-sucesso">
+            <div class="icone-sucesso">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <h1>Pedido confirmado!</h1>
+            <p>Seu pedido foi realizado com sucesso.</p>
+        </div>
+
+        <div id="conteudoPedido">
+            <div class="carregando">
+                <div class="spinner-border spinner-border-sm"></div>
+                <div class="mt-2">Carregando os detalhes do pedido...</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/loja/loja-pedido-confirmado.js" asp-append-version="true"></script>
+}

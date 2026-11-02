@@ -1,0 +1,20 @@
+﻿using PolarDrinks.Compartilhado.Common;
+using PolarDrinks.Modules.Usuarios.Models;
+
+namespace PolarDrinks.Modules.Usuarios.Services
+{
+    public interface IUsuarioService
+    {
+        List<UsuarioModel> ListarUsuarios();
+        UsuarioModel? ObterUsuario(int id);
+        ResultadoOperacao<UsuarioModel> Autenticar(string? login, string? senha);
+
+        ResultadoOperacao CadastrarUsuario(
+            string usuarioNome, string usuarioLogin, string senha, string confirmacaoSenha,
+            string usuarioPerfil, string senhaAtual, string? loginUsuarioLogado);
+
+        ResultadoOperacao AlterarSenha(int id, string senhaAtual, string novaSenha, string confirmacaoSenha);
+
+        ResultadoOperacao Desativar(int id, string senhaAtual, string? loginUsuarioLogado);
+    }
+}

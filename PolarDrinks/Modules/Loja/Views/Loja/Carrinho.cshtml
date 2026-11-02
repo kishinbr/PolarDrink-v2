@@ -1,0 +1,80 @@
+﻿@{
+    Layout = "~/Modules/Loja/Views/Loja/_LayoutLoja.cshtml";
+    ViewData["Title"] = "Meu carrinho";
+}
+
+<div class="container-loja pagina">
+
+    <div class="pagina-topo">
+        <h1>Meu carrinho</h1>
+        <p>Revise seus produtos antes de finalizar o pedido.</p>
+    </div>
+
+    <div id="mensagemAviso" class="aviso aviso-alerta" style="display:none;"></div>
+
+    <div id="carrinhoCarregando" class="carregando">
+        <div class="spinner-border spinner-border-sm"></div>
+        <div class="mt-2">Carregando carrinho...</div>
+    </div>
+
+    <div id="carrinhoVazio" class="estado-vazio" style="display:none;">
+        <div class="icone-vazio">
+            <i class="bi bi-bag-x"></i>
+        </div>
+
+        <h3>Seu carrinho está vazio</h3>
+        <p>Adicione alguns produtos para começar seu pedido.</p>
+
+        <a href="/loja/catalogo" class="btn-primario">
+            Ver produtos <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div id="carrinhoConteudo" class="carrinho-layout" style="display:none;">
+
+        <div id="listaItensCarrinho" class="lista-carrinho-box">
+            <!-- preenchido via JavaScript -->
+        </div>
+
+        <aside class="resumo-carrinho">
+
+            <h3>Resumo do pedido</h3>
+
+            <div class="resumo-total">
+                <span>Total</span>
+                <strong id="totalCarrinho">R$ 0,00</strong>
+            </div>
+
+            <div class="titulo-pagamento">
+                Forma de pagamento
+            </div>
+
+            <div class="pagamentos">
+                <button type="button" class="btn-pagamento" data-tipo="Cartao">
+                    <i class="bi bi-credit-card"></i> Cartão
+                </button>
+
+                <button type="button" class="btn-pagamento" data-tipo="Pix">
+                    <i class="bi bi-qr-code"></i> Pix
+                </button>
+            </div>
+
+            <button type="button" id="btnFinalizarCompra" class="btn-primario btn-bloco" disabled>
+                Finalizar compra <i class="bi bi-arrow-right"></i>
+            </button>
+
+            <button type="button" id="btnLimparCarrinho" class="btn-fantasma btn-bloco mt-2">
+                <i class="bi bi-trash3"></i> Esvaziar carrinho
+            </button>
+
+            <p class="resumo-nota">
+                <i class="bi bi-shop"></i> Retirada na loja com código de 4 dígitos.
+            </p>
+
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/loja/loja-carrinho.js" asp-append-version="true"></script>
+}

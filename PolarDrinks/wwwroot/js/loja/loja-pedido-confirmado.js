@@ -1,36 +1,82 @@
 ﻿document.addEventListener("DOMContentLoaded", async function () {
+    if (!estaLogado()) {
+        window.location.href = "/loja/conta";
+        return;
+    }
     const params = new URLSearchParams(window.location.search);
     const pedidoId = params.get("id");
+    const conteudo = document.getElementById("conteudoPedido");
 
     if (!pedidoId) {
-        document.getElementById("conteudoPedido").innerText = "Pedido não encontrado.";
+        conteudo.innerHTML = `
+            <div class="pedido-erro">
+                <i class="bi bi-exclamation-circle fs-2"></i>
+                <p class="mt-2 mb-0">Pedido não encontrado.</p>
+            </div>
+        `;
         return;
     }
 
-    const resultado = await chamarApi("/api/pedidos/" + pedidoId);
+    const resultado = await chamarApi("/api/pedidos/" + encodeURIComponent(pedidoId));
 
     if (!resultado.ok) {
-        document.getElementById("conteudoPedido").innerText = "Não foi possível carregar os detalhes do pedido.";
+        conteudo.innerHTML = `
+            <div class="pedido-erro">
+                <i class="bi bi-exclamation-circle fs-2"></i>
+                <p class="mt-2 mb-0">Não foi possível carregar os detalhes do pedido.</p>
+            </div>
+        `;
         return;
     }
 
     const pedido = resultado.dados;
 
-    let itensHtml = "";
-    pedido.itens.forEach(item => {
-        itensHtml += `<li>${item.itemPedidoQtd}x ${item.produto.produtoNome} - R$ ${item.itemPedidoPreco.toFixed(2)}</li>`;
-    });
+    const itensHtml = pedido.itens.map(item => `
+        <li>
+            <span>${item.itemPedidoQtd}× ${escaparHtml(item.produto?.produtoNome ?? "Produto")}</span>
+            <strong>${formatarPreco(item.itemPedidoPreco * item.itemPedidoQtd)}</strong>
+        </li>
+    `).join("");
 
-    document.getElementById("conteudoPedido").innerHTML = `
-        <p>Seu código de retirada é:</p>
-        <h1>${pedido.pedidoCodigo}</h1>
-        <p>Guarde esse código e apresente-o na loja, junto com seu nome, para retirar seu pedido.</p>
+    conteudo.innerHTML = `
+       <div class="codigo-box">
+            <div class="codigo-item">
+                <span>NÚMERO DO PEDIDO</span>
+                <h2>#${pedido.pedidoID}</h2>
+            </div>
 
-        <p><strong>Você tem até 48 horas após a separação para retirar o produto.</strong></p>
+            <div class="codigo-item">
+                <span>CÓDIGO DE RETIRADA</span>
+                <h2>${escaparHtml(pedido.pedidoCodigo)}</h2>
+            </div>
+        </div>
 
-        <h3>Itens do pedido:</h3>
-        <ul>${itensHtml}</ul>
+        <div class="aviso aviso-info">
+            <i class="bi bi-info-circle"></i>
+            <div>
+                Apresente esse código e o número do pedido na loja para retirar o pedido.
+                <strong>Você tem até 24 horas após a separação para retirar.</strong>
+            </div>
+        </div>
 
-        <p><strong>Total: R$ ${pedido.pedidoValorTotal.toFixed(2)}</strong></p>
+        <div class="secao-itens">
+            <h3>Itens do pedido #${pedido.pedidoID}</h3>
+            <ul id="listaItensPedido" class="lista-itens-pedido">${itensHtml}</ul>
+        </div>
+
+        <div class="total-pedido">
+            <span>Total do pedido</span>
+            <strong>${formatarPreco(pedido.pedidoValorTotal)}</strong>
+        </div>
+
+        <div class="pedido-acoes">
+            <a href="/loja/catalogo" class="btn-secundario">
+                Continuar comprando
+            </a>
+
+            <a href="/loja/perfil" class="btn-primario">
+                Meus pedidos <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
     `;
 });

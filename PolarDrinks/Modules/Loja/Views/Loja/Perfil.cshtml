@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "~/Modules/Loja/Views/Loja/_LayoutLoja.cshtml";
+    ViewData["Title"] = "Meus pedidos";
+}
+
+<div class="container-loja pagina">
+
+    <div class="pagina-topo">
+        <h1>Meus pedidos</h1>
+        <p>Acompanhe seus pedidos e consulte o código de retirada.</p>
+    </div>
+
+    <section class="secao-pedidos">
+        <div class="secao-titulo">
+            <i class="bi bi-clock-history"></i>
+            <h3>Em andamento</h3>
+        </div>
+
+        <div id="listaPedidosAndamento" class="lista-pedidos">
+            <div class="lista-vazia">
+                <div class="spinner-border spinner-border-sm"></div>
+                Carregando...
+            </div>
+        </div>
+    </section>
+
+    <section class="secao-pedidos">
+        <div class="secao-titulo">
+            <i class="bi bi-check-circle"></i>
+            <h3>Finalizados</h3>
+        </div>
+
+        <div id="listaPedidosConcluidos" class="lista-pedidos">
+            <div class="lista-vazia">
+                <div class="spinner-border spinner-border-sm"></div>
+                Carregando...
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<div id="overlayModal" style="display:none; position:fixed; inset:0; z-index:3000;"></div>
+
+<div id="modalDetalhePedido" role="dialog" aria-modal="true" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:3001;">
+
+    <button type="button" id="btnFecharModal" aria-label="Fechar">
+        <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div id="conteudoModalPedido"></div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/loja/loja-perfil.js" asp-append-version="true"></script>
+}

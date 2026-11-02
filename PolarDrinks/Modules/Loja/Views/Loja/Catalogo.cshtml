@@ -1,0 +1,195 @@
+﻿@{
+    Layout = "~/Modules/Loja/Views/Loja/_LayoutLoja.cshtml";
+    ViewData["Title"] = "Catálogo";
+}
+
+<div id="paginaCatalogo" class="container-loja">
+
+    <section class="hero apenas-vitrine">
+        <div class="hero-texto">
+            <span class="hero-etiqueta">Retirada na loja</span>
+            <h1>Peça online.<br />Retire gelado.</h1>
+            <p>Escolha suas bebidas, pague por Pix ou no Cartão e retire na loja gelado e pronto para consumir.</p>
+            <a href="#produtos" class="btn-primario">
+                Ver produtos <i class="bi bi-arrow-down"></i>
+            </a>
+        </div>
+
+        <div class="hero-imagem">
+            <img src="~/img/polaria.png" alt="Mascote Polar Drinks" />
+        </div>
+    </section>
+
+    <section id="secaoCategorias" class="secao apenas-vitrine" style="display:none;">
+        <div class="secao-cabecalho">
+            <div>
+                <h2 class="titulo-secao">Navegue por categoria</h2>
+                <p class="subtitulo-secao">Encontre rápido o que falta na sua festa.</p>
+            </div>
+        </div>
+
+        <div id="tilesCategorias" class="tiles-categorias"></div>
+    </section>
+
+    <section id="produtos" class="secao">
+        <button type="button" id="btnVoltarTodos" class="voltar-catalogo voltar-todos" style="display:none;">
+            <i class="bi bi-arrow-left"></i> Ver todos os produtos
+        </button>
+
+        <div class="secao-cabecalho">
+            <div>
+                <h2 id="tituloProdutos" class="titulo-secao">Nossos produtos</h2>
+                <p id="subtituloProdutos" class="subtitulo-secao">Preços com promoção já aplicada.</p>
+            </div>
+        </div>
+
+        <div class="catalogo-layout">
+
+            <aside class="filtros-lateral" aria-label="Filtros">
+                <div id="painelFiltros" class="painel-filtros">
+
+                    <button type="button" id="btnAlternarFiltros" class="painel-filtros-topo" aria-expanded="false" aria-controls="corpoFiltros">
+                        <span class="painel-filtros-icone"><i class="bi bi-sliders"></i></span>
+                        <span class="painel-filtros-titulos">
+                            <span class="painel-filtros-etiqueta">Refinar</span>
+                            <span class="painel-filtros-titulo">Filtros</span>
+                            <span id="resumoFiltrosMobile" class="painel-filtros-resumo"></span>
+                        </span>
+                        <i class="bi bi-chevron-down painel-filtros-seta"></i>
+                    </button>
+
+                    <div id="corpoFiltros" class="painel-filtros-corpo">
+
+                        <div class="filtro-grupo">
+                            <label class="filtro-rotulo" for="filtroPalavra"><i class="bi bi-search"></i> Palavra-chave</label>
+                            <div class="filtro-input-icone">
+                                <i class="bi bi-search"></i>
+                                <input type="search" id="filtroPalavra" class="filtro-input" placeholder="Nome do produto..." autocomplete="off" />
+                            </div>
+                        </div>
+
+                        <div class="filtro-grupo">
+                            <label class="filtro-rotulo" for="filtroOrdem"><i class="bi bi-sort-down"></i> Ordenar por</label>
+                            <div class="filtro-select">
+                                <select id="filtroOrdem" class="filtro-input">
+                                    <option value="padrao">Destaques</option>
+                                    <option value="menor-preco">Menor preço</option>
+                                    <option value="maior-preco">Maior preço</option>
+                                    <option value="desconto">Maior desconto</option>
+                                    <option value="nome">Nome (A–Z)</option>
+                                </select>
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        <div class="filtro-grupo">
+                            <span class="filtro-rotulo"><i class="bi bi-grid"></i> Categoria</span>
+                            <div id="listaCategorias" class="filtro-opcoes" role="radiogroup" aria-label="Categoria"></div>
+                        </div>
+
+                        <div class="filtro-grupo">
+                            <span class="filtro-rotulo"><i class="bi bi-cash-coin"></i> Faixa de preço</span>
+                            <p id="faixaPrecoInfo" class="filtro-ajuda"></p>
+                            <div class="filtro-preco">
+                                <div>
+                                    <label for="filtroPrecoMin">De (R$)</label>
+                                    <input type="number" id="filtroPrecoMin" class="filtro-input" placeholder="Mín." min="0" step="0.01" inputmode="decimal" />
+                                </div>
+                                <div>
+                                    <label for="filtroPrecoMax">Até (R$)</label>
+                                    <input type="number" id="filtroPrecoMax" class="filtro-input" placeholder="Máx." min="0" step="0.01" inputmode="decimal" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filtro-grupo">
+                            <span class="filtro-rotulo"><i class="bi bi-funnel"></i> Mostrar</span>
+                            <label class="filtro-check">
+                                <input type="checkbox" id="filtroPromocao" />
+                                <span>Só em promoção</span>
+                            </label>
+                            <label class="filtro-check">
+                                <input type="checkbox" id="filtroDisponivel" />
+                                <span>Disponível para pedir online</span>
+                            </label>
+                        </div>
+
+                        <div class="filtro-rodape">
+                            <span id="contagemFiltros"></span>
+                            <button type="button" id="btnLimparFiltros" class="filtro-limpar">Limpar filtros</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div id="gridProdutos" class="grid-produtos"></div>
+        </div>
+    </section>
+
+    <section class="secao apenas-vitrine">
+        <div class="secao-cabecalho">
+            <div>
+                <h2 class="titulo-secao">Como funciona</h2>
+                <p class="subtitulo-secao">Sem fila e sem espera no caixa.</p>
+            </div>
+        </div>
+
+        <div class="como-funciona">
+            <div class="passo">
+                <div class="passo-numero"><i class="bi bi-bag-check"></i></div>
+                <h3>Monte seu pedido</h3>
+                <p>Adicione as bebidas e outros produtos ao seu carrinho e finalize a compra.</p>
+            </div>
+
+            <div class="passo">
+                <div class="passo-numero"><i class="bi bi-box-seam"></i></div>
+                <h3>A gente separa</h3>
+                <p>Você recebe um código de retirada e acompanha o status no seu perfil.</p>
+            </div>
+
+            <div class="passo">
+                <div class="passo-numero"><i class="bi bi-shop"></i></div>
+                <h3>Retire na loja</h3>
+                <p>Apresente o código e o número do pedido em até 24 horas após a separação.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="secao apenas-vitrine">
+        <div class="secao-cabecalho">
+            <h2 class="titulo-secao">Perguntas frequentes</h2>
+        </div>
+
+        <div class="faq">
+            <details>
+                <summary>Como retiro meu pedido? <i class="bi bi-chevron-down"></i></summary>
+                <p>Depois da compra você recebe um código e o número do pedido. Quando o status mudar para "Pronto para retirada", vá até a loja e informe o código e o número do pedido.</p>
+            </details>
+
+            <details>
+                <summary>Qual o prazo para retirar? <i class="bi bi-chevron-down"></i></summary>
+                <p>Você tem até 24 horas após a separação. Depois disso o pedido expira e os produtos voltam ao estoque.</p>
+            </details>
+
+            <details>
+                <summary>Posso cancelar um pedido? <i class="bi bi-chevron-down"></i></summary>
+                <p>Sim. Em "Meus pedidos", abra o pedido e cancele em até 24 horas após a compra, desde que ele ainda não tenha sido retirado.</p>
+            </details>
+
+            <details>
+                <summary>Quais formas de pagamento são aceitas? <i class="bi bi-chevron-down"></i></summary>
+                <p>Pix e cartão.</p>
+            </details>
+
+            <details>
+                <summary>Por que alguns produtos aparecem como "Só na loja"? <i class="bi bi-chevron-down"></i></summary>
+                <p>Parte do estoque fica reservada para quem compra no balcão. Quando a quantidade disponível online acaba, o produto ainda pode estar à venda na loja física.</p>
+            </details>
+        </div>
+    </section>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/loja/loja-catalogo.js" asp-append-version="true"></script>
+}

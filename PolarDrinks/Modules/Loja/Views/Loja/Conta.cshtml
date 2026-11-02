@@ -1,0 +1,131 @@
+﻿@{
+    Layout = "~/Modules/Loja/Views/Loja/_LayoutLoja.cshtml";
+    ViewData["Title"] = "Minha conta";
+}
+
+<div class="container-loja">
+    <div class="conta-container">
+
+        <div class="conta-card">
+
+            <div id="mensagemErro" class="aviso aviso-erro" style="display:none;"></div>
+
+            <div id="blocoLogin">
+
+                <div class="conta-cabecalho">
+                    <img src="~/img/polaria.png" alt="" />
+                    <h1 class="titulo-formulario">Entrar</h1>
+                    <p class="subtitulo-formulario">Acesse sua conta para finalizar pedidos.</p>
+                </div>
+
+                <div class="campo">
+                    <label for="loginEmail">E-mail</label>
+                    <div class="campo-input">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="loginSenha">Senha</label>
+                    <div class="campo-input">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" id="loginSenha" placeholder="Digite sua senha" autocomplete="current-password" />
+                    </div>
+                </div>
+
+                <button type="button" id="btnLogin" class="btn-primario btn-conta">
+                    Entrar <i class="bi bi-arrow-right"></i>
+                </button>
+
+                <p class="troca-formulario">
+                    Não tem conta?
+                    <a href="#" id="linkIrCadastro">Criar uma agora</a>
+                </p>
+
+            </div>
+
+            <div id="blocoCadastro" style="display:none;">
+
+                <div class="conta-cabecalho">
+                    <img src="~/img/polaria.png" alt="" />
+                    <h1 class="titulo-formulario">Criar conta</h1>
+                    <p class="subtitulo-formulario">Leva menos de um minuto.</p>
+                </div>
+
+                <div class="campo">
+                    <label for="cadNome">Nome</label>
+                    <div class="campo-input">
+                        <i class="bi bi-person"></i>
+                        <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="name" />
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="cadEmail">E-mail</label>
+                    <div class="campo-input">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" id="cadEmail" placeholder="seu@email.com" autocomplete="email" />
+                    </div>
+                </div>
+
+                <div class="campos-duplos">
+                    <div class="campo">
+                        <label for="cadSenha">Senha</label>
+                        <div class="campo-input">
+                            <i class="bi bi-lock"></i>
+                            <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="cadConfirmacaoSenha">Confirmar senha</label>
+                        <div class="campo-input">
+                            <i class="bi bi-shield-check"></i>
+                            <input type="password" id="cadConfirmacaoSenha" placeholder="Repita a senha" autocomplete="new-password" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="campos-duplos">
+                    <div class="campo">
+                        <label for="cadTelefone">Telefone</label>
+                        <div class="campo-input">
+                            <i class="bi bi-telephone"></i>
+                            <input type="tel" id="cadTelefone" placeholder="(00) 00000-0000" autocomplete="tel" />
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="cadCpf">CPF</label>
+                        <div class="campo-input">
+                            <i class="bi bi-card-text"></i>
+                            <input type="text" id="cadCpf" placeholder="000.000.000-00" inputmode="numeric" />
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="btnCadastrar" class="btn-primario btn-conta">
+                    Criar conta <i class="bi bi-arrow-right"></i>
+                </button>
+
+                <p class="troca-formulario">
+                    Já tem conta?
+                    <a href="#" id="linkIrLogin">Entrar</a>
+                </p>
+
+            </div>
+
+        </div>
+
+        <a href="/loja/catalogo" class="voltar-catalogo">
+            <i class="bi bi-arrow-left"></i>
+            Voltar para os produtos
+        </a>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/loja/loja-conta.js" asp-append-version="true"></script>
+}

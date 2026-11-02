@@ -1,0 +1,103 @@
+﻿@* Cabeçalho da loja: faixa de aviso, logo central, ações e menu de categorias (preenchido por loja-header.js) *@
+
+<div class="faixa-aviso" aria-live="off">
+    <span id="textoFaixaAviso">Peça online e retire gelado na loja</span>
+</div>
+
+<header class="loja-header">
+    <div class="container-loja">
+        <div class="header-linha">
+
+            <div class="header-lado">
+                <button type="button" id="btnAbrirBusca" class="header-icone" aria-label="Buscar produtos" title="Buscar">
+                <i class="bi bi-search"></i>
+                </button>
+
+                <button type="button" id="btnTema" class="header-icone" aria-label="Ativar tema escuro" title="Tema escuro">
+                    <i class="bi bi-moon"></i>
+                </button>
+            </div>
+
+            <a href="/loja/catalogo" class="logo-loja" aria-label="Polar Drinks, página inicial">
+                <img src="~/img/polaria.png" alt="" />
+                <span>Polar <strong>Drinks</strong></span>
+            </a>
+
+            <div class="header-lado header-lado-direito">
+                <div id="areaConta" class="area-conta">
+                    <a href="/loja/conta" id="linkLogin" class="header-icone" aria-label="Entrar" title="Entrar">
+                        <i class="bi bi-person"></i>
+                    </a>
+
+                    <div id="menuConta" class="menu-conta" style="display:none;">
+                        <a href="/loja/perfil">
+                            <i class="bi bi-receipt"></i> Meus pedidos
+                        </a>
+                        <a href="#" id="btnSairMenu">
+                            <i class="bi bi-box-arrow-right"></i> Sair
+                        </a>
+                    </div>
+                </div>
+
+                <button type="button" id="btnAbrirSidecart" class="header-icone" aria-label="Abrir carrinho" title="Carrinho">
+                    <i class="bi bi-bag"></i>
+                    <span id="contadorCarrinho" class="contador-carrinho" style="display:none;">0</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="areaBusca" class="barra-busca" style="display:none;">
+        <div class="container-loja">
+            <div class="campo-busca">
+                <i class="bi bi-search"></i>
+                <input type="search" id="campoBusca" placeholder="O que você procura?" autocomplete="off" aria-label="Buscar produtos" />
+                <div id="dropdownSugestoes"></div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="menu-categorias" aria-label="Categorias">
+        <div class="container-loja">
+            <div id="trilhoCategorias" class="menu-categorias-trilho">
+                <button type="button" class="menu-seta menu-seta-esquerda" data-direcao="-1" aria-label="Ver categorias anteriores" tabindex="-1">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div id="menuCategorias" class="menu-categorias-lista">
+                    <a href="/loja/catalogo" data-categoria="">Início</a>
+                </div>
+
+                <button type="button" class="menu-seta menu-seta-direita" data-direcao="1" aria-label="Ver mais categorias" tabindex="-1">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div id="sidecartOverlay" style="display:none; position:fixed; inset:0; z-index:2000;"></div>
+
+<aside id="sidecart" style="display:none; position:fixed; top:0; right:0; height:100%; z-index:2001;" aria-label="Carrinho">
+
+    <div class="sidecart-topo">
+        <h3>Seu carrinho</h3>
+        <button type="button" id="btnFecharSidecart" aria-label="Fechar carrinho">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div id="sidecartItens"></div>
+
+    <div class="sidecart-rodape">
+        <div class="sidecart-total">
+            <span>Total</span>
+            <strong id="sidecartTotal">R$ 0,00</strong>
+        </div>
+
+        <button type="button" id="btnProsseguir" class="btn-primario btn-bloco">
+            Finalizar pedido <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+</aside>

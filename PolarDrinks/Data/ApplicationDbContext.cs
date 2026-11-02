@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PolarDrinks.Models;
-using PolarDrinks.Models.Loja;
+using PolarDrinks.Modules.Compras.Models;
+using PolarDrinks.Modules.Estoque.Models;
+using PolarDrinks.Modules.Loja.Models;
+using PolarDrinks.Modules.Usuarios.Models;
+using PolarDrinks.Modules.Vendas.Models;
 
 namespace PolarDrinks.Data
 {
@@ -240,6 +243,14 @@ namespace PolarDrinks.Data
                 .Property(p => p.PedidoValorTotal)
                 .HasPrecision(18, 2);
 
+            // ===== TABELAS COM TRIGGER NO BANCO =====
+            // Com trigger, o SQL Server não aceita o jeito padrão de gravação do EF (OUTPUT).
+            // Declarar a trigger faz o EF gravar de um jeito compatível.
+            modelBuilder.Entity<UsuarioModel>()
+                .ToTable(t => t.HasTrigger("TR_Usuarios_ProtegerUltimoAdmin"));
+
+            modelBuilder.Entity<ProdutoModel>()
+                .ToTable(t => t.HasTrigger("TR_Produtos_ImpedirEstoqueNegativo"));
         }
     }
 }
