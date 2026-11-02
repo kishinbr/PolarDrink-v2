@@ -80,5 +80,9 @@ function calcularPrecoFinal(produto) {
 }
 
 function urlImagemProduto(caminho) {
-    return caminho ? "/" + caminho : "/img/polaria.png";
+    if (!caminho) return "/img/polaria.png";
+
+    if (/^https?:\/\//i.test(caminho)) return caminho;
+
+    return "/" + caminho;
 }

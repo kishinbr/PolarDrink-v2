@@ -92,8 +92,12 @@
                     <label class="form-label text-light">Imagem do Produto</label>
                     @if (!string.IsNullOrEmpty(Model.ProdutoImagemUrl))
                     {
+                        var urlImagemAtual = Model.ProdutoImagemUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                            ? Model.ProdutoImagemUrl
+                            : Url.Content("~/" + Model.ProdutoImagemUrl);
+
                         <div class="mb-2">
-                            <img src="~/@Model.ProdutoImagemUrl" alt="Imagem atual" style="max-width:120px;" class="rounded">
+                            <img src="@urlImagemAtual" alt="Imagem atual" style="max-width:120px;" class="rounded">
                         </div>
                     }
                     <input type="file" class="form-control bg-shadow text-light" name="imagem" accept="image/*">

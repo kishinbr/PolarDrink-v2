@@ -21,6 +21,7 @@ using PolarDrinks.Modules.Usuarios.Repositories;
 using PolarDrinks.Modules.Usuarios.Services;
 using PolarDrinks.Modules.Vendas.Repositories;
 using PolarDrinks.Modules.Vendas.Services;
+using Azure.Storage.Blobs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,7 +53,7 @@ builder.Services.AddScoped<ICompraEstoqueService, CompraEstoqueService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IMovimentacaoEstoqueService, MovimentacaoEstoqueService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
-builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
+
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IRelatorioRepository, RelatorioRepository>();
 builder.Services.AddScoped<IRelatorioService, RelatorioService>();
@@ -69,6 +70,18 @@ builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();
 
+var conexaoBlob = builder.Configuration["Armazenamento:BlobConnectionString"];
+
+if (!string.IsNullOrWhiteSpace(conexaoBlob))
+{
+    var nomeContainer = builder.Configuration["Armazenamento:BlobContainer"] ?? "produtos";
+    builder.Services.AddSingleton(new BlobContainerClient(conexaoBlob, nomeContainer));
+    builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoBlobService>();
+}
+else
+{
+    builder.Services.AddScoped<IArmazenamentoService, ArmazenamentoService>();
+}
 // Autenticação JWT (Loja Online / Clientes)
 var jwtChave = builder.Configuration["Jwt:ChaveSecreta"]!;
 
