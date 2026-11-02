@@ -5,7 +5,8 @@ namespace PolarDrinks.Modules.Loja.Jobs
     public class ExpiracaoPedidosJob : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly TimeSpan _intervalo = TimeSpan.FromMinutes(15);
+        //private readonly TimeSpan _intervalo = TimeSpan.FromMinutes(15);
+        private readonly TimeSpan _intervalo = TimeSpan.FromHours(6);
 
         public ExpiracaoPedidosJob(IServiceProvider serviceProvider)
         {
