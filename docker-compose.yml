@@ -21,7 +21,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=SuaSenhaForte123!
     ports:
-      - "1433:1433"
+      - "1434:1434"
     volumes:
       - polardrinks-db-data:/var/opt/mssql
     healthcheck:
