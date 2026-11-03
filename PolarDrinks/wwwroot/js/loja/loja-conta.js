@@ -143,3 +143,41 @@ document.getElementById("btnCadastrar").addEventListener("click", async function
 
     redirecionarAposLogin();
 });
+
+// ===== Máscaras do cadastro: telefone (00) 00000-0000 e CPF 000.000.000-00 =====
+
+function mascaraTelefone(valor) {
+    let d = valor.replace(/\D/g, "");
+    if (d.length > 11 && d.startsWith("55")) d = d.slice(2); // colado com +55
+    d = d.slice(0, 11);
+
+    if (d.length === 0) return "";
+    if (d.length <= 2) return "(" + d;
+
+    const ddd = "(" + d.slice(0, 2) + ") ";
+    const numero = d.slice(2);
+    const corte = d.length === 11 ? 5 : 4; // celular: 5 + 4 dígitos; fixo: 4 + 4
+
+    if (numero.length <= corte) return ddd + numero;
+    return ddd + numero.slice(0, corte) + "-" + numero.slice(corte);
+}
+
+function mascaraCpf(valor) {
+    const d = valor.replace(/\D/g, "").slice(0, 11);
+
+    return d
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+const campoTelefone = document.getElementById("cadTelefone");
+const campoCpf = document.getElementById("cadCpf");
+
+campoTelefone.addEventListener("input", function() {
+    campoTelefone.value = mascaraTelefone(campoTelefone.value);
+});
+
+campoCpf.addEventListener("input", function() {
+    campoCpf.value = mascaraCpf(campoCpf.value);
+});

@@ -15,7 +15,7 @@
                 <div class="conta-cabecalho">
                     <img src="~/img/polaria.png" alt="" />
                     <h1 class="titulo-formulario">Entrar</h1>
-                    <p class="subtitulo-formulario">Acesse sua conta para finalizar pedidos.</p>
+                    
                 </div>
 
                 <div class="campo">
@@ -57,7 +57,7 @@
                     <label for="cadNome">Nome</label>
                     <div class="campo-input">
                         <i class="bi bi-person"></i>
-                        <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="name" />
+                        <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="name" maxlength="100" />
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@
                     <label for="cadEmail">E-mail</label>
                     <div class="campo-input">
                         <i class="bi bi-envelope"></i>
-                        <input type="email" id="cadEmail" placeholder="seu@email.com" autocomplete="email" />
+                        <input type="email" id="cadEmail" placeholder="seu@email.com" autocomplete="email" maxlength="100" />
                     </div>
                 </div>
 
@@ -74,7 +74,7 @@
                         <label for="cadSenha">Senha</label>
                         <div class="campo-input">
                             <i class="bi bi-lock"></i>
-                            <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+                            <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" maxlength="100" />
                         </div>
                     </div>
 
@@ -82,7 +82,7 @@
                         <label for="cadConfirmacaoSenha">Confirmar senha</label>
                         <div class="campo-input">
                             <i class="bi bi-shield-check"></i>
-                            <input type="password" id="cadConfirmacaoSenha" placeholder="Repita a senha" autocomplete="new-password" />
+                            <input type="password" id="cadConfirmacaoSenha" placeholder="Repita a senha" autocomplete="new-password" maxlength="100" />
                         </div>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                         <label for="cadCpf">CPF</label>
                         <div class="campo-input">
                             <i class="bi bi-card-text"></i>
-                            <input type="text" id="cadCpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="11"/>
+                            <input type="text" id="cadCpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"/>
                         </div>
                     </div>
                 </div>
