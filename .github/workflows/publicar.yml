@@ -5,16 +5,35 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 env:
   IMAGEM: ghcr.io/kishinbr/polardrinks-app
 
 jobs:
-  publicar-imagem:
+  # 1) Roda os testes unitários e de arquitetura (sem banco de dados)
+  testes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar o .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Rodar os testes (sem os de integração)
+        run: dotnet test PolarDrinks/PolarDrinks.sln --filter "Categoria!=Integracao"
+
+  # 2) Monta a imagem e envia para o GitHub Container Registry
+  publicar-imagem:
+    needs: testes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Baixar o código do repositório
@@ -41,3 +60,27 @@ jobs:
             ${{ env.IMAGEM }}:${{ github.sha }}
           labels: |
             org.opencontainers.image.source=https://github.com/kishinbr/PolarDrink-v2
+
+  # 3) Atualiza o app no Azure para usar a imagem nova
+  publicar-azure:
+    needs: publicar-imagem
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Entrar no Azure (OIDC, sem senha)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Atualizar o Container App
+        run: |
+          az config set extension.use_dynamic_install=yes_without_prompt
+          az containerapp update \
+            --name polardrinks-app \
+            --resource-group rg-polardrinks \
+            --image ${{ env.IMAGEM }}:${{ github.sha }}
