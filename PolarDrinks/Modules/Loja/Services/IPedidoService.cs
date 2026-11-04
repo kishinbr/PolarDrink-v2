@@ -11,6 +11,7 @@ namespace PolarDrinks.Modules.Loja.Services
         ResultadoOperacao CancelarPeloCliente(int clienteId, int pedidoId);
         ResultadoOperacao CancelarAposEntrega(int pedidoId, string descricao, int usuarioId);
         List<PedidoModel> ListarPorStatus(string status);
+        int ContarAguardandoSeparacao();
         PedidoModel? ObterPedidoAdmin(int pedidoId);
         ResultadoOperacao MarcarComoSeparado(int pedidoId, int usuarioId);
         ResultadoOperacao VoltarParaSeparacao(int pedidoId);

@@ -53,6 +53,10 @@ namespace PolarDrinks.Modules.Loja.Repositories
 
             return _db.Pedidos.Any(p => p.PedidoCodigo == codigo && statusAtivos.Contains(p.PedidoStatus));
         }
+        public int ContarPorStatus(string status)
+        {
+            return _db.Pedidos.Count(p => p.PedidoStatus == status);
+        }
         public List<PedidoModel> ObterPorStatus(string status)
         {
             return _db.Pedidos

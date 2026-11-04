@@ -89,6 +89,7 @@
             </a>
             <a asp-controller="PedidoOnline" asp-action="Index" class="@(Ativo("PedidoOnline"))">
                 <i class="bi bi-bag-check"></i> Pedidos online
+                <span id="contadorPedidos" class="contador-menu" hidden></span>
             </a>
             @if (ehAdmin)
             {

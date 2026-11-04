@@ -12,6 +12,7 @@ namespace PolarDrinks.Modules.Loja.Repositories
 
         List<PedidoModel> ObterPorStatus(string status);
         List<PedidoModel> ObterTodosComDetalhes();
+        int ContarPorStatus(string status);
         (int Quantidade, decimal Faturamento, decimal Lucro) ObterResumoFinanceiro(
             IEnumerable<string> statusValidos, DateTime? inicio, DateTime? fim);
     }

@@ -9,7 +9,7 @@
         <div>
             <span class="hero-etiqueta">
                 <span id="ice-badge" class="hero-gelo"><i class="bi bi-snow2"></i></span>
-                Painel da equipe
+                Polar Drinks
             </span>
 
             <h1>Bem-vindo ao<br />Polar Drinks!</h1>
@@ -77,43 +77,37 @@
 </div>
 
 <style>
-    .cherry-ball {
+    /* ==============================
+       CEREJA E GUARDA-CHUVA (5 cliques no urso)
+       Os dois caem do alto e param dentro da taça que forma o nariz do urso.
+       ============================== */
+
+    .enfeite-drink {
         position:absolute;
-        width:15px;
-        height:15px;
-        border-radius:50%;
-        background:#7b1a1a;
-        box-shadow:inset -2px -2px 5px rgba(0,0,0,0.4),inset 2px 2px 4px rgba(255,255,255,0.1);
-        pointer-events:none;
-        opacity:0;
+        left:0;
+        top:0;
         z-index:10;
-        transform:rotate(35deg);
-    }
-
-    .cherry-ball::before {
-        content:'';
-        position:absolute;
-        top:-10px;
-        left:60%;
-        width:2px;
-        height:12px;
-        background:#1a5c2a;
-        border-radius:1px;
-        transform-origin:bottom center;
-    }
-
-    .umbrella-wrap {
-        position:absolute;
         pointer-events:none;
-        opacity:0;
-        z-index:10;
-        width:32px;
-        height:38px;
+        will-change:transform;
     }
 
-    .umbrella-wrap svg {
+    .enfeite-drink svg {
+        display:block;
         width:100%;
         height:100%;
+        overflow:visible;
+    }
+
+    .respingo {
+        position:absolute;
+        left:0;
+        top:0;
+        z-index:11;
+        width:5px;
+        height:5px;
+        border-radius:50%;
+        background:#bfe6ff;
+        pointer-events:none;
     }
 
     /* ==============================
@@ -177,145 +171,177 @@
 </style>
 
 <script>
-    // ===== Animação original (cereja + guarda-chuva) =====
+    // ===== Cereja e guarda-chuva (5 cliques no urso) =====
+    // O nariz do urso é uma taça. As medidas abaixo são frações do tamanho da imagem
+    // (tiradas do polaria.png), então a animação acerta a taça em qualquer tamanho de tela.
 
     (function () {
-        var clicks = 0;
-        var MAX = 5;
-        var animating = false;
-        var STOP_PCT = 0.56;
+        var CLIQUES = 5;
+        var TACA = { centroX: 0.50, bordaY: 0.535 };
+        var TEMPO_SERVIDO = 3.2; // segundos que o drink fica pronto antes de sumir
+
+        var SVG_CEREJA =
+            '<svg viewBox="0 0 20 28" xmlns="http://www.w3.org/2000/svg">' +
+            '<path d="M10 12 Q11 4 17 1" fill="none" stroke="#2f7a3a" stroke-width="1.6" stroke-linecap="round"/>' +
+            '<circle cx="10" cy="19" r="8" fill="#b3122e"/>' +
+            '<circle cx="7" cy="16" r="2.4" fill="#fff" opacity=".45"/>' +
+            '</svg>';
+
+        var SVG_GUARDA_CHUVA =
+            '<svg viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg">' +
+            '<path d="M16 3 Q2 3 2 14 Q8 8 16 10 Q24 8 30 14 Q30 3 16 3Z" fill="#e74c3c"/>' +
+            '<path d="M2 14 Q8 8 16 10" fill="#e67e22"/>' +
+            '<path d="M16 10 Q24 8 30 14" fill="#f1c40f"/>' +
+            '<path d="M16 3 Q2 3 2 14 Q8 8 16 10 Q24 8 30 14 Q30 3 16 3Z" fill="none" stroke="#c0392b" stroke-width="0.8"/>' +
+            '<line x1="16" y1="10" x2="16" y2="35" stroke="#8B4513" stroke-width="1.5" stroke-linecap="round"/>' +
+            '</svg>';
+
         var img = document.getElementById('bear-img');
-        var zone = document.getElementById('bear-zone');
+        var zona = document.getElementById('bear-zone');
+        if (!img || !zona) return;
+
+        var cliques = 0;
+        var animando = false;
 
         img.addEventListener('click', function () {
-            if (animating) return;
+            if (animando) return;
 
-            clicks++;
+            cliques++;
 
-            if (clicks >= MAX) {
-                clicks = 0;
-                animating = true;
-                launch();
+            if (cliques >= CLIQUES) {
+                cliques = 0;
+                animando = true;
+                servirDrink();
             }
         });
 
-        function launch() {
-            var imgW = img.offsetWidth;
-            var imgH = img.offsetHeight;
-            var stopY = Math.round(imgH * STOP_PCT);
-            var centerX = Math.round(imgW / 2);
-
-            launchCherry(centerX, stopY);
-            launchUmbrella(centerX, stopY, imgW);
+        function criarEnfeite(svg, largura, altura) {
+            var el = document.createElement('div');
+            el.className = 'enfeite-drink';
+            el.style.width = largura + 'px';
+            el.style.height = altura + 'px';
+            el.innerHTML = svg;
+            zona.appendChild(el);
+            return el;
         }
 
-        function launchCherry(centerX, stopY) {
-            var ball = document.createElement('div');
+        function posicionar(el, x, y, graus) {
+            el.style.transform = 'translate(' + x + 'px, ' + y + 'px) rotate(' + (graus || 0) + 'deg)';
+        }
 
-            ball.className = 'cherry-ball';
-            ball.style.left = (centerX - 7) + 'px';
-            ball.style.top = '-16px';
-            ball.style.opacity = '1';
+        function servirDrink() {
+            var largura = img.offsetWidth;
+            var altura = img.offsetHeight;
 
-            zone.appendChild(ball);
+            soltarCereja(largura, altura);
+            setTimeout(function () { soltarGuardaChuva(largura, altura); }, 450);
+        }
 
-            var y = -16;
-            var vy = 0.8;
-            var finalStop = stopY - 8;
+        // Cereja: cai com gravidade, afunda um pouco na bebida e espirra gotinhas
+        function soltarCereja(largura, altura) {
+            var tamanho = largura * 0.06;
+            var el = criarEnfeite(SVG_CEREJA, tamanho, tamanho * 1.4);
 
-            function fall() {
-                vy += 0.18;
-                y += vy;
-                ball.style.top = y + 'px';
+            var x = largura * TACA.centroX - tamanho / 2;
+            var yFinal = altura * (TACA.bordaY + 0.012) - tamanho * 1.4 * (19 / 28);
+            var yInicial = -tamanho * 2;
+            var gravidade = altura * 2.4; // pixels por segundo ao quadrado
+            var comeco = null;
 
-                if (y < finalStop) {
-                    requestAnimationFrame(fall);
+            function cair(agora) {
+                if (comeco === null) comeco = agora;
+
+                var t = (agora - comeco) / 1000;
+                var y = yInicial + gravidade * t * t / 2;
+
+                if (y < yFinal) {
+                    posicionar(el, x, y, 0);
+                    requestAnimationFrame(cair);
+                    return;
+                }
+
+                posicionar(el, x, yFinal, 0);
+                el.style.transformOrigin = '50% 100%';
+                el.firstChild.animate(
+                    [{ transform: 'scale(1.18, 0.82)' }, { transform: 'scale(0.94, 1.06)' }, { transform: 'scale(1, 1)' }],
+                    { duration: 380, easing: 'ease-out' });
+
+                espirrar(largura * TACA.centroX, altura * TACA.bordaY);
+            }
+
+            requestAnimationFrame(cair);
+        }
+
+        // Guarda-chuva: desce balançando como uma folha e fica apoiado na borda da taça
+        function soltarGuardaChuva(largura, altura) {
+            var tamanho = largura * 0.11;
+            var alturaEl = tamanho * 38 / 32;
+            var el = criarEnfeite(SVG_GUARDA_CHUVA, tamanho, alturaEl);
+
+            // o ponto de giro é a ponta do cabo, que fica dentro da bebida
+            el.style.transformOrigin = '50% 92%';
+
+            var pontaX = largura * (TACA.centroX + 0.035);
+            var pontaY = altura * (TACA.bordaY + 0.03);
+            var xFinal = pontaX - tamanho * 0.5;
+            var yFinal = pontaY - alturaEl * 0.92;
+            var yInicial = -alturaEl * 1.5;
+            var duracao = 1.9;
+            var comeco = null;
+
+            function descer(agora) {
+                if (comeco === null) comeco = agora;
+
+                var t = (agora - comeco) / 1000;
+                var p = Math.min(t / duracao, 1);
+                var suave = 1 - Math.pow(1 - p, 2);
+                var balanco = Math.sin(t * 3.4) * (1 - p);
+
+                var x = xFinal + balanco * largura * 0.12;
+                var y = yInicial + (yFinal - yInicial) * suave;
+                var graus = 22 + balanco * 26;
+
+                posicionar(el, x, y, graus);
+
+                if (p < 1) {
+                    requestAnimationFrame(descer);
                 } else {
-                    ball.style.top = finalStop + 'px';
-                    ball.style.transition = 'transform 0.5s';
-                    ball.style.transform = 'rotate(35deg) scale(1.3)';
-
-                    setTimeout(function () {
-                        ball.style.transform = 'rotate(35deg) scale(1)';
-                    }, 500);
-
-                    fadeOut(ball, 1800);
+                    setTimeout(recolher, TEMPO_SERVIDO * 1000);
                 }
             }
 
-            requestAnimationFrame(fall);
+            requestAnimationFrame(descer);
         }
 
-        function launchUmbrella(centerX, stopY, imgW) {
-            var wrap = document.createElement('div');
+        function espirrar(x, y) {
+            for (var i = 0; i < 5; i++) {
+                var gota = document.createElement('span');
+                gota.className = 'respingo';
+                zona.appendChild(gota);
 
-            wrap.className = 'umbrella-wrap';
+                var dx = (i - 2) * 9 + (Math.random() * 6 - 3);
+                var dy = -(14 + Math.random() * 12);
 
-            var umbX = centerX - 10;
-
-            wrap.style.left = umbX + 'px';
-            wrap.style.top = '-40px';
-            wrap.style.opacity = '1';
-            wrap.innerHTML = buildUmbrellaSVG();
-
-            zone.appendChild(wrap);
-
-            var y = -40;
-            var vy = 0;
-            var t = 0;
-            var finalStop = stopY - 30;
-
-            function fall() {
-                vy += 0.06;
-
-                if (vy > 1.2) {
-                    vy = 1.2;
-                }
-
-                y += vy;
-                t += 0.07;
-
-                var sway = Math.sin(t) * 18;
-                var tiltDeg = 20 + Math.sin(t) * 10;
-
-                wrap.style.top = y + 'px';
-                wrap.style.transform = 'rotate(' + tiltDeg + 'deg)';
-                wrap.style.left = (umbX + sway) + 'px';
-
-                if (y < finalStop) {
-                    requestAnimationFrame(fall);
-                } else {
-                    wrap.style.top = finalStop + 'px';
-                    fadeOut(wrap, 1200);
-                }
+                gota.animate(
+                    [
+                        { transform: 'translate(' + (x - 2) + 'px, ' + (y - 2) + 'px)', opacity: 1 },
+                        { transform: 'translate(' + (x - 2 + dx) + 'px, ' + (y - 2 + dy) + 'px)', opacity: 1, offset: 0.5 },
+                        { transform: 'translate(' + (x - 2 + dx * 1.4) + 'px, ' + (y + 6) + 'px)', opacity: 0 }
+                    ],
+                    { duration: 650, easing: 'ease-out', fill: 'forwards' });
             }
-
-            requestAnimationFrame(fall);
         }
 
-        function buildUmbrellaSVG() {
-            return '<svg viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg">' +
-                '<path d="M16 3 Q2 3 2 14 Q8 8 16 10 Q24 8 30 14 Q30 3 16 3Z" fill="#e74c3c"/>' +
-                '<path d="M16 3 Q2 3 2 14 Q8 8 16 10 Q24 8 30 14 Q30 3 16 3Z" fill="none" stroke="#c0392b" stroke-width="0.8"/>' +
-                '<path d="M16 10 Q8 8 2 14" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.4"/>' +
-                '<path d="M16 10 Q24 8 30 14" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.4"/>' +
-                '<path d="M2 14 Q8 8 16 10" fill="#e67e22" stroke="none"/>' +
-                '<path d="M16 10 Q24 8 30 14" fill="#f1c40f" stroke="none"/>' +
-                '<line x1="16" y1="10" x2="16" y2="33" stroke="#8B4513" stroke-width="1.5" stroke-linecap="round"/>' +
-                '<path d="M16 33 Q17 36 15 37 Q13 38 13 36" fill="none" stroke="#8B4513" stroke-width="1.5" stroke-linecap="round"/>' +
-                '</svg>';
-        }
-
-        function fadeOut(el, delay) {
-            setTimeout(function () {
-                el.style.transition = 'opacity 0.6s';
+        function recolher() {
+            zona.querySelectorAll('.enfeite-drink, .respingo').forEach(function (el) {
+                el.style.transition = 'opacity .6s';
                 el.style.opacity = '0';
+            });
 
-                setTimeout(function () {
-                    el.remove();
-                    animating = false;
-                }, 650);
-            }, delay);
+            setTimeout(function () {
+                zona.querySelectorAll('.enfeite-drink, .respingo').forEach(function (el) { el.remove(); });
+                animando = false;
+            }, 650);
         }
     })();
 
