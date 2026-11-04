@@ -59,7 +59,7 @@
                             @foreach (var item in Model.Pendentes)
                             {
                                 <tr>
-                                    <td class="text-center"><span class="sf-badge" style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">#@item.CompraID</span></td>
+                                    <td class="text-center"><span class="fw-semibold">#@item.CompraID</span></td>
                                     <td>@item.CompraData.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Fornecedor?.FornecedorNome</td>
                                     <td><span class="sf-badge sf-badge-baixo">@item.CompraStatus</span></td>
@@ -126,7 +126,7 @@
                         @foreach (var item in Model.Concluidas)
                         {
                             <tr>
-                                <td data-order="@item.CompraID"><span class="sf-badge" style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">#@item.CompraID</span></td>
+                                <td data-order="@item.CompraID"><span class="fw-semibold">#@item.CompraID</span></td>
                                 <td data-order="@item.CompraData.ToString("yyyy-MM-dd")">@item.CompraData.ToString("dd/MM/yyyy")</td>
                                 <td>@item.CompraDataEntrega?.ToString("dd/MM/yyyy")</td>
                                 <td>@item.Fornecedor?.FornecedorNome</td>
