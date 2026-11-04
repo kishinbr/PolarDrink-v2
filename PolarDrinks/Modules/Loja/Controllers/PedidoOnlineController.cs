@@ -23,7 +23,14 @@ namespace PolarDrinks.Modules.Loja.Controllers
             ViewBag.Separados = separados;
 
             return View(aguardando);
+        }       
+
+        [HttpGet]
+        public IActionResult ContarPendentes()
+        {
+            return Json(new { aguardando = _pedidoService.ContarAguardandoSeparacao() });
         }
+
         [AdminFilter]
         public IActionResult Detalhes(int id)
         {

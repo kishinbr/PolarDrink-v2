@@ -88,7 +88,7 @@
 
                     <thead>
                         <tr class="bg-tpreto text-secondary sf-thead">
-                            <th class="py-3 ps-4">ID</th>
+                            <th class="py-3">Venda</th>
                             <th class="py-3">Data / Hora</th>
                             <th class="py-3">Valor Total</th>
                             <th class="py-3">Tipo Pagamento</th>
@@ -102,11 +102,8 @@
                         {
                             <tr>
 
-                                <td class="ps-4">
-                                    <span class="sf-badge"
-                                          style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">
-                                        #@venda.VendaID
-                                    </span>
+                                <td data-order="@venda.VendaID">
+                                    <span class="fw-semibold">#@venda.VendaID</span>
                                 </td>
 
                                 <td class="sf-num"
