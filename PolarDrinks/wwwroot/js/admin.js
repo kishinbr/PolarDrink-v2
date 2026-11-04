@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const CHAVE = "pedidosAguardando";
     const INTERVALO = 30000;
+    const LIMITE_INATIVIDADE = 10 * 60 * 1000; // 10 minutos sem uso
+    let ultimaAtividade = Date.now();
 
     function lerUltimaQuantidade() {
         try {
@@ -83,14 +85,12 @@ document.addEventListener("DOMContentLoaded", function () {
             // Sem conexão ou sessão expirada: tenta de novo na próxima rodada
         }
     }
-
-       
     let temporizador = null;
 
     function iniciar() {
         if (temporizador !== null) return;
         atualizar();
-        temporizador = setInterval(atualizar, INTERVALO);
+        temporizador = setInterval(verificar, INTERVALO);
     }
 
     function parar() {
@@ -98,11 +98,31 @@ document.addEventListener("DOMContentLoaded", function () {
         temporizador = null;
     }
 
+    // Sem uso por 10 minutos: para de consultar. Assim a sessão expira normalmente
+    // e o contêiner e o banco na nuvem podem desligar.
+    function verificar() {
+        if (Date.now() - ultimaAtividade > LIMITE_INATIVIDADE) {
+            parar();
+            return;
+        }
+        atualizar();
+    }
+
+    // Qualquer uso da tela volta a consultar
+    function registrarAtividade() {
+        ultimaAtividade = Date.now();
+        if (!document.hidden) iniciar();
+    }
+
+    ["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(function (evento) {
+        document.addEventListener(evento, registrarAtividade, { passive: true });
+    });
+
     document.addEventListener("visibilitychange", function () {
         if (document.hidden) {
             parar();
         } else {
-            iniciar();
+            registrarAtividade();
         }
     });
 
