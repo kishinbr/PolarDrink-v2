@@ -97,11 +97,11 @@
 
                     <thead>
                         <tr class="bg-tpreto text-secondary sf-thead">
-                            <th class="py-3 ps-4">COD Movi</th>
+                            <th class="py-3">Movimentação</th>
                             <th class="py-3">Data</th>
                             <th class="py-3 text-center">Tipo</th>
-                            <th class="py-3 text-center">QTD</th>
-                            <th class="py-3 text-center">COD Venda/Compra</th>
+                            <th class="py-3 text-center">Qtd</th>
+                            <th class="py-3 text-center">Origem</th>
                             <th class="py-3">Responsável</th>
                             <th class="py-3 pe-4">Descrição</th>
                         </tr>
@@ -114,7 +114,7 @@
                             {
                                 <tr>
 
-                                    <td class="ps-4" data-order="@mov.MovimentacaoID">
+                                    <td data-order="@mov.MovimentacaoID">
 
                                         <span class="sf-badge"
                                               style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">
@@ -219,20 +219,20 @@
                                         @if (mov.ItemVenda != null)
                                         {
                                             <span class="sf-badge sf-badge-ativo">
-                                                #@mov.ItemVenda.VendaID
+                                                Venda #@mov.ItemVenda.VendaID
                                             </span>
                                         }
                                         else if (mov.ItemCompra != null)
                                         {
                                             <span class="sf-badge sf-badge-ok">
-                                                #@mov.ItemCompra.CompraID
+                                                Compra #@mov.ItemCompra.CompraID
                                             </span>
                                         }
                                         else if (mov.ItemPedido != null)
                                         {
                                             <span class="sf-badge"
                                                   style="background:rgba(6,182,212,.14);color:#22d3ee;border-color:rgba(6,182,212,.3);">
-                                                #@mov.ItemPedido.PedidoID
+                                                Pedido #@mov.ItemPedido.PedidoID
                                             </span>
                                         }
                                         else
@@ -357,7 +357,7 @@
 
                 columnDefs: [
                     { orderable: false, targets: [5] },
-                    { className: "text-center", targets: [4] }
+                    { className: "text-center", targets: [0, 4] }
                 ],
 
                 language: {

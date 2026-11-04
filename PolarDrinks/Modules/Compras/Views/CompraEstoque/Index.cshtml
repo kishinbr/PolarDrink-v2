@@ -48,7 +48,7 @@
                     <table class="table table-hover align-middle mb-0 text-light">
                         <thead class="bg-tpreto text-secondary sf-thead">
                             <tr>
-                                <th>ID</th>
+                                <th class="text-center">Compra</th>
                                 <th>Data Compra</th>
                                 <th>Fornecedor</th>
                                 <th>Status</th>
@@ -59,7 +59,7 @@
                             @foreach (var item in Model.Pendentes)
                             {
                                 <tr>
-                                    <td>@item.CompraID</td>
+                                    <td class="text-center"><span class="sf-badge" style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">#@item.CompraID</span></td>
                                     <td>@item.CompraData.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Fornecedor?.FornecedorNome</td>
                                     <td><span class="sf-badge sf-badge-baixo">@item.CompraStatus</span></td>
@@ -114,7 +114,7 @@
                 <table id="tabelaConcluidos" class="table table-hover align-middle mb-0 text-light">
                     <thead class="bg-tpreto text-secondary sf-thead">
                         <tr>
-                            <th>ID</th>
+                            <th>Compra</th>
                             <th>Data Compra</th>
                             <th>Data Entrega</th>
                             <th>Fornecedor</th>
@@ -126,7 +126,7 @@
                         @foreach (var item in Model.Concluidas)
                         {
                             <tr>
-                                <td>@item.CompraID</td>
+                                <td data-order="@item.CompraID"><span class="sf-badge" style="background:rgba(255,255,255,.08);color:#e7e9ee;border-color:rgba(255,255,255,.08);">#@item.CompraID</span></td>
                                 <td data-order="@item.CompraData.ToString("yyyy-MM-dd")">@item.CompraData.ToString("dd/MM/yyyy")</td>
                                 <td>@item.CompraDataEntrega?.ToString("dd/MM/yyyy")</td>
                                 <td>@item.Fornecedor?.FornecedorNome</td>
