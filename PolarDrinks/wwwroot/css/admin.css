@@ -280,18 +280,96 @@ html[data-tema="claro"] .admin-topo {
 }
 
 /* =========================
+   BOOTSTRAP COM AS CORES DO SISTEMA
+   O <html> tem data-bs-theme="dark": formulários, modais e tabelas do
+   Bootstrap já vêm escuros; aqui só trocamos as cores pelas nossas.
+========================= */
+
+html[data-bs-theme] {
+    --bs-body-bg: var(--fundo);
+    --bs-body-color: var(--texto);
+    --bs-body-font-family: var(--fonte);
+    --bs-secondary-color: var(--texto-fraco);
+    --bs-tertiary-bg: var(--superficie-2);
+    --bs-border-color: var(--borda);
+    --bs-primary: var(--azul);
+    --bs-primary-rgb: 2, 119, 201;
+    --bs-link-color: var(--azul-gelo);
+    --bs-link-hover-color: var(--azul-gelo);
+    --bs-link-color-rgb: 56, 189, 248;
+    --bs-link-hover-color-rgb: 56, 189, 248;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--azul);
+    --bs-btn-border-color: var(--azul);
+    --bs-btn-hover-bg: var(--azul-escuro);
+    --bs-btn-hover-border-color: var(--azul-escuro);
+    --bs-btn-active-bg: var(--azul-escuro);
+    --bs-btn-active-border-color: var(--azul-escuro);
+    --bs-btn-disabled-bg: var(--azul);
+    --bs-btn-disabled-border-color: var(--azul);
+}
+
+.form-check-input:checked {
+    background-color: var(--azul);
+    border-color: var(--azul);
+}
+
+.modal {
+    --bs-modal-bg: var(--superficie);
+    --bs-modal-border-color: var(--borda);
+}
+
+.dropdown-menu {
+    --bs-dropdown-bg: var(--superficie);
+    --bs-dropdown-border-color: var(--borda);
+}
+
+/* =========================
    TABELAS (DataTables)
 ========================= */
 
-select.dt-input {
+select.dt-input,
+.dt-search input {
     color: var(--texto) !important;
-    background-color: var(--superficie) !important;
+    background-color: var(--fundo) !important;
     border: 1px solid var(--borda) !important;
+    border-radius: 10px !important;
 }
 
-.dt-length label {
-    color: var(--texto) !important;
+.dt-length label,
+.dt-search label {
+    color: var(--texto-suave) !important;
 }
+
+.dt-info {
+    color: var(--texto-fraco) !important;
+}
+
+.dt-paging .dt-paging-button {
+    border-radius: 8px !important;
+    color: var(--texto-suave) !important;
+}
+
+    .dt-paging .dt-paging-button.current,
+    .dt-paging .dt-paging-button.current:hover {
+        background: var(--azul) !important;
+        border-color: var(--azul) !important;
+        color: #fff !important;
+    }
+
+    .dt-paging .dt-paging-button:hover {
+        background: var(--superficie-2) !important;
+        border-color: var(--borda) !important;
+        color: var(--texto) !important;
+    }
+
+    .dt-paging .dt-paging-button.disabled,
+    .dt-paging .dt-paging-button.disabled:hover {
+        color: var(--texto-fraco) !important;
+        opacity: .5;
+    }
 
 /* =========================
    CELULAR E TABLET: o menu vira uma gaveta
