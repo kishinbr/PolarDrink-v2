@@ -58,6 +58,10 @@
                 <strong>Você tem até 24 horas após a separação para retirar.</strong>
             </div>
         </div>
+        <div class="aviso aviso-alerta">
+            <i class="bi bi-person-vcard"></i>
+            <div>Retirada somente para maiores de 18 anos.</div>
+        </div>
 
         <div class="secao-itens">
             <h3>Itens do pedido #${pedido.pedidoID}</h3>
