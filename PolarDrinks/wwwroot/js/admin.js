@@ -84,6 +84,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    atualizar();
-    setInterval(atualizar, INTERVALO);
+       
+    let temporizador = null;
+
+    function iniciar() {
+        if (temporizador !== null) return;
+        atualizar();
+        temporizador = setInterval(atualizar, INTERVALO);
+    }
+
+    function parar() {
+        clearInterval(temporizador);
+        temporizador = null;
+    }
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            parar();
+        } else {
+            iniciar();
+        }
+    });
+
+    if (!document.hidden) {
+        iniciar();
+    }
 });

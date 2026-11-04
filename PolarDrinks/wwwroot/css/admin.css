@@ -825,7 +825,7 @@ textarea.form-control {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 6px 12px 6px 6px;
+    padding: 6px;
     border-radius: 10px;
     background: rgba(255, 255, 255, .14);
     font-size: 10px;
@@ -835,6 +835,8 @@ textarea.form-control {
 }
 
 .hero-gelo {
+    position: relative;
+    overflow: hidden;
     width: 30px;
     height: 30px;
     display: grid;
@@ -844,7 +846,72 @@ textarea.form-control {
     font-size: 15px;
     cursor: pointer;
     user-select: none;
+    transition: background .35s, color .35s, box-shadow .35s, transform .35s;
 }
+
+    .hero-gelo i {
+        display: inline-block;
+        transition: transform .9s cubic-bezier(.3, 1.4, .5, 1), filter .35s;
+    }
+
+    /* faixa de brilho que atravessa o cubo quando ele congela */
+    .hero-gelo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .9) 48%, transparent 66%);
+        transform: translateX(-130%);
+        pointer-events: none;
+    }
+
+    /* Mouse em cima: o quadradinho vira um cubo de gelo */
+    .hero-gelo:hover {
+        background: linear-gradient(145deg, #f0fbff 0%, #a5e2ff 45%, #5fbcef 100%);
+        color: #0a5f9e;
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, .9),
+            inset 0 -4px 6px rgba(2, 119, 201, .35),
+            0 0 16px rgba(125, 211, 252, .9);
+        transform: scale(1.12) rotate(-4deg);
+    }
+
+        .hero-gelo:hover i {
+            transform: rotate(180deg);
+            filter: drop-shadow(0 0 3px #fff);
+        }
+
+        .hero-gelo:hover::after {
+            animation: brilho-gelo .9s ease .15s;
+        }
+
+@keyframes brilho-gelo {
+    to { transform: translateX(130%); }
+}
+
+/* Taça da etiqueta: troca o período do dia (manhã, tarde, noite, madrugada) */
+.hero-taca {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+    .hero-taca:hover {
+        background: rgba(255, 255, 255, .3);
+        transform: rotate(-12deg);
+    }
+
+    .hero-taca svg {
+        width: 15px;
+        height: 15px;
+    }
 
 .hero-painel .botao-branco {
     background: #fff;
@@ -867,6 +934,156 @@ textarea.form-control {
         filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .35));
         cursor: pointer;
     }
+
+/* O urso conforme o dia: o script da Home coloca uma classe periodo-* no .hero-painel.
+   A tarde usa o visual padrão do painel, por isso não tem regra própria. */
+
+.hero-ceu {
+    position: absolute;
+    top: 26px;
+    right: 32px;
+    font-size: 34px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.periodo-manha {
+    background:
+        radial-gradient(circle at 90% 14%, rgba(253, 224, 71, .55), transparent 28%),
+        radial-gradient(circle at 80% 40%, rgba(125, 211, 252, .5), transparent 50%),
+        linear-gradient(120deg, #0b4f86 0%, #1789cf 60%, #5cc0f0 100%);
+}
+
+    .periodo-manha .hero-ceu {
+        color: #fde047;
+    }
+
+.periodo-noite {
+    background:
+        radial-gradient(circle at 58% 16%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 70% 34%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 52% 70%, rgba(255, 255, 255, .6) 0 1px, transparent 2px),
+        radial-gradient(circle at 94% 52%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 85% 20%, rgba(129, 140, 248, .35), transparent 40%),
+        linear-gradient(120deg, #050b1a 0%, #0c1f3f 60%, #1d3a7a 100%);
+    box-shadow: 0 20px 50px -20px rgba(29, 58, 122, .6);
+}
+
+    .periodo-noite .hero-ceu {
+        color: #e0e7ff;
+    }
+
+.periodo-madrugada {
+    background:
+        radial-gradient(circle at 60% 20%, rgba(255, 255, 255, .45) 0 1px, transparent 2px),
+        radial-gradient(circle at 74% 62%, rgba(255, 255, 255, .35) 0 1px, transparent 2px),
+        linear-gradient(120deg, #03060d 0%, #081226 70%, #0f1d3a 100%);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .7);
+}
+
+    .periodo-madrugada .hero-ceu {
+        color: #94a3b8;
+    }
+
+    .periodo-madrugada .hero-urso img {
+        filter: brightness(.6) drop-shadow(0 30px 40px rgba(0, 0, 0, .5));
+    }
+
+/* Gorro de pijama do urso (só aparece de madrugada). Posição em % do tamanho do urso. */
+.hero-gorro {
+    display: none;
+    position: absolute;
+    left: 18%;
+    top: -5%;
+    width: 62%;
+    transform: rotate(-9deg);
+    filter: brightness(.85);
+    pointer-events: none;
+}
+
+    .hero-gorro svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+.periodo-madrugada .hero-gorro {
+    display: block;
+    animation: gorro-cai .7s cubic-bezier(.3, 1.5, .6, 1);
+}
+
+@keyframes gorro-cai {
+    from {
+        opacity: 0;
+        transform: translateY(-60%) rotate(-30deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: rotate(-9deg);
+    }
+}
+
+/* Zzz do urso dormindo (só aparece de madrugada) */
+.hero-zzz {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: var(--fonte-titulo);
+    font-weight: 900;
+    color: #c7d2fe;
+    pointer-events: none;
+}
+
+.periodo-madrugada .hero-zzz {
+    display: block;
+}
+
+.hero-zzz b {
+    position: absolute;
+    animation: zzz-flutua 3s ease-in-out infinite;
+}
+
+    .hero-zzz b:nth-child(1) {
+        right: 0;
+        top: 10px;
+        font-size: 30px;
+    }
+
+    .hero-zzz b:nth-child(2) {
+        right: 26px;
+        top: -16px;
+        font-size: 21px;
+        opacity: .75;
+        animation-delay: .4s;
+    }
+
+    .hero-zzz b:nth-child(3) {
+        right: 48px;
+        top: -36px;
+        font-size: 15px;
+        opacity: .5;
+        animation-delay: .8s;
+    }
+
+@keyframes zzz-flutua {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* No celular o urso fica no topo do painel: desce o Zzz e diminui o sol/lua */
+@media (max-width: 992px) {
+    .hero-zzz {
+        top: 22px;
+    }
+
+    .hero-ceu {
+        top: 20px;
+        right: 22px;
+        font-size: 28px;
+    }
+}
 
 .atalhos {
     display: grid;

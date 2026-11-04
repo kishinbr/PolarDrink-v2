@@ -1,19 +1,27 @@
-@{
+﻿@{
     ViewData["Title"] = "Início";
     var ehAdmin = Context.Session.GetString("Perfil") == "Admin";
+    var primeiroNome = (Context.Session.GetString("Nome") ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
 }
 
 <div class="pagina">
 
-    <section class="hero-painel">
+    <section id="heroPainel" class="hero-painel" data-nome="@primeiroNome">
+        <span id="heroCeu" class="hero-ceu" aria-hidden="true"></span>
+
         <div>
             <span class="hero-etiqueta">
                 <span id="ice-badge" class="hero-gelo"><i class="bi bi-snow2"></i></span>
                 Polar Drinks
+                <button type="button" id="heroTrocar" class="hero-taca" title="Trocar o período do dia" aria-label="Trocar o período do dia">
+                    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M3 1h10l-.4 3.6c-.3 2.6-2.1 4.4-3.85 4.75V13.5H11V15H5v-1.5h2.25V9.35C5.5 9 3.7 7.2 3.4 4.6Z" />
+                    </svg>
+                </button>
             </span>
 
-            <h1>Bem-vindo ao<br />Polar Drinks!</h1>
-            <p>Sua plataforma de controle de estoque e vendas de bebidas e produtos.</p>
+            <h1 id="heroTitulo">Bem-vindo ao<br />Polar Drinks!</h1>
+            <p id="heroFrase">Sua plataforma de controle de estoque e vendas de bebidas e produtos.</p>
 
             <a class="botao botao-branco" asp-controller="Venda" asp-action="Cadastrar">
                 Nova venda <i class="bi bi-arrow-right"></i>
@@ -22,8 +30,90 @@
 
         <div id="bear-zone" class="hero-urso">
             <img id="bear-img" src="/img/polaria.png" alt="Polaria, o mascote do Polar Drinks" />
+            <!-- Gorro de pijama: só aparece de madrugada (classe periodo-madrugada, ver admin.css) -->
+            <span class="hero-gorro" aria-hidden="true">
+            <svg viewBox="-4 0 124 80" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 60 C24 44 30 34 40 30 C30 31 21 36 15 43 L9 37 C22 22 42 12 64 12 C88 12 102 30 102 56 Z" fill="#8a63c9"/>
+              <path d="M40 30 C30 31 21 36 15 43 L12 40 C20 33 30 29 40 30 Z" fill="#6f4db3"/>
+              <path d="M58 22 C48 26 40 34 38 44" fill="none" stroke="#3b2a66" stroke-width="1.6" stroke-linecap="round"/>
+              <g fill="#fff">
+                <path transform="translate(74 30) scale(1.5)" d="M0 -4 Q.6 -.6 4 0 Q.6 .6 0 4 Q-.6 .6 -4 0 Q-.6 -.6 0 -4Z"/>
+                <path transform="translate(52 40) scale(.9)" d="M0 -4 Q.6 -.6 4 0 Q.6 .6 0 4 Q-.6 .6 -4 0 Q-.6 -.6 0 -4Z"/>
+                <path transform="translate(92 42) scale(1)" d="M0 -4 Q.6 -.6 4 0 Q.6 .6 0 4 Q-.6 .6 -4 0 Q-.6 -.6 0 -4Z"/>
+                <path transform="translate(30 25) scale(.8)" d="M0 -4 Q.6 -.6 4 0 Q.6 .6 0 4 Q-.6 .6 -4 0 Q-.6 -.6 0 -4Z"/>
+                <path transform="translate(64 20) scale(.6)" d="M0 -4 Q.6 -.6 4 0 Q.6 .6 0 4 Q-.6 .6 -4 0 Q-.6 -.6 0 -4Z"/>
+                <circle cx="84" cy="22" r="1"/><circle cx="46" cy="18" r=".9"/><circle cx="66" cy="46" r="1"/><circle cx="36" cy="48" r=".8"/>
+              </g>
+              <path d="M20 56 Q62 47 104 52 L105 64 Q62 59 19 70 Z" fill="#6b4bb0"/>
+              <path d="M22 66 Q62 56 103 60" fill="none" stroke="#3b2a66" stroke-width="1.2" opacity=".6"/>
+              <g fill="#dbeefe">
+                <circle cx="10" cy="40" r="8.5"/>
+                <circle cx="3" cy="36" r="3"/><circle cx="6" cy="32" r="3"/><circle cx="12" cy="31" r="3"/><circle cx="17" cy="35" r="3"/>
+                <circle cx="18" cy="42" r="3"/><circle cx="15" cy="47" r="3"/><circle cx="9" cy="49" r="3"/><circle cx="3" cy="45" r="3"/><circle cx="1.5" cy="40" r="3"/>
+              </g>
+              <circle cx="10" cy="40" r="6.2" fill="#fff"/>
+            </svg>
+            </span>
+            <span class="hero-zzz" aria-hidden="true"><b>Z</b><b>z</b><b>z</b></span>
         </div>
     </section>
+
+    <script>
+        // O urso conforme o dia: usa a hora do aparelho de quem abriu a página.
+        // (O servidor na Azure fica em UTC, 3 horas à frente de Brasília, por isso a hora não vem dele.)
+        // Roda logo depois do painel, antes da página aparecer, então não pisca o texto antigo.
+        (function () {
+            var painel = document.getElementById("heroPainel");
+            var nome = painel.dataset.nome;
+
+            // Os 4 períodos, na ordem em que a taça vai trocando.
+            // Para mudar os textos: "saudacao" é o título grande e "frase" é o texto de baixo.
+            var periodos = [
+                { classe: "periodo-manha", icone: "bi-sun-fill", saudacao: "Bom dia",
+                  frase: "Sua plataforma de controle de estoque e vendas de bebidas e produtos." },
+                { classe: "periodo-tarde", icone: "", saudacao: "Boa tarde",
+                  frase: "Sua plataforma de controle de estoque e vendas de bebidas e produtos." },
+                { classe: "periodo-noite", icone: "bi-moon-stars-fill", saudacao: "Boa noite",
+                  frase: "Sua plataforma de controle de estoque e vendas de bebidas e produtos." },
+                { classe: "periodo-madrugada", icone: "bi-moon-fill", saudacao: "Boa madrugada",
+                  frase: "Sua plataforma de controle de estoque e vendas de bebidas e produtos." }
+            ];
+
+            function aplicar(indice) {
+                var p = periodos[indice];
+
+                periodos.forEach(function (outro) { painel.classList.remove(outro.classe); });
+                painel.classList.add(p.classe);
+
+                document.getElementById("heroFrase").textContent = p.frase;
+                document.getElementById("heroCeu").innerHTML = p.icone ? '<i class="bi ' + p.icone + '"></i>' : "";
+
+                // "Bom dia," + quebra de linha + "Vinicius!" (createTextNode: o nome entra como texto, nunca como HTML)
+                var titulo = document.getElementById("heroTitulo");
+                titulo.textContent = p.saudacao + (nome ? "," : "!");
+                if (nome) {
+                    titulo.appendChild(document.createElement("br"));
+                    titulo.appendChild(document.createTextNode(nome + "!"));
+                }
+            }
+
+            // Período de acordo com a hora do aparelho
+            var hora = new Date().getHours();
+            var atual;
+            if (hora >= 6 && hora < 12) atual = 0;        // manhã
+            else if (hora >= 12 && hora < 18) atual = 1;  // tarde
+            else if (hora >= 18 && hora < 23) atual = 2;  // noite
+            else atual = 3;                               // madrugada
+            aplicar(atual);
+
+            // Taça: cada clique passa para o próximo período. Não salva nada,
+            // então ao recarregar a página volta para o período do horário real.
+            document.getElementById("heroTrocar").addEventListener("click", function () {
+                atual = (atual + 1) % periodos.length;
+                aplicar(atual);
+            });
+        })();
+    </script>
 
     <div class="atalhos">
         <a class="atalho" asp-controller="Venda" asp-action="Cadastrar">
@@ -78,8 +168,9 @@
 
 <style>
     /* ==============================
-       CEREJA E GUARDA-CHUVA (5 cliques no urso)
-       Os dois caem do alto e param dentro da taça que forma o nariz do urso.
+       SURPRESAS DO URSO (5 cliques no urso)
+       Primeiro a cereja e o guarda-chuva caem dentro da taça que forma o nariz do urso,
+       depois vêm o colar havaiano e os óculos escuros de pixel, e tudo fica junto um tempo.
        ============================== */
 
     .enfeite-drink {
@@ -171,14 +262,17 @@
 </style>
 
 <script>
-    // ===== Cereja e guarda-chuva (5 cliques no urso) =====
+    // ===== Surpresas do urso (5 cliques no urso) =====
+    // 1) Cereja e guarda-chuva caem na taça do nariz.  2) Colar havaiano e óculos escuros.
+    // 3) Tudo fica na tela junto por alguns segundos e some.
     // O nariz do urso é uma taça. As medidas abaixo são frações do tamanho da imagem
     // (tiradas do polaria.png), então a animação acerta a taça em qualquer tamanho de tela.
 
     (function () {
         var CLIQUES = 5;
         var TACA = { centroX: 0.50, bordaY: 0.535 };
-        var TEMPO_SERVIDO = 3.2; // segundos que o drink fica pronto antes de sumir
+        var TEMPO_SERVIDO = 4.5;  // segundos que tudo fica na tela depois que os óculos encaixam
+        var ESPERA_FERIAS = 2.6;  // segundos depois do drink para começar o colar e os óculos
 
         var SVG_CEREJA =
             '<svg viewBox="0 0 20 28" xmlns="http://www.w3.org/2000/svg">' +
@@ -211,7 +305,9 @@
             if (cliques >= CLIQUES) {
                 cliques = 0;
                 animando = true;
+
                 servirDrink();
+                setTimeout(modoFerias, ESPERA_FERIAS * 1000);
             }
         });
 
@@ -303,14 +399,134 @@
 
                 posicionar(el, x, y, graus);
 
-                if (p < 1) {
-                    requestAnimationFrame(descer);
-                } else {
-                    setTimeout(recolher, TEMPO_SERVIDO * 1000);
-                }
+                if (p < 1) requestAnimationFrame(descer);
             }
 
             requestAnimationFrame(descer);
+        }
+
+        // ===== Modo férias: colar havaiano + óculos escuros de pixel =====
+        // Medidas também em frações da imagem: os olhos terminam em ~0.43 da altura,
+        // então os óculos param logo abaixo (os olhos continuam aparecendo) e o colar fica sob o queixo.
+
+        var OCULOS = { largura: 0.58, topo: 0.435 };
+        var COLAR = { largura: 0.68, topo: 0.54 };
+
+        function modoFerias() {
+            var largura = img.offsetWidth;
+            var altura = img.offsetHeight;
+
+            colocarColar(largura, altura);
+            setTimeout(function () { colocarOculos(largura, altura); }, 700);
+        }
+
+        // Óculos em pixel art: grade de 32 x 7 quadradinhos
+        function svgOculos() {
+            // [linha, de, até] da lente esquerda; a direita é o espelho dela
+            var lente = [[1, 0, 14], [2, 0, 13], [3, 1, 12], [4, 1, 11], [5, 2, 10], [6, 3, 9]];
+            // [linha, coluna] dos quadradinhos brancos do reflexo (repetidos na lente direita)
+            var reflexo = [[2, 3], [2, 5], [3, 4], [3, 6], [4, 5], [4, 7]];
+
+            var preto = '<rect x="0" y="0" width="32" height="1.05"/>';
+            lente.forEach(function (l) {
+                var tamanho = l[2] - l[1] + 1;
+                preto += '<rect x="' + l[1] + '" y="' + l[0] + '" width="' + tamanho + '" height="1.05"/>';
+                preto += '<rect x="' + (31 - l[2]) + '" y="' + l[0] + '" width="' + tamanho + '" height="1.05"/>';
+            });
+
+            var branco = '';
+            reflexo.forEach(function (r) {
+                branco += '<rect x="' + r[1] + '" y="' + r[0] + '" width="1" height="1"/>';
+                branco += '<rect x="' + (r[1] + 16) + '" y="' + r[0] + '" width="1" height="1"/>';
+            });
+
+            return '<svg viewBox="0 0 32 7" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">' +
+                '<g fill="#000">' + preto + '</g>' +
+                '<g class="reflexo-oculos" fill="#fff">' + branco + '</g>' +
+                '</svg>';
+        }
+
+        // Colar havaiano: flores de 5 pétalas e folhas ao longo de um arco
+        function svgColar() {
+            var cores = ['#ff4f8b', '#ffd23f', '#ff7a3d', '#c86bfa', '#ff3b5c'];
+            var total = 13;
+            var pontos = [];
+
+            for (var i = 0; i < total; i++) {
+                var angulo = (12 + 156 * i / (total - 1)) * Math.PI / 180;
+                pontos.push({ x: 50 + 42 * Math.cos(angulo), y: 6 + 44 * Math.sin(angulo) });
+            }
+
+            var folhas = '';
+            for (var f = 0; f < total - 1; f++) {
+                var a = pontos[f], b = pontos[f + 1];
+                var giro = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+                folhas += '<ellipse rx="3.8" ry="1.6" fill="#2f9e44" transform="translate(' +
+                    ((a.x + b.x) / 2).toFixed(1) + ' ' + ((a.y + b.y) / 2 + 2.5).toFixed(1) + ') rotate(' + giro.toFixed(0) + ')"/>';
+            }
+
+            var flores = '';
+            pontos.forEach(function (ponto, i) {
+                var petalas = '';
+                for (var k = 0; k < 5; k++) {
+                    petalas += '<ellipse cy="-3.2" rx="2.4" ry="3.4" transform="rotate(' + (k * 72) + ')"/>';
+                }
+                flores += '<g fill="' + cores[i % cores.length] + '" transform="translate(' +
+                    ponto.x.toFixed(1) + ' ' + ponto.y.toFixed(1) + ') rotate(' + (i * 23) + ')">' +
+                    petalas + '<circle r="1.6" fill="#fff3b0"/></g>';
+            });
+
+            return '<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">' + folhas + flores + '</svg>';
+        }
+
+        // Colar: cai por cima da cabeça, para no pescoço e balança um pouco
+        function colocarColar(largura, altura) {
+            var w = largura * COLAR.largura;
+            var h = w * 0.6;
+            var el = criarEnfeite(svgColar(), w, h);
+
+            var x = largura / 2 - w / 2;
+            var yFinal = altura * COLAR.topo;
+
+            posicionar(el, x, yFinal, 0);
+            el.animate(
+                [{ transform: 'translate(' + x + 'px, ' + (-h * 1.3) + 'px)' }, { transform: 'translate(' + x + 'px, ' + yFinal + 'px)' }],
+                { duration: 600, easing: 'cubic-bezier(.55, 0, 1, .45)' }
+            ).onfinish = function () {
+                el.firstChild.style.transformOrigin = '50% 15%';
+                el.firstChild.animate(
+                    [{ transform: 'rotate(0)' }, { transform: 'rotate(7deg)' }, { transform: 'rotate(-5deg)' },
+                     { transform: 'rotate(3deg)' }, { transform: 'rotate(-1.5deg)' }, { transform: 'rotate(0)' }],
+                    { duration: 1300, easing: 'ease-out' });
+            };
+        }
+
+        // Óculos: descem devagar (bem no estilo do meme), encaixam no rosto e o reflexo pisca
+        function colocarOculos(largura, altura) {
+            var w = largura * OCULOS.largura;
+            var h = w * 7 / 32;
+            var el = criarEnfeite(svgOculos(), w, h);
+            el.style.zIndex = 9; // fica atrás da cereja e do guarda-chuva, que estão "na frente", dentro da taça
+
+            var x = largura / 2 - w / 2;
+            var yFinal = altura * OCULOS.topo;
+            var yInicial = -h * 4;
+
+            posicionar(el, x, yFinal, 0);
+            el.animate(
+                [
+                    { transform: 'translate(' + x + 'px, ' + yInicial + 'px)' },
+                    { transform: 'translate(' + x + 'px, ' + (yFinal + h * 0.12) + 'px)', offset: 0.88 },
+                    { transform: 'translate(' + x + 'px, ' + yFinal + 'px)' }
+                ],
+                { duration: 1700, easing: 'linear' }
+            ).onfinish = function () {
+                el.querySelector('.reflexo-oculos').animate(
+                    [{ opacity: 1 }, { opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }],
+                    { duration: 700, easing: 'steps(1, end)' });
+
+                setTimeout(recolher, TEMPO_SERVIDO * 1000);
+            };
         }
 
         function espirrar(x, y) {
