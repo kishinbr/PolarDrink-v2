@@ -24,6 +24,7 @@ namespace PolarDrinks.Modules.Loja.Controllers
 
             return View(aguardando);
         }
+        [AdminFilter]
         public IActionResult Detalhes(int id)
         {
             var pedido = _pedidoService.ObterPedidoAdmin(id);
@@ -86,6 +87,7 @@ namespace PolarDrinks.Modules.Loja.Controllers
             TempData[resultado.Sucesso ? "MensagemSucesso" : "MensagemErro"] = resultado.Mensagem;
             return RedirectToAction("Historico");
         }
+        [AdminFilter]
         public IActionResult Historico()
         {
             var todos = new List<PedidoModel>();

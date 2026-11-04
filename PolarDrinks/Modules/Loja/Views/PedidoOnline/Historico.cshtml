@@ -39,8 +39,9 @@
                 </div>
 
             </div>
-
-            <a asp-action="Index"
+            @if (Context.Session.GetString("Perfil") == "Admin")
+            {
+                <a asp-action="Index"
                asp-controller="Venda"
                class="btn text-white fw-semibold px-3 py-2 rounded-3 border-0"
                style="background:linear-gradient(135deg,#3b82f6,#6366f1);"
@@ -50,7 +51,7 @@
                 Ver histórico
 
             </a>
-
+            }
         </div>
 
         <div class="bg-shadow text-light p-3 rounded-4 mb-3">
