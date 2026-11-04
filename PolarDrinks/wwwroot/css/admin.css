@@ -1,0 +1,348 @@
+/* =========================================================
+   POLAR DRINKS - SISTEMA ADMINISTRATIVO
+   Mesma identidade da loja (Poppins, títulos fortes, azul Polar).
+   Tema escuro é o padrão; o claro vale com data-tema="claro" na tag <html>.
+   ========================================================= */
+
+:root {
+    --azul: #0277c9;
+    --azul-escuro: #035a99;
+    --azul-gelo: #38bdf8;
+    --azul-noite: #08233d;
+    --azul-tinta: rgba(2, 119, 201, .2);
+
+    --texto: #f0f3f6;
+    --texto-suave: #c9d1d9;
+    --texto-fraco: #8b949e;
+
+    --fundo: #0d1117;
+    --superficie: #161b22;
+    --superficie-2: #1f2630;
+    --borda: #2a313c;
+
+    --sucesso: #4ade80;
+    --sucesso-tinta: rgba(34, 197, 94, .14);
+    --alerta: #fbbf24;
+    --alerta-tinta: rgba(245, 158, 11, .14);
+    --erro: #f87171;
+    --erro-tinta: rgba(239, 68, 68, .14);
+
+    --raio: 12px;
+    --raio-grande: 16px;
+    --largura-menu: 252px;
+
+    --fonte: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fonte-titulo: "Montserrat", "Poppins", system-ui, sans-serif;
+
+    color-scheme: dark;
+}
+
+html[data-tema="claro"] {
+    --azul-tinta: #e8f4fc;
+
+    --texto: #0a0a0a;
+    --texto-suave: #374151;
+    --texto-fraco: #6b7280;
+
+    --fundo: #f2f4f6;
+    --superficie: #ffffff;
+    --superficie-2: #f2f4f6;
+    --borda: #e5e7eb;
+
+    --sucesso: #15803d;
+    --sucesso-tinta: #e9f7ee;
+    --alerta: #b45309;
+    --alerta-tinta: #fef6e7;
+    --erro: #c81e1e;
+    --erro-tinta: #fdecec;
+
+    color-scheme: light;
+}
+
+body {
+    margin: 0;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: var(--fonte);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================
+   MENU LATERAL
+========================= */
+
+.admin-menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    width: var(--largura-menu);
+    display: flex;
+    flex-direction: column;
+    padding: 22px 16px;
+    overflow-y: auto;
+    background: var(--superficie);
+    border-right: 1px solid var(--borda);
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 8px 18px;
+    border-bottom: 1px solid var(--borda);
+    color: var(--texto);
+    text-decoration: none;
+}
+
+    .admin-logo:hover {
+        color: var(--texto);
+    }
+
+    .admin-logo img {
+        width: 38px;
+    }
+
+    .admin-logo span {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -.02em;
+        white-space: nowrap;
+    }
+
+    .admin-logo strong {
+        color: var(--azul);
+    }
+
+.admin-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 6px 6px;
+    padding: 10px;
+    border-radius: var(--raio);
+    background: var(--superficie-2);
+}
+
+    .admin-usuario b {
+        display: block;
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 150px;
+    }
+
+    .admin-usuario small {
+        color: var(--texto-fraco);
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+.admin-avatar {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--azul-noite), var(--azul));
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.secao-menu {
+    margin: 18px 10px 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+}
+
+.item-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s, color .2s;
+}
+
+    .item-menu i {
+        font-size: 16px;
+        color: var(--texto-fraco);
+        transition: color .2s;
+    }
+
+    .item-menu:hover {
+        background: var(--superficie-2);
+        color: var(--texto);
+    }
+
+        .item-menu:hover i {
+            color: var(--texto);
+        }
+
+    .item-menu.ativo {
+        background: var(--azul-tinta);
+        color: var(--azul);
+    }
+
+        .item-menu.ativo i {
+            color: var(--azul);
+        }
+
+        .item-menu.ativo::before {
+            content: "";
+            position: absolute;
+            left: -16px;
+            top: 8px;
+            bottom: 8px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--azul);
+        }
+
+/* =========================
+   ÁREA PRINCIPAL
+========================= */
+
+.admin-principal {
+    min-height: 100vh;
+    margin-left: var(--largura-menu);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-topo {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    padding: 10px 36px;
+    background: rgba(13, 17, 23, .92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--borda);
+}
+
+html[data-tema="claro"] .admin-topo {
+    background: rgba(255, 255, 255, .92);
+}
+
+.admin-topo-titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texto);
+}
+
+.admin-icone {
+    width: 40px;
+    height: 40px;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--texto-suave);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+    .admin-icone:hover {
+        background: var(--superficie-2);
+        color: var(--texto);
+    }
+
+.admin-botao-menu,
+.admin-logo-topo {
+    display: none;
+}
+
+.admin-conteudo {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-fundo-menu {
+    display: none;
+}
+
+/* =========================
+   TABELAS (DataTables)
+========================= */
+
+select.dt-input {
+    color: var(--texto) !important;
+    background-color: var(--superficie) !important;
+    border: 1px solid var(--borda) !important;
+}
+
+.dt-length label {
+    color: var(--texto) !important;
+}
+
+/* =========================
+   CELULAR E TABLET: o menu vira uma gaveta
+========================= */
+
+@media (max-width: 992px) {
+    .admin-menu {
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 20px 0 50px rgba(0, 0, 0, .4);
+    }
+
+    .menu-aberto .admin-menu {
+        transform: translateX(0);
+    }
+
+    .menu-aberto .admin-fundo-menu {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1035;
+        background: rgba(0, 0, 0, .55);
+    }
+
+    .admin-principal {
+        margin-left: 0;
+    }
+
+    .admin-topo {
+        padding: 8px 16px;
+    }
+
+    .admin-botao-menu {
+        display: inline-grid;
+    }
+
+    .admin-topo-titulo {
+        display: none;
+    }
+
+    .admin-logo-topo {
+        display: flex;
+        padding: 0;
+        border: 0;
+    }
+
+        .admin-logo-topo img {
+            width: 30px;
+        }
+
+        .admin-logo-topo span {
+            font-size: 19px;
+        }
+}
