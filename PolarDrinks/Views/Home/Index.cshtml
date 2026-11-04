@@ -1,24 +1,72 @@
-﻿
 @{
-    ViewData["Title"] = "Polar Drinks Visual";
+    ViewData["Title"] = "Início";
+    var ehAdmin = Context.Session.GetString("Perfil") == "Admin";
 }
 
-<div class="tema-dark" style="min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;">
-    <div class="container py-4 px-3 px-md-5">
-        <div class="bg-shadow p-4 p-md-5 rounded-5 text-light text-center">
-            <div id="ice-badge" class="sf-icon-badge mx-auto mb-3" style="background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 8px 20px -8px rgba(59,130,246,.8);cursor:pointer;user-select:none;">
-                <i class="bi bi-snow2 fs-4 text-white"></i>
-            </div>
+<div class="pagina">
 
-            <h1 class="display-5 display-md-4 fw-bold mb-1">Bem-vindo ao</h1>
-            <h1 class="display-5 display-md-4 fw-bold mb-3">Polar Drinks!</h1>
-            <p class="lead text-secondary mb-4">Sua plataforma de controle de estoque e vendas de bebidas e produtos</p>
+    <section class="hero-painel">
+        <div>
+            <span class="hero-etiqueta">
+                <span id="ice-badge" class="hero-gelo"><i class="bi bi-snow2"></i></span>
+                Painel da equipe
+            </span>
 
-            <div id="bear-zone" style="position:relative;display:inline-block;">
-                <img id="bear-img" src="/img/polaria.png" class="img-fluid" style="max-height:400px;object-fit:contain;cursor:pointer;" alt="Polaria mascot" />
-            </div>
+            <h1>Bem-vindo ao<br />Polar Drinks!</h1>
+            <p>Sua plataforma de controle de estoque e vendas de bebidas e produtos.</p>
+
+            <a class="botao botao-branco" asp-controller="Venda" asp-action="Cadastrar">
+                Nova venda <i class="bi bi-arrow-right"></i>
+            </a>
         </div>
+
+        <div id="bear-zone" class="hero-urso">
+            <img id="bear-img" src="/img/polaria.png" alt="Polaria, o mascote do Polar Drinks" />
+        </div>
+    </section>
+
+    <div class="atalhos">
+        <a class="atalho" asp-controller="Venda" asp-action="Cadastrar">
+            <span class="icone-atalho"><i class="bi bi-cart-check"></i></span>
+            <b>Nova venda</b>
+            <small>Registrar uma venda no balcão</small>
+            <span class="ir">Abrir <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <a class="atalho" asp-controller="PedidoOnline" asp-action="Index">
+            <span class="icone-atalho"><i class="bi bi-bag-check"></i></span>
+            <b>Pedidos online</b>
+            <small>Separar e entregar os pedidos da loja</small>
+            <span class="ir">Abrir <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <a class="atalho" asp-controller="Estoque" asp-action="Index">
+            <span class="icone-atalho"><i class="bi bi-box-seam"></i></span>
+            <b>Produtos</b>
+            <small>Consultar preços e estoque</small>
+            <span class="ir">Abrir <i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        @if (ehAdmin)
+        {
+            <a class="atalho" asp-controller="Dashboard" asp-action="Index">
+                <span class="icone-atalho"><i class="bi bi-graph-up"></i></span>
+                <b>Dashboard</b>
+                <small>Indicadores e relatórios</small>
+                <span class="ir">Abrir <i class="bi bi-arrow-right"></i></span>
+            </a>
+        }
+        else
+        {
+            <a class="atalho" asp-controller="Fornecedor" asp-action="Index">
+                <span class="icone-atalho"><i class="bi bi-truck"></i></span>
+                <b>Fornecedores</b>
+                <small>Contatos de quem abastece a loja</small>
+                <span class="ir">Abrir <i class="bi bi-arrow-right"></i></span>
+            </a>
+        }
     </div>
+
 </div>
 
 <!-- Easter egg: 5 cliques no gelo congelam a tela -->

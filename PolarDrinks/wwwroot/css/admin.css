@@ -10,6 +10,7 @@
     --azul-gelo: #38bdf8;
     --azul-noite: #08233d;
     --azul-tinta: rgba(2, 119, 201, .2);
+    --azul-texto: #38bdf8;   /* azul para textos: mais claro no tema escuro */
 
     --texto: #f0f3f6;
     --texto-suave: #c9d1d9;
@@ -39,6 +40,7 @@
 
 html[data-tema="claro"] {
     --azul-tinta: #e8f4fc;
+    --azul-texto: #0277c9;
 
     --texto: #0a0a0a;
     --texto-suave: #374151;
@@ -372,6 +374,456 @@ select.dt-input,
     }
 
 /* =========================
+   COMPONENTES DAS TELAS
+   Cabeçalho da página, cartões, botões, avisos e formulários.
+========================= */
+
+.pagina {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 36px 40px;
+}
+
+.pagina-cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.pagina-etiqueta {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--azul-texto);
+}
+
+.pagina-titulo {
+    margin: 4px 0 2px;
+    font-family: var(--fonte-titulo);
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -.01em;
+    text-transform: uppercase;
+    color: var(--texto);
+}
+
+.pagina-subtitulo {
+    margin: 0;
+    color: var(--texto-fraco);
+    font-weight: 500;
+}
+
+.pagina-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.cartao {
+    padding: 24px;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-grande);
+    color: var(--texto);
+}
+
+.cartao-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+}
+
+.cartao-estreito {
+    max-width: 520px;
+}
+
+.cartao-medio {
+    max-width: 960px;
+}
+
+/* Botões */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1.5px solid transparent;
+    border-radius: var(--raio);
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s, box-shadow .2s;
+}
+
+.botao-primario {
+    background: var(--azul);
+    color: #fff;
+    box-shadow: 0 10px 20px -10px rgba(2, 119, 201, .7);
+}
+
+    .botao-primario:hover {
+        background: var(--azul-escuro);
+        color: #fff;
+    }
+
+.botao-secundario {
+    background: transparent;
+    border-color: var(--borda);
+    color: var(--texto);
+}
+
+    .botao-secundario:hover {
+        border-color: var(--texto-suave);
+        color: var(--texto);
+    }
+
+.botao-perigo {
+    background: #c81e1e;
+    color: #fff;
+}
+
+    .botao-perigo:hover {
+        background: #a51717;
+        color: #fff;
+    }
+
+.botao-sucesso {
+    background: #15803d;
+    color: #fff;
+}
+
+    .botao-sucesso:hover {
+        background: #116a32;
+        color: #fff;
+    }
+
+.botao-pequeno {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 10.5px;
+}
+
+.form-botoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Botões de ação dentro das tabelas */
+.acao-tabela {
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--texto-suave);
+    text-decoration: none;
+    transition: border-color .2s, color .2s;
+}
+
+    .acao-tabela:hover {
+        border-color: var(--azul);
+        color: var(--azul-texto);
+    }
+
+    .acao-tabela.perigo:hover {
+        border-color: var(--erro);
+        color: var(--erro);
+    }
+
+/* Avisos (mensagens de sucesso e erro) */
+.aviso {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: var(--raio);
+    font-weight: 600;
+}
+
+.aviso-sucesso {
+    background: var(--sucesso-tinta);
+    color: var(--sucesso);
+}
+
+.aviso-erro {
+    background: var(--erro-tinta);
+    color: var(--erro);
+}
+
+.aviso-info {
+    background: var(--azul-tinta);
+    color: var(--azul-texto);
+}
+
+/* Formulários */
+.rotulo {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+}
+
+.form-control,
+.form-select {
+    min-height: 46px;
+    background-color: var(--fundo);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    color: var(--texto);
+    font-weight: 500;
+}
+
+    .form-control[readonly],
+    .form-control:disabled {
+        background-color: var(--superficie-2);
+        color: var(--texto-suave);
+    }
+
+textarea.form-control {
+    min-height: 96px;
+}
+
+.input-group > .form-control {
+    min-height: 46px;
+}
+
+.form-check-label {
+    color: var(--texto-suave);
+    font-weight: 500;
+}
+
+.text-danger {
+    color: var(--erro) !important;
+    font-size: 12.5px;
+}
+
+.campo-ajuda {
+    display: block;
+    margin-top: 6px;
+    color: var(--texto-fraco);
+    font-size: 12px;
+}
+
+/* Bloco com dados de um registro (ex.: usuário que vai ser alterado) */
+.ficha {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: var(--raio);
+    background: var(--superficie-2);
+}
+
+    .ficha b {
+        display: block;
+        color: var(--texto);
+    }
+
+    .ficha small {
+        color: var(--texto-fraco);
+        font-weight: 500;
+    }
+
+/* Números (CNPJ, telefone, CEP, valores) não quebram linha nas tabelas */
+.table .sf-num {
+    white-space: nowrap;
+}
+
+/* Selo neutro (ex.: perfil Funcionário) e cores do avatar na ficha */
+.sf-badge-neutro {
+    background: rgba(148, 163, 184, .14);
+    color: var(--texto-suave);
+}
+
+.admin-avatar.avatar-perigo {
+    background: #c81e1e;
+}
+
+.admin-avatar.avatar-sucesso {
+    background: #15803d;
+}
+
+/* Imagem atual do produto (tela de edição) */
+.imagem-atual img {
+    width: 120px;
+    height: 120px;
+    padding: 8px;
+    object-fit: contain;
+    border-radius: var(--raio);
+    background: #eef1f4;
+}
+
+/* =========================
+   INÍCIO (HOME)
+========================= */
+
+.hero-painel {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    align-items: center;
+    gap: 24px;
+    padding: 46px 52px;
+    border-radius: 20px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 85% 30%, rgba(56, 189, 248, .45), transparent 45%),
+        linear-gradient(120deg, var(--azul-noite) 0%, #0b3a63 55%, var(--azul) 100%);
+    box-shadow: 0 20px 50px -20px rgba(2, 119, 201, .45);
+}
+
+    .hero-painel h1 {
+        margin: 16px 0 14px;
+        font-family: var(--fonte-titulo);
+        font-size: 44px;
+        font-weight: 900;
+        line-height: 1.02;
+        text-transform: uppercase;
+    }
+
+    .hero-painel p {
+        max-width: 440px;
+        margin: 0 0 24px;
+        color: rgba(255, 255, 255, .82);
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+.hero-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .14);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.hero-gelo {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .18);
+    font-size: 15px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.hero-painel .botao-branco {
+    background: #fff;
+    color: var(--azul-noite);
+}
+
+    .hero-painel .botao-branco:hover {
+        background: var(--azul-gelo);
+        color: var(--azul-noite);
+    }
+
+.hero-urso {
+    position: relative;
+    justify-self: center;
+}
+
+    .hero-urso img {
+        max-height: 300px;
+        object-fit: contain;
+        filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .35));
+        cursor: pointer;
+    }
+
+.atalhos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.atalho {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-grande);
+    color: var(--texto);
+    text-decoration: none;
+    transition: border-color .2s, transform .2s;
+}
+
+    .atalho:hover {
+        border-color: var(--azul);
+        color: var(--texto);
+        transform: translateY(-2px);
+    }
+
+    .atalho .icone-atalho {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 8px;
+        border-radius: var(--raio);
+        background: var(--azul);
+        color: #fff;
+        font-size: 20px;
+        box-shadow: 0 10px 15px -3px rgba(2, 119, 201, .25);
+    }
+
+    .atalho b {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+    }
+
+    .atalho small {
+        color: var(--texto-fraco);
+        font-size: 12.5px;
+        font-weight: 500;
+    }
+
+    .atalho .ir {
+        margin-top: 6px;
+        color: var(--azul-texto);
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+    }
+
+/* =========================
    CELULAR E TABLET: o menu vira uma gaveta
 ========================= */
 
@@ -423,4 +875,39 @@ select.dt-input,
         .admin-logo-topo span {
             font-size: 19px;
         }
+
+    .pagina {
+        padding: 20px 16px 32px;
+    }
+
+    .pagina-titulo {
+        font-size: 24px;
+    }
+
+    .hero-painel {
+        grid-template-columns: 1fr;
+        padding: 32px 24px;
+        text-align: center;
+    }
+
+        .hero-painel h1 {
+            font-size: 32px;
+        }
+
+        .hero-painel p {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    .hero-urso {
+        order: -1;
+    }
+
+        .hero-urso img {
+            max-height: 180px;
+        }
+
+    .atalhos {
+        grid-template-columns: 1fr 1fr;
+    }
 }
