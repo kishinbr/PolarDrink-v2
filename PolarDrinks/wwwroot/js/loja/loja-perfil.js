@@ -171,7 +171,14 @@ function abrirModalPedido(pedido) {
 
     if (podeCancelar) {
         document.getElementById("btnCancelarPedidoModal").addEventListener("click", async function () {
-            if (!confirm("Tem certeza que deseja cancelar este pedido?")) return;
+            const cancelar = await confirmarLoja({
+                titulo: "Cancelar este pedido?",
+                mensagem: "Os produtos voltam para o estoque e o pedido não poderá mais ser retirado.",
+                textoConfirmar: "Cancelar pedido",
+                textoCancelar: "Voltar",
+                perigo: true
+            });
+            if (!cancelar) return;
 
             const botao = this;
 
@@ -181,14 +188,14 @@ function abrirModalPedido(pedido) {
             const resultado = await chamarApi("/api/pedidos/" + pedido.pedidoID + "/cancelar", "POST");
 
             if (!resultado.ok) {
-                alert(resultado.dados?.mensagem || "Não foi possível cancelar o pedido.");
+                avisoLoja(resultado.dados?.mensagem || "Não foi possível cancelar o pedido.");
 
                 botao.disabled = false;
                 botao.innerHTML = `<i class="bi bi-x-circle"></i> Cancelar pedido`;
                 return;
             }
 
-            alert("Pedido cancelado com sucesso!");
+            avisoLoja("Pedido cancelado.", "sucesso");
 
             fecharModal();
             await carregarPedidos();

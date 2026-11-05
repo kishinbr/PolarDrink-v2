@@ -116,10 +116,16 @@ document.addEventListener("click", function (e) {
     }
 });
 
-document.getElementById("btnSairMenu").addEventListener("click", function (e) {
+document.getElementById("btnSairMenu").addEventListener("click", async function (e) {
     e.preventDefault();
 
-    if (!confirm("Deseja realmente sair da sua conta?")) return;
+    const sair = await confirmarLoja({
+        titulo: "Sair da conta?",
+        mensagem: "Seu carrinho fica salvo para quando você entrar de novo.",
+        textoConfirmar: "Sair",
+        textoCancelar: "Continuar"
+    });
+    if (!sair) return;
 
     removerToken();
     window.location.href = "/loja/catalogo";

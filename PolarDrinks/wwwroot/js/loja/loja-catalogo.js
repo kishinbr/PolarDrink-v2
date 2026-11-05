@@ -511,7 +511,7 @@ async function adicionarAoCarrinho(produtoId) {
         });
 
         if (!resultado.ok) {
-            alert(resultado.dados?.mensagem || "Não foi possível adicionar o produto ao carrinho.");
+            avisoLoja(resultado.dados?.mensagem || "Não foi possível adicionar o produto ao carrinho.");
             return false;
         }
     } else {
@@ -523,7 +523,7 @@ async function adicionarAoCarrinho(produtoId) {
         const quantidadeAtual = itemExistente ? itemExistente.quantidade : 0;
 
         if (produto && quantidadeAtual + 1 > produto.estoqueDisponivelOnline) {
-            alert(`Apenas ${produto.estoqueDisponivelOnline} unidade(s) de ${produto.produtoNome} disponíveis.`);
+            avisoLoja(`Apenas ${produto.estoqueDisponivelOnline} unidade(s) de ${produto.produtoNome} disponíveis.`);
             return false;
         }
 

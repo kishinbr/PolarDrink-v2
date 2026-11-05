@@ -1,0 +1,1327 @@
+/* =========================================================
+   POLAR DRINKS - SISTEMA ADMINISTRATIVO
+   Mesma identidade da loja (Poppins, títulos fortes, azul Polar).
+   Tema escuro é o padrão; o claro vale com data-tema="claro" na tag <html>.
+   ========================================================= */
+
+:root {
+    --azul: #0277c9;
+    --azul-escuro: #035a99;
+    --azul-gelo: #38bdf8;
+    --azul-noite: #08233d;
+    --azul-tinta: rgba(2, 119, 201, .2);
+    --azul-texto: #38bdf8;   /* azul para textos: mais claro no tema escuro */
+
+    --texto: #f0f3f6;
+    --texto-suave: #c9d1d9;
+    --texto-fraco: #8b949e;
+
+    --fundo: #0d1117;
+    --superficie: #161b22;
+    --superficie-2: #1f2630;
+    --borda: #2a313c;
+
+    --sucesso: #4ade80;
+    --sucesso-tinta: rgba(34, 197, 94, .14);
+    --alerta: #fbbf24;
+    --alerta-tinta: rgba(245, 158, 11, .14);
+    --erro: #f87171;
+    --erro-tinta: rgba(239, 68, 68, .14);
+
+    --raio: 12px;
+    --raio-grande: 16px;
+    --largura-menu: 252px;
+
+    --fonte: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fonte-titulo: "Montserrat", "Poppins", system-ui, sans-serif;
+
+    color-scheme: dark;
+}
+
+html[data-tema="claro"] {
+    --azul-tinta: #e8f4fc;
+    --azul-texto: #0277c9;
+
+    --texto: #0a0a0a;
+    --texto-suave: #374151;
+    --texto-fraco: #6b7280;
+
+    --fundo: #f2f4f6;
+    --superficie: #ffffff;
+    --superficie-2: #f2f4f6;
+    --borda: #e5e7eb;
+
+    --sucesso: #15803d;
+    --sucesso-tinta: #e9f7ee;
+    --alerta: #b45309;
+    --alerta-tinta: #fef6e7;
+    --erro: #c81e1e;
+    --erro-tinta: #fdecec;
+
+    color-scheme: light;
+}
+
+body {
+    margin: 0;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: var(--fonte);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================
+   MENU LATERAL
+========================= */
+
+.admin-menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    width: var(--largura-menu);
+    display: flex;
+    flex-direction: column;
+    padding: 22px 16px;
+    overflow-y: auto;
+    background: var(--superficie);
+    border-right: 1px solid var(--borda);
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 8px 18px;
+    border-bottom: 1px solid var(--borda);
+    color: var(--texto);
+    text-decoration: none;
+}
+
+    .admin-logo:hover {
+        color: var(--texto);
+    }
+
+    .admin-logo img {
+        width: 38px;
+    }
+
+    .admin-logo span {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -.02em;
+        white-space: nowrap;
+    }
+
+    .admin-logo strong {
+        color: var(--azul);
+    }
+
+.admin-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 6px 6px;
+    padding: 10px;
+    border-radius: var(--raio);
+    background: var(--superficie-2);
+}
+
+    .admin-usuario b {
+        display: block;
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 150px;
+    }
+
+    .admin-usuario small {
+        color: var(--texto-fraco);
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+.admin-avatar {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--azul-noite), var(--azul));
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.secao-menu {
+    margin: 18px 10px 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+}
+
+.item-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s, color .2s;
+}
+
+    .item-menu i {
+        font-size: 16px;
+        color: var(--texto-fraco);
+        transition: color .2s;
+    }
+
+    .item-menu:hover {
+        background: var(--superficie-2);
+        color: var(--texto);
+    }
+
+        .item-menu:hover i {
+            color: var(--texto);
+        }
+
+    .item-menu.ativo {
+        background: var(--azul-tinta);
+        color: var(--azul);
+    }
+
+        .item-menu.ativo i {
+            color: var(--azul);
+        }
+
+        .item-menu.ativo::before {
+            content: "";
+            position: absolute;
+            left: -16px;
+            top: 8px;
+            bottom: 8px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--azul);
+        }
+
+/* =========================
+   ÁREA PRINCIPAL
+========================= */
+
+.admin-principal {
+    min-height: 100vh;
+    margin-left: var(--largura-menu);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-topo {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    padding: 10px 36px;
+    background: rgba(13, 17, 23, .92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--borda);
+}
+
+html[data-tema="claro"] .admin-topo {
+    background: rgba(255, 255, 255, .92);
+}
+
+.admin-topo-titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texto);
+}
+
+.admin-icone {
+    width: 40px;
+    height: 40px;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--texto-suave);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+    .admin-icone:hover {
+        background: var(--superficie-2);
+        color: var(--texto);
+    }
+
+.admin-botao-menu,
+.admin-logo-topo {
+    display: none;
+}
+
+.admin-conteudo {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-fundo-menu {
+    display: none;
+}
+
+/* =========================
+   BOOTSTRAP COM AS CORES DO SISTEMA
+   O <html> tem data-bs-theme="dark": formulários, modais e tabelas do
+   Bootstrap já vêm escuros; aqui só trocamos as cores pelas nossas.
+========================= */
+
+html[data-bs-theme] {
+    --bs-body-bg: var(--fundo);
+    --bs-body-color: var(--texto);
+    --bs-body-font-family: var(--fonte);
+    --bs-secondary-color: var(--texto-fraco);
+    --bs-tertiary-bg: var(--superficie-2);
+    --bs-border-color: var(--borda);
+    --bs-primary: var(--azul);
+    --bs-primary-rgb: 2, 119, 201;
+    --bs-link-color: var(--azul-gelo);
+    --bs-link-hover-color: var(--azul-gelo);
+    --bs-link-color-rgb: 56, 189, 248;
+    --bs-link-hover-color-rgb: 56, 189, 248;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--azul);
+    --bs-btn-border-color: var(--azul);
+    --bs-btn-hover-bg: var(--azul-escuro);
+    --bs-btn-hover-border-color: var(--azul-escuro);
+    --bs-btn-active-bg: var(--azul-escuro);
+    --bs-btn-active-border-color: var(--azul-escuro);
+    --bs-btn-disabled-bg: var(--azul);
+    --bs-btn-disabled-border-color: var(--azul);
+}
+
+.form-check-input:checked {
+    background-color: var(--azul);
+    border-color: var(--azul);
+}
+
+.modal {
+    --bs-modal-bg: var(--superficie);
+    --bs-modal-border-color: var(--borda);
+}
+
+.dropdown-menu {
+    --bs-dropdown-bg: var(--superficie);
+    --bs-dropdown-border-color: var(--borda);
+}
+
+/* =========================
+   TABELAS (DataTables)
+========================= */
+
+select.dt-input,
+.dt-search input {
+    color: var(--texto) !important;
+    background-color: var(--fundo) !important;
+    border: 1px solid var(--borda) !important;
+    border-radius: 10px !important;
+}
+
+.dt-length label,
+.dt-search label {
+    color: var(--texto-suave) !important;
+}
+
+.dt-info {
+    color: var(--texto-fraco) !important;
+}
+
+.dt-paging .dt-paging-button {
+    border-radius: 8px !important;
+    color: var(--texto-suave) !important;
+}
+
+    .dt-paging .dt-paging-button.current,
+    .dt-paging .dt-paging-button.current:hover {
+        background: var(--azul) !important;
+        border-color: var(--azul) !important;
+        color: #fff !important;
+    }
+
+    .dt-paging .dt-paging-button:hover {
+        background: var(--superficie-2) !important;
+        border-color: var(--borda) !important;
+        color: var(--texto) !important;
+    }
+
+    .dt-paging .dt-paging-button.disabled,
+    .dt-paging .dt-paging-button.disabled:hover {
+        color: var(--texto-fraco) !important;
+        opacity: .5;
+    }
+
+/* Número de pedidos online aguardando separação (item do menu) */
+.contador-menu {
+    min-width: 20px;
+    height: 20px;
+    margin-left: auto;
+    padding: 0 6px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 20px;
+    background: var(--azul);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 800;
+    animation: pulsoPedido 2s ease-in-out infinite;
+}
+
+    .contador-menu[hidden] {
+        display: none;
+    }
+
+@keyframes pulsoPedido {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(2, 119, 201, .6);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(2, 119, 201, 0);
+    }
+}
+
+/* Aviso de pedido novo (canto inferior direito) */
+.aviso-pedido-novo {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1060;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--azul);
+    border-radius: var(--raio-grande);
+    background: var(--superficie);
+    color: var(--texto);
+    text-decoration: none;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+    animation: entrarAviso .35s ease-out;
+    transition: opacity .5s, transform .5s;
+}
+
+    .aviso-pedido-novo:hover {
+        color: var(--texto);
+        border-color: var(--azul-texto);
+    }
+
+    .aviso-pedido-novo i {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--raio);
+        background: var(--azul);
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .aviso-pedido-novo b {
+        display: block;
+        font-size: 14px;
+    }
+
+    .aviso-pedido-novo small {
+        color: var(--texto-fraco);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .aviso-pedido-novo.saindo {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+@keyframes entrarAviso {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+}
+
+/* No celular, um ponto no botão do menu avisa que há pedidos esperando */
+.admin-botao-menu {
+    position: relative;
+}
+
+.tem-pedidos .admin-botao-menu::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--fundo);
+    border-radius: 50%;
+    background: var(--azul);
+}
+
+/* =========================
+   COMPONENTES DAS TELAS
+   Cabeçalho da página, cartões, botões, avisos e formulários.
+========================= */
+
+.pagina {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 36px 40px;
+}
+
+.pagina-cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.pagina-etiqueta {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--azul-texto);
+}
+
+.pagina-titulo {
+    margin: 4px 0 2px;
+    font-family: var(--fonte-titulo);
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -.01em;
+    text-transform: uppercase;
+    color: var(--texto);
+}
+
+.pagina-subtitulo {
+    margin: 0;
+    color: var(--texto-fraco);
+    font-weight: 500;
+}
+
+.pagina-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.cartao {
+    padding: 24px;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-grande);
+    color: var(--texto);
+}
+
+.cartao-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+}
+
+.cartao-estreito {
+    max-width: 520px;
+}
+
+.cartao-medio {
+    max-width: 960px;
+}
+
+/* Botões */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1.5px solid transparent;
+    border-radius: var(--raio);
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s, box-shadow .2s;
+}
+
+.botao-primario {
+    background: var(--azul);
+    color: #fff;
+    box-shadow: 0 10px 20px -10px rgba(2, 119, 201, .7);
+}
+
+    .botao-primario:hover {
+        background: var(--azul-escuro);
+        color: #fff;
+    }
+
+.botao-secundario {
+    background: transparent;
+    border-color: var(--borda);
+    color: var(--texto);
+}
+
+    .botao-secundario:hover {
+        border-color: var(--texto-suave);
+        color: var(--texto);
+    }
+
+.botao-perigo {
+    background: #c81e1e;
+    color: #fff;
+}
+
+    .botao-perigo:hover {
+        background: #a51717;
+        color: #fff;
+    }
+
+.botao-sucesso {
+    background: #15803d;
+    color: #fff;
+}
+
+    .botao-sucesso:hover {
+        background: #116a32;
+        color: #fff;
+    }
+
+.botao-pequeno {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 10.5px;
+}
+
+.form-botoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Botões de ação dentro das tabelas */
+.acao-tabela {
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--texto-suave);
+    text-decoration: none;
+    transition: border-color .2s, color .2s;
+}
+
+    .acao-tabela:hover {
+        border-color: var(--azul);
+        color: var(--azul-texto);
+    }
+
+    .acao-tabela.perigo:hover {
+        border-color: var(--erro);
+        color: var(--erro);
+    }
+
+/* Avisos (mensagens de sucesso e erro) */
+.aviso {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: var(--raio);
+    font-weight: 600;
+}
+
+.aviso-sucesso {
+    background: var(--sucesso-tinta);
+    color: var(--sucesso);
+}
+
+.aviso-erro {
+    background: var(--erro-tinta);
+    color: var(--erro);
+}
+
+.aviso-info {
+    background: var(--azul-tinta);
+    color: var(--azul-texto);
+}
+
+/* Formulários */
+.rotulo {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+}
+
+.form-control,
+.form-select {
+    min-height: 46px;
+    background-color: var(--fundo);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    color: var(--texto);
+    font-weight: 500;
+}
+
+    .form-control[readonly],
+    .form-control:disabled {
+        background-color: var(--superficie-2);
+        color: var(--texto-suave);
+    }
+
+textarea.form-control {
+    min-height: 96px;
+}
+
+.input-group > .form-control {
+    min-height: 46px;
+}
+
+.form-check-label {
+    color: var(--texto-suave);
+    font-weight: 500;
+}
+
+.text-danger {
+    color: var(--erro) !important;
+    font-size: 12.5px;
+}
+
+.campo-ajuda {
+    display: block;
+    margin-top: 6px;
+    color: var(--texto-fraco);
+    font-size: 12px;
+}
+
+/* Bloco com dados de um registro (ex.: usuário que vai ser alterado) */
+.ficha {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: var(--raio);
+    background: var(--superficie-2);
+}
+
+    .ficha b {
+        display: block;
+        color: var(--texto);
+    }
+
+    .ficha small {
+        color: var(--texto-fraco);
+        font-weight: 500;
+    }
+
+/* Números (CNPJ, telefone, CEP, valores) não quebram linha nas tabelas */
+.table .sf-num {
+    white-space: nowrap;
+}
+
+/* Selo neutro (ex.: perfil Funcionário) e cores do avatar na ficha */
+.sf-badge-neutro {
+    background: rgba(148, 163, 184, .14);
+    color: var(--texto-suave);
+}
+
+.admin-avatar.avatar-perigo {
+    background: #c81e1e;
+}
+
+.admin-avatar.avatar-sucesso {
+    background: #15803d;
+}
+
+/* Imagem atual do produto (tela de edição) */
+.imagem-atual img {
+    width: 120px;
+    height: 120px;
+    padding: 8px;
+    object-fit: contain;
+    border-radius: var(--raio);
+    background: #eef1f4;
+}
+
+/* =========================
+   INÍCIO (HOME)
+========================= */
+
+.hero-painel {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    align-items: center;
+    gap: 24px;
+    padding: 46px 52px;
+    border-radius: 20px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 85% 30%, rgba(56, 189, 248, .45), transparent 45%),
+        linear-gradient(120deg, var(--azul-noite) 0%, #0b3a63 55%, var(--azul) 100%);
+    box-shadow: 0 20px 50px -20px rgba(2, 119, 201, .45);
+}
+
+    .hero-painel h1 {
+        margin: 16px 0 14px;
+        font-family: var(--fonte-titulo);
+        font-size: 44px;
+        font-weight: 900;
+        line-height: 1.02;
+        text-transform: uppercase;
+    }
+
+    .hero-painel p {
+        max-width: 440px;
+        margin: 0 0 24px;
+        color: rgba(255, 255, 255, .82);
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+.hero-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .14);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.hero-gelo {
+    position: relative;
+    overflow: hidden;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .18);
+    font-size: 15px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .35s, color .35s, box-shadow .35s, transform .35s;
+}
+
+    .hero-gelo i {
+        display: inline-block;
+        transition: transform .9s cubic-bezier(.3, 1.4, .5, 1), filter .35s;
+    }
+
+    /* faixa de brilho que atravessa o cubo quando ele congela */
+    .hero-gelo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .9) 48%, transparent 66%);
+        transform: translateX(-130%);
+        pointer-events: none;
+    }
+
+    /* Mouse em cima: o quadradinho vira um cubo de gelo */
+    .hero-gelo:hover {
+        background: linear-gradient(145deg, #f0fbff 0%, #a5e2ff 45%, #5fbcef 100%);
+        color: #0a5f9e;
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, .9),
+            inset 0 -4px 6px rgba(2, 119, 201, .35),
+            0 0 16px rgba(125, 211, 252, .9);
+        transform: scale(1.12) rotate(-4deg);
+    }
+
+        .hero-gelo:hover i {
+            transform: rotate(180deg);
+            filter: drop-shadow(0 0 3px #fff);
+        }
+
+        .hero-gelo:hover::after {
+            animation: brilho-gelo .9s ease .15s;
+        }
+
+@keyframes brilho-gelo {
+    to { transform: translateX(130%); }
+}
+
+/* Taça da etiqueta: troca o período do dia (manhã, tarde, noite, madrugada) */
+.hero-taca {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+    .hero-taca:hover {
+        background: rgba(255, 255, 255, .3);
+        transform: rotate(-12deg);
+    }
+
+    .hero-taca svg {
+        width: 15px;
+        height: 15px;
+    }
+
+.hero-painel .botao-branco {
+    background: #fff;
+    color: var(--azul-noite);
+}
+
+    .hero-painel .botao-branco:hover {
+        background: var(--azul-gelo);
+        color: var(--azul-noite);
+    }
+
+.hero-urso {
+    position: relative;
+    justify-self: center;
+}
+
+    .hero-urso img {
+        max-height: 300px;
+        object-fit: contain;
+        filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .35));
+        cursor: pointer;
+    }
+
+/* O urso conforme o dia: o script da Home coloca uma classe periodo-* no .hero-painel.
+   A tarde usa o visual padrão do painel, por isso não tem regra própria. */
+
+.hero-ceu {
+    position: absolute;
+    top: 26px;
+    right: 32px;
+    font-size: 34px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.periodo-manha {
+    background:
+        radial-gradient(circle at 90% 14%, rgba(253, 224, 71, .55), transparent 28%),
+        radial-gradient(circle at 80% 40%, rgba(125, 211, 252, .5), transparent 50%),
+        linear-gradient(120deg, #0b4f86 0%, #1789cf 60%, #5cc0f0 100%);
+}
+
+    .periodo-manha .hero-ceu {
+        color: #fde047;
+    }
+
+.periodo-noite {
+    background:
+        radial-gradient(circle at 58% 16%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 70% 34%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 52% 70%, rgba(255, 255, 255, .6) 0 1px, transparent 2px),
+        radial-gradient(circle at 94% 52%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 85% 20%, rgba(129, 140, 248, .35), transparent 40%),
+        linear-gradient(120deg, #050b1a 0%, #0c1f3f 60%, #1d3a7a 100%);
+    box-shadow: 0 20px 50px -20px rgba(29, 58, 122, .6);
+}
+
+    .periodo-noite .hero-ceu {
+        color: #e0e7ff;
+    }
+
+.periodo-madrugada {
+    background:
+        radial-gradient(circle at 60% 20%, rgba(255, 255, 255, .45) 0 1px, transparent 2px),
+        radial-gradient(circle at 74% 62%, rgba(255, 255, 255, .35) 0 1px, transparent 2px),
+        linear-gradient(120deg, #03060d 0%, #081226 70%, #0f1d3a 100%);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .7);
+}
+
+    .periodo-madrugada .hero-ceu {
+        color: #94a3b8;
+    }
+
+    .periodo-madrugada .hero-urso img {
+        filter: brightness(.6) drop-shadow(0 30px 40px rgba(0, 0, 0, .5));
+    }
+
+/* Gorro de pijama do urso (só aparece de madrugada). Posição em % do tamanho do urso. */
+.hero-gorro {
+    display: none;
+    position: absolute;
+    left: 18%;
+    top: -5%;
+    width: 62%;
+    transform: rotate(-9deg);
+    filter: brightness(.85);
+    pointer-events: none;
+}
+
+    .hero-gorro svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+.periodo-madrugada .hero-gorro {
+    display: block;
+    animation: gorro-cai .7s cubic-bezier(.3, 1.5, .6, 1);
+}
+
+@keyframes gorro-cai {
+    from {
+        opacity: 0;
+        transform: translateY(-60%) rotate(-30deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: rotate(-9deg);
+    }
+}
+
+/* Zzz do urso dormindo (só aparece de madrugada) */
+.hero-zzz {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: var(--fonte-titulo);
+    font-weight: 900;
+    color: #c7d2fe;
+    pointer-events: none;
+}
+
+.periodo-madrugada .hero-zzz {
+    display: block;
+}
+
+.hero-zzz b {
+    position: absolute;
+    animation: zzz-flutua 3s ease-in-out infinite;
+}
+
+    .hero-zzz b:nth-child(1) {
+        right: 0;
+        top: 10px;
+        font-size: 30px;
+    }
+
+    .hero-zzz b:nth-child(2) {
+        right: 26px;
+        top: -16px;
+        font-size: 21px;
+        opacity: .75;
+        animation-delay: .4s;
+    }
+
+    .hero-zzz b:nth-child(3) {
+        right: 48px;
+        top: -36px;
+        font-size: 15px;
+        opacity: .5;
+        animation-delay: .8s;
+    }
+
+@keyframes zzz-flutua {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* No celular o urso fica no topo do painel: desce o Zzz e diminui o sol/lua */
+@media (max-width: 992px) {
+    .hero-zzz {
+        top: 22px;
+    }
+
+    .hero-ceu {
+        top: 20px;
+        right: 22px;
+        font-size: 28px;
+    }
+}
+
+.atalhos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.atalho {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-grande);
+    color: var(--texto);
+    text-decoration: none;
+    transition: border-color .2s, transform .2s;
+}
+
+    .atalho:hover {
+        border-color: var(--azul);
+        color: var(--texto);
+        transform: translateY(-2px);
+    }
+
+    .atalho .icone-atalho {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 8px;
+        border-radius: var(--raio);
+        background: var(--azul);
+        color: #fff;
+        font-size: 20px;
+        box-shadow: 0 10px 15px -3px rgba(2, 119, 201, .25);
+    }
+
+    .atalho b {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+    }
+
+    .atalho small {
+        color: var(--texto-fraco);
+        font-size: 12.5px;
+        font-weight: 500;
+    }
+
+    .atalho .ir {
+        margin-top: 6px;
+        color: var(--azul-texto);
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+    }
+
+/* =========================
+   CELULAR E TABLET: o menu vira uma gaveta
+========================= */
+
+@media (max-width: 992px) {
+    .admin-menu {
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 20px 0 50px rgba(0, 0, 0, .4);
+    }
+
+    .menu-aberto .admin-menu {
+        transform: translateX(0);
+    }
+
+    .menu-aberto .admin-fundo-menu {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1035;
+        background: rgba(0, 0, 0, .55);
+    }
+
+    .admin-principal {
+        margin-left: 0;
+    }
+
+    .admin-topo {
+        padding: 8px 16px;
+    }
+
+    .admin-botao-menu {
+        display: inline-grid;
+    }
+
+    .admin-topo-titulo {
+        display: none;
+    }
+
+    .admin-logo-topo {
+        display: flex;
+        padding: 0;
+        border: 0;
+    }
+
+        .admin-logo-topo img {
+            width: 30px;
+        }
+
+        .admin-logo-topo span {
+            font-size: 19px;
+        }
+
+    .pagina {
+        padding: 20px 16px 32px;
+    }
+
+    .pagina-titulo {
+        font-size: 24px;
+    }
+
+    .hero-painel {
+        grid-template-columns: 1fr;
+        padding: 32px 24px;
+        text-align: center;
+    }
+
+        .hero-painel h1 {
+            font-size: 32px;
+        }
+
+        .hero-painel p {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    .hero-urso {
+        order: -1;
+    }
+
+        .hero-urso img {
+            max-height: 180px;
+        }
+
+    .atalhos {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ===== Chips de categoria (cadastrar/editar produto) ===== */
+.categorias-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip-categoria {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.chip-categoria i {
+    display: none;
+}
+
+.chip-categoria:hover {
+    border-color: var(--azul-gelo);
+    color: var(--texto);
+}
+
+.btn-check:checked + .chip-categoria {
+    background: var(--azul-tinta);
+    border-color: var(--azul);
+    color: var(--azul-texto);
+}
+
+.btn-check:checked + .chip-categoria i {
+    display: inline;
+}
+
+.btn-check:focus-visible + .chip-categoria {
+    outline: 2px solid var(--azul-gelo);
+    outline-offset: 2px;
+}
+
+/* ===== Campo de imagem (cadastrar/editar produto) ===== */
+.upload-imagem {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-height: 46px;
+    padding: 6px;
+    border: 1px dashed var(--borda);
+    border-radius: var(--raio);
+    background: var(--fundo);
+}
+
+.upload-botao {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+}
+
+.upload-nome {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--texto-suave);
+    font-size: 13px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.upload-input:focus-visible + .upload-imagem .upload-botao {
+    outline: 2px solid var(--azul-gelo);
+    outline-offset: 2px;
+}
+
+.upload-previa {
+    display: block;
+    max-width: 160px;
+    max-height: 160px;
+    margin-top: 10px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    object-fit: cover;
+}

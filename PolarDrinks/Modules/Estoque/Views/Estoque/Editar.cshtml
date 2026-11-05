@@ -88,7 +88,7 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-4" data-upload>
                     <label class="form-label text-light">Imagem do Produto</label>
                     @if (!string.IsNullOrEmpty(Model.ProdutoImagemUrl))
                     {
@@ -100,7 +100,17 @@
                             <img src="@urlImagemAtual" alt="Imagem atual" style="max-width:120px;" class="rounded">
                         </div>
                     }
-                    <input type="file" class="form-control bg-shadow text-light" name="imagem" accept="image/*">
+                    <input type="file" class="visually-hidden upload-input" id="imagemProduto" name="imagem" accept="image/*">
+                    <div class="upload-imagem">
+                        <label for="imagemProduto" class="btn btn-outline-light upload-botao">
+                            <i class="bi bi-upload me-1"></i>Escolher nova imagem
+                        </label>
+                        <span class="upload-nome">Nenhuma nova imagem selecionada</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger upload-remover" hidden>
+                            <i class="bi bi-x-lg me-1"></i>Remover
+                        </button>
+                    </div>
+                    <img class="upload-previa" alt="Prévia da nova imagem" hidden>
                     @Html.ValidationMessage("imagem", null, new { @class = "text-danger" })
                     <small class="text-secondary">Deixe em branco para manter a imagem atual.</small>
                 </div>
@@ -110,13 +120,17 @@
                     @{
                         var categoriasSelecionadas = (List<int>)ViewBag.CategoriasSelecionadas;
                     }
-                    @foreach (var categoria in (List<CategoriaModel>)ViewBag.TodasCategorias)
-                    {
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="categoriaIds" value="@categoria.CategoriaID" checked="@(categoriasSelecionadas.Contains(categoria.CategoriaID) ? "checked" : null)">
-                            <label class="form-check-label text-light">@categoria.CategoriaNome</label>
-                        </div>
-                    }
+                    <div class="categorias-chips">
+                        @foreach (var categoria in (List<CategoriaModel>)ViewBag.TodasCategorias)
+                        {
+                            <input type="checkbox" class="btn-check" name="categoriaIds" value="@categoria.CategoriaID"
+                                   id="categoria-@categoria.CategoriaID" autocomplete="off"
+                                   checked="@(categoriasSelecionadas.Contains(categoria.CategoriaID) ? "checked" : null)">
+                            <label class="chip-categoria" for="categoria-@categoria.CategoriaID">
+                                <i class="bi bi-check-lg"></i>@categoria.CategoriaNome
+                            </label>
+                        }
+                    </div>
                 </div>
 
                 <div class="d-flex gap-3 mt-4">

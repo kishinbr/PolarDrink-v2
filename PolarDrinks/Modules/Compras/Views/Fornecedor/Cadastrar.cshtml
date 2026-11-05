@@ -65,6 +65,7 @@
                             <button type="button" id="btnBuscarCEP" class="btn btn-secondary" title="Buscar CEP">Buscar</button>
                         </div>
                         <span asp-validation-for="FornecedorCEP" class="text-danger"></span>
+                        <small id="erroCep" class="text-danger d-block" role="alert"></small>
                     </div>
 
                     <div class="col-md-2">
@@ -119,25 +120,34 @@
 
 @section Scripts {
 <script>
-    // buscar endereço pelo CEP usando a API ViaCEP
-    $("#btnBuscarCEP").click(function(){
-        var cep = $("#FornecedorCEP").val().replace(/\D/g, '');
+    // buscar endereço pelo CEP usando a API ViaCEP; erros aparecem embaixo do campo
+    $("#FornecedorCEP").on("input", function () {
+        $("#erroCep").text("");
+    });
 
-        if(cep.length !== 8){
-            alert("CEP inválido!");
+    $("#btnBuscarCEP").click(function () {
+        var cep = $("#FornecedorCEP").val().replace(/\D/g, '');
+        $("#erroCep").text("");
+
+        if (cep.length !== 8) {
+            $("#erroCep").text("Digite um CEP com 8 números.");
             return;
         }
 
-        $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(dados){
-            if(!("erro" in dados)){
-                $("#FornecedorLogradouro").val(dados.logradouro);
-                $("#FornecedorBairro").val(dados.bairro);
-                $("#FornecedorCidade").val(dados.localidade);
-                $("#FornecedorEstado").val(dados.uf);
-            } else {
-                alert("CEP não encontrado.");
-            }
-        });
+        $.getJSON(`https://viacep.com.br/ws/${cep}/json/`)
+            .done(function (dados) {
+                if (!("erro" in dados)) {
+                    $("#FornecedorLogradouro").val(dados.logradouro);
+                    $("#FornecedorBairro").val(dados.bairro);
+                    $("#FornecedorCidade").val(dados.localidade);
+                    $("#FornecedorEstado").val(dados.uf);
+                } else {
+                    $("#erroCep").text("CEP não encontrado. Confira os números.");
+                }
+            })
+            .fail(function () {
+                $("#erroCep").text("Não foi possível consultar o CEP agora. Tente de novo em instantes.");
+            });
     });
 </script>
 }

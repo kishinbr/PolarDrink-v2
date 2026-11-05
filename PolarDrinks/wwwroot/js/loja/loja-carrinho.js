@@ -188,10 +188,7 @@ async function alterarQuantidade(produtoId, delta) {
     );
 
     if (!resultadoAlteracao.ok) {
-        alert(
-            resultadoAlteracao.dados?.mensagem ||
-            "Não foi possível atualizar a quantidade."
-        );
+        avisoLoja(resultadoAlteracao.dados?.mensagem || "Não foi possível atualizar a quantidade.");
         return;
     }
 
@@ -244,10 +241,7 @@ document.getElementById("btnFinalizarCompra").addEventListener("click", async fu
     );
 
     if (!resultado.ok) {
-        alert(
-            resultado.dados?.mensagem ||
-            "Erro ao finalizar a compra. Tente novamente."
-        );
+        avisoLoja(resultado.dados?.mensagem || "Não foi possível finalizar a compra. Tente novamente.");
 
         botao.disabled = false;
 
@@ -264,9 +258,12 @@ document.getElementById("btnFinalizarCompra").addEventListener("click", async fu
 });
 
 document.getElementById("btnLimparCarrinho").addEventListener("click", async function () {
-    const confirmar = confirm(
-        "Tem certeza que deseja excluir todos os itens do carrinho?"
-    );
+    const confirmar = await confirmarLoja({
+        titulo: "Esvaziar o carrinho?",
+        mensagem: "Todos os itens serão removidos do carrinho.",
+        textoConfirmar: "Esvaziar",
+        perigo: true
+    });
 
     if (!confirmar) return;
 
