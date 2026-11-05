@@ -1,78 +1,94 @@
+/* =========================================================
+   CLASSES COMPARTILHADAS DAS TELAS DA EQUIPE
+   Usadas em quase todas as views (cartões, campos, tabelas, badges...).
+   Todas as cores vêm das variáveis do admin.css, então seguem o tema.
+   ========================================================= */
 
+/* Cartões */
 .bg-shadow {
-    background: linear-gradient(180deg, #1b1e27 0%, #16181f 100%) !important;
-    color: #e7e9ee;
-    border: 1px solid rgba(255,255,255,.06) !important;
-    box-shadow: 0 10px 30px -18px rgba(0,0,0,.9);
+    background: var(--superficie) !important;
+    color: var(--texto);
+    border: 1px solid var(--borda) !important;
+    box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .6);
     transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 
     .bg-shadow::placeholder {
-        color: #6b7280 !important;
+        color: var(--texto-fraco) !important;
         opacity: 1;
     }
 
-.bg-shadowt {
-    background-color: #151B23 !important;
-}
-
-.bg-shadowi {
-    background-color: #262C36 !important;
-    color: #fff;
-    border: 5px solid #3D444D !important;
-}
-
+/* Campos e áreas "afundadas" dentro dos cartões */
 .bg-tpreto {
-    background: #0f1116 !important;
-    border: 1px solid rgba(255,255,255,.06);
+    background: var(--fundo) !important;
+    border: 1px solid var(--borda);
 }
 
+/* Campos preenchidos automaticamente (somente leitura) */
+.bg-shadowi {
+    background-color: var(--superficie-2) !important;
+    color: var(--texto);
+    border: 1px solid var(--borda) !important;
+}
+
+/* Listas (sugestões de busca etc.) */
 .list-group-item {
-    background-color: #13161D !important;
-    color: #fff;
+    background-color: var(--superficie) !important;
+    color: var(--texto);
+    border-color: var(--borda);
 }
 
     .list-group-item:hover {
-        background-color: #262C36 !important;
-        color: #fff;
+        background-color: var(--superficie-2) !important;
+        color: var(--texto);
     }
 
 /* Tabelas */
-.table td,
-.table th {
-    background-color: #13161D !important;
-    color: #ffffff !important;
-    border-color: #2a2f3a !important;
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--texto);
 }
 
-.table.dataTable tbody tr:hover {
-    background-color: #262C36 !important;
+    .table > :not(caption) > * > * {
+        background-color: transparent !important;
+        color: var(--texto);
+        border-bottom-color: var(--borda) !important;
+    }
+
+    .table th,
+    .sf-thead th {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--texto-fraco) !important;
+    }
+
+    .table.dataTable tbody tr:hover > *,
+    .table-hover > tbody > tr:hover > *,
+    .bg-h:hover {
+        background-color: var(--superficie-2) !important;
+        color: var(--texto);
+    }
+
+.sf-thead th {
+    border: 0;
 }
 
-.bg-h:hover {
-    background-color: #262C36 !important;
+.dt-column-title {
+    color: var(--texto-fraco) !important;
 }
 
-.table > :not(caption) > * > * {
-    background-color: transparent !important;
-}
-
-
-/* =========================================================
-   ELEMENTOS DO TEMA DARK
-   Agora funcionam sem precisar de .tema-dark
-   ========================================================= */
-
+/* Texto secundário */
 .text-secondary {
-    color: #9aa0ac !important;
+    color: var(--texto-fraco) !important;
 }
 
-
-/* Ícones */
+/* Ícones dos títulos e dos indicadores */
 .sf-icon-badge {
     width: 48px;
     height: 48px;
-    border-radius: .75rem;
+    border-radius: var(--raio);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -91,159 +107,128 @@
     font-variant-numeric: tabular-nums;
 }
 
-
-/* Cabeçalho das tabelas */
-.sf-thead th {
-    font-size: .78rem;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    border: 0;
-}
-
-
-/* Tabelas */
-.table {
-    --bs-table-bg: transparent;
-}
-
-    .table > :not(caption) > * > * {
-        background-color: transparent;
-        color: #e7e9ee;
-        border-bottom-color: rgba(255,255,255,.05);
-    }
-
-.table-hover > tbody > tr:hover > * {
-    background-color: rgba(255,255,255,.03);
-    color: #e7e9ee;
-}
-
-
-/* Badges */
+/* Badges de status */
 .sf-badge {
     display: inline-block;
-    font-size: .72rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-variant-numeric: tabular-nums;
+    padding: 4px 11px;
     border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
 }
 
 .sf-badge-ok {
-    background: rgba(16,185,129,.14);
-    color: #34d399;
-    border-color: rgba(16,185,129,.3);
+    background: var(--sucesso-tinta);
+    color: var(--sucesso);
 }
 
 .sf-badge-baixo {
-    background: rgba(245,158,11,.14);
-    color: #fbbf24;
-    border-color: rgba(245,158,11,.3);
+    background: var(--alerta-tinta);
+    color: var(--alerta);
 }
 
-.sf-badge-zerado {
-    background: rgba(239,68,68,.14);
-    color: #f87171;
-    border-color: rgba(239,68,68,.3);
+.sf-badge-zerado,
+.sf-badge-inativo {
+    background: var(--erro-tinta);
+    color: var(--erro);
 }
 
 .sf-badge-ativo {
-    background: rgba(59,130,246,.14);
-    color: #60a5fa;
-    border-color: rgba(59,130,246,.3);
+    background: var(--azul-tinta);
+    color: var(--azul-gelo);
 }
 
-.sf-badge-inativo {
-    background: rgba(239,68,68,.14);
-    color: #f87171;
-    border-color: rgba(239,68,68,.3);
-}
-
-
-/* Botões */
+/* Botões de ação da lista de produtos */
 .sf-btn-edit {
-    background: linear-gradient(135deg,#f59e0b,#d97706);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .sf-btn-promo {
-    background: linear-gradient(135deg,#a78bfa,#8b5cf6);
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
 }
 
-
-/* Inputs */
+/* Campos */
 .form-control::placeholder {
-    color: #6b7280;
+    color: var(--texto-fraco);
 }
 
-.form-control:focus {
-    background: #0f1116;
-    color: #e7e9ee;
-    border-color: rgba(59,130,246,.5);
-    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+.form-control:focus,
+.form-select:focus {
+    background: var(--fundo);
+    color: var(--texto);
+    border-color: var(--azul);
+    box-shadow: 0 0 0 4px rgba(2, 119, 201, .2);
 }
 
+/* Modais */
+.modal-content.bg-shadow {
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .9);
+}
 
 /* =========================================================
-   FILTRO SEGMENTADO
+   FILTRO SEGMENTADO (Presencial / Online / Geral)
    ========================================================= */
 
 .sf-segment {
     display: inline-flex;
-    padding: 4px;
     gap: 4px;
+    padding: 4px;
     border-radius: 999px;
-    background: #0f1116;
-    border: 1px solid rgba(255,255,255,.06);
+    background: var(--fundo);
+    border: 1px solid var(--borda);
 }
 
     .sf-segment button {
-        border: 0;
-        background: transparent;
-        color: #9aa0ac;
-        font-size: .8rem;
-        font-weight: 600;
-        padding: 6px 16px;
-        border-radius: 999px;
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        padding: 6px 16px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--texto-fraco);
+        font-size: .8rem;
+        font-weight: 700;
         cursor: pointer;
         transition: all .18s ease;
     }
 
         .sf-segment button:hover {
-            color: #e7e9ee;
+            color: var(--texto);
         }
 
         .sf-segment button.active {
             color: #fff;
-            background: linear-gradient(135deg,#3b82f6,#6366f1);
-            box-shadow: 0 6px 18px -6px rgba(59,130,246,.7);
+            background: var(--azul);
+            box-shadow: 0 6px 18px -6px rgba(2, 119, 201, .7);
         }
 
+            .sf-segment button.active[data-ch="online"] {
+                background: linear-gradient(135deg, #00bdae, #0ea5a0);
+                box-shadow: 0 6px 18px -6px rgba(0, 189, 174, .7);
+            }
 
-/* Modal */
-.modal-content.bg-shadow {
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);
-}
+            .sf-segment button.active[data-ch="geral"] {
+                background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+                box-shadow: 0 6px 18px -6px rgba(167, 139, 250, .7);
+            }
 
-/* ===== REMOVE EFEITOS DO BOOTSTRAP ===== */
-
-.dt-column-title {
-    color: #ffffff !important;
-    
-}
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
 
 .servfesta-dash {
-    --sf-bg: #0c0d11;
-    --sf-card: #16181f;
-    --sf-card-2: #1b1e27;
-    --sf-inset: #0f1116;
-    --sf-border: rgba(255,255,255,.06);
-    --sf-muted: #9aa0ac;
-    background: radial-gradient(1200px 600px at 100% -10%, rgba(59,130,246,.08), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgba(167,139,250,.07), transparent 55%), var(--sf-bg);
+    --sf-bg: var(--fundo);
+    --sf-card: var(--superficie);
+    --sf-card-2: var(--superficie);
+    --sf-inset: var(--fundo);
+    --sf-border: var(--borda);
+    --sf-muted: var(--texto-fraco);
     min-height: 100vh;
-    color: #e7e9ee;
+    background: var(--sf-bg);
+    color: var(--texto);
 }
 
     .servfesta-dash .card {
@@ -252,87 +237,40 @@
     }
 
     .servfesta-dash .bg-shadow {
-        background: linear-gradient(180deg, var(--sf-card-2) 0%, var(--sf-card) 100%);
-        border: 1px solid var(--sf-border);
-        box-shadow: 0 10px 30px -18px rgba(0,0,0,.9);
-        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+        background: var(--sf-card) !important;
+        border: 1px solid var(--sf-border) !important;
     }
 
         .servfesta-dash .bg-shadow:hover {
             transform: translateY(-2px);
-            border-color: rgba(255,255,255,.12);
-            box-shadow: 0 18px 40px -20px rgba(0,0,0,.95);
+            border-color: var(--azul) !important;
+            box-shadow: 0 18px 40px -20px rgba(0, 0, 0, .8);
         }
 
     .servfesta-dash .bg-tpreto {
-        background: var(--sf-inset);
+        background: var(--sf-inset) !important;
         border: 1px solid var(--sf-border);
     }
 
     .servfesta-dash .text-light {
-        color: #e7e9ee !important;
+        color: var(--texto) !important;
     }
 
     .servfesta-dash .text-secondary {
         color: var(--sf-muted) !important;
     }
 
-.sf-segment {
-    display: inline-flex;
-    padding: 4px;
-    gap: 4px;
-    border-radius: 999px;
-    background: var(--sf-inset);
-    border: 1px solid var(--sf-border);
-}
-
-    .sf-segment button {
-        border: 0;
-        background: transparent;
-        color: var(--sf-muted);
-        font-size: .8rem;
-        font-weight: 600;
-        padding: 6px 16px;
-        border-radius: 999px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        transition: all .18s ease;
-    }
-
-        .sf-segment button:hover {
-            color: #e7e9ee;
-        }
-
-        .sf-segment button.active {
-            color: #fff;
-            background: linear-gradient(135deg,#3b82f6,#6366f1);
-            box-shadow: 0 6px 18px -6px rgba(59,130,246,.7);
-        }
-
-            .sf-segment button.active[data-ch="online"] {
-                background: linear-gradient(135deg,#00bdae,#0ea5a0);
-                box-shadow: 0 6px 18px -6px rgba(0,189,174,.7);
-            }
-
-            .sf-segment button.active[data-ch="geral"] {
-                background: linear-gradient(135deg,#a78bfa,#8b5cf6);
-                box-shadow: 0 6px 18px -6px rgba(167,139,250,.7);
-            }
-
 .sf-chip {
+    padding: 2px 8px;
+    border: 1px solid var(--sf-border, var(--borda));
+    border-radius: 999px;
+    background: var(--sf-inset, var(--fundo));
     font-size: .65rem;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 999px;
-    border: 1px solid var(--sf-border);
-    background: var(--sf-inset);
 }
 
 .sf-kpibar {
-    height: 3px;
     width: 36px;
+    height: 3px;
     border-radius: 999px;
 }
-

@@ -65,7 +65,8 @@ function iniciarFaixaAviso() {
     const mensagens = [
         "Peça online e retire gelado na loja",
         "Pagamento por Pix ou cartão",
-        "Retire em até 24 horas após a separação"
+        "Retire em até 24 horas após a separação",
+        "Retirada somente para maiores de 18 anos"
     ];
 
     const texto = document.getElementById("textoFaixaAviso");

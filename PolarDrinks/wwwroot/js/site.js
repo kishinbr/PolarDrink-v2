@@ -196,7 +196,7 @@ $(document).ready(function () {
 
         columnDefs: [
             { orderable: false, targets: [5] },
-            { className: "text-center", targets: [1,2,5] }
+            { className: "text-center", targets: [0, 1, 2, 5] }
         ],
 
         language: {

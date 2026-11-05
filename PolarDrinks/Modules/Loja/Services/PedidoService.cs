@@ -35,6 +35,10 @@ namespace PolarDrinks.Modules.Loja.Services
         {
             return _pedidoRepository.ObterPedidosDoCliente(clienteId);
         }
+        public int ContarAguardandoSeparacao()
+        {
+            return _pedidoRepository.ContarPorStatus(PedidoModel.Status.AguardandoSeparacao);
+        }
         public List<PedidoModel> ListarPorStatus(string status)
         {
             return _pedidoRepository.ObterPorStatus(status);
