@@ -130,8 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
         iniciar();
     }
 });
-<<<<<<< HEAD
-
 // Campo de imagem (cadastrar/editar produto): mostra nome e prévia do arquivo escolhido
 // e permite desfazer a escolha antes de salvar. Não envia nada ao servidor.
 document.addEventListener("DOMContentLoaded", function () {
@@ -182,5 +180,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-=======
->>>>>>> 4c12680f084e448c5f57211fbf5d4a388db8ce0b

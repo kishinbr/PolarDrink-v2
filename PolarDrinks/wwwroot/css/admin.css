@@ -1234,8 +1234,6 @@ textarea.form-control {
         grid-template-columns: 1fr 1fr;
     }
 }
-<<<<<<< HEAD
-
 /* ===== Chips de categoria (cadastrar/editar produto) ===== */
 .categorias-chips {
     display: flex;
@@ -1326,5 +1324,3 @@ textarea.form-control {
     border-radius: var(--raio);
     object-fit: cover;
 }
-=======
->>>>>>> 4c12680f084e448c5f57211fbf5d4a388db8ce0b

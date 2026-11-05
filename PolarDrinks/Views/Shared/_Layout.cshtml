@@ -114,19 +114,11 @@
                 <i class="bi bi-universal-access"></i> Ativar LIBRAS
             </a>
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-            <a class="menu-item" href="/Auth/Deslogar">
-            <i class="bi bi-box-arrow-right"></i> Deslogar
-=======
             <div class="secao-menu">Acesso</div>
             <a asp-controller="Loja" asp-action="Catalogo" target="_blank" rel="noopener" class="item-menu">
                 <i class="bi bi-shop"></i> Ver loja online
                 <i class="bi bi-box-arrow-up-right ms-auto small"></i>
             </a>
-=======
-            <div class="secao-menu">Acesso</div>
->>>>>>> 4c12680f084e448c5f57211fbf5d4a388db8ce0b
             @if (ehAdmin)
             {
                 <a asp-controller="Usuario" asp-action="Index" class="@(Ativo("Usuario"))">
@@ -135,10 +127,6 @@
             }
             <a asp-controller="Auth" asp-action="Deslogar" class="item-menu">
                 <i class="bi bi-box-arrow-right"></i> Sair
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> 4c12680f084e448c5f57211fbf5d4a388db8ce0b
             </a>
         </nav>
     </aside>
